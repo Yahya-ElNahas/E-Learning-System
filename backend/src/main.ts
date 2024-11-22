@@ -1,9 +1,10 @@
+/* eslint-disable prettier/prettier */
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 
-async function bootstrap() {
+async function bootstrap(port) {
   const app = await NestFactory.create(AppModule);
-  await app.listen(process.env.PORT ?? 3000);
-  console.log(200);
+  await app.listen(port);
+  console.log('Server is running on port: ' + port);
 }
-bootstrap();
+bootstrap(process.env.PORT ?? 5000);
