@@ -11,7 +11,6 @@ import { NoteSchema } from './note/note.schema';
 import { UserInteractionSchema } from './user_interaction/user_interaction.Scehma';
 import { RecommendationSchema } from './recommendation/recommendation.Schema';
 import { AuthenticationLogSchema } from './authentication_log/authentication_log.schema';
-import { ConfigurationSchema } from './configuration/configuration.schema';
 @Module({
   imports: [
       MongooseModule.forRoot('mongodb://localhost:27017/e-learning'),
@@ -24,8 +23,7 @@ import { ConfigurationSchema } from './configuration/configuration.schema';
       MongooseModule.forFeature([{name:'Note',schema:NoteSchema}]),
       MongooseModule.forFeature([{name:'UserInteraction',schema:UserInteractionSchema}]),
       MongooseModule.forFeature([{name:'Recommendation',schema:RecommendationSchema}]),
-      MongooseModule.forFeature([{name:'Authenticationlog',schema:AuthenticationLogSchema}]),
-      MongooseModule.forFeature([{name:'Configuration',schema:ConfigurationSchema}]),
+      MongooseModule.forFeature([{name:'Authenticationlog',schema:AuthenticationLogSchema}])
   ],
   controllers: [],
   providers: [],
