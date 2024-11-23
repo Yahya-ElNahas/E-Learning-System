@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UserSchema } from './user/user.schema';
@@ -11,6 +10,8 @@ import { NoteSchema } from './note/note.schema';
 import { UserInteractionSchema } from './user_interaction/user_interaction.Scehma';
 import { RecommendationSchema } from './recommendation/recommendation.Schema';
 import { AuthenticationLogSchema } from './authentication_log/authentication_log.schema';
+import { QuizController } from './quiz/quiz.controller';
+import { QuizService } from './quiz/quiz.service';
 @Module({
   imports: [
       MongooseModule.forRoot('mongodb://localhost:27017/e-learning'),
@@ -25,7 +26,7 @@ import { AuthenticationLogSchema } from './authentication_log/authentication_log
       MongooseModule.forFeature([{name:'Recommendation',schema:RecommendationSchema}]),
       MongooseModule.forFeature([{name:'Authenticationlog',schema:AuthenticationLogSchema}])
   ],
-  controllers: [],
-  providers: [],
+  controllers: [QuizController],
+  providers: [QuizService]
 })
 export class AppModule {}
