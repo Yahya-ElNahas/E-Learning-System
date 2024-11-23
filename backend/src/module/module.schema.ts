@@ -16,7 +16,7 @@ export class Module {
   title: string;
 
   @Prop({ required: true })
-  content: string;
+  content: string;  
 
   @Prop({ type: [String], required: false })
   resources?: string[];
