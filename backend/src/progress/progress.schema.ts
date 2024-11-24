@@ -1,22 +1,25 @@
-/* eslint-disable prettier/prettier */
-import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';
-import { Document, Types } from 'mongoose';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Document } from 'mongoose';
 
-export type ModuleDocument = Module & Document;
+export type ProgressDocument = Progress & Document;
 
 @Schema({ timestamps: true })
-export class Module {
-  @Prop({ type: Types.ObjectId, ref: 'Course', required: true })
-  course_id: Types.ObjectId;
+export class Progress {
+  @Prop({ required: true, unique: true })
+  progressId: string;
 
   @Prop({ required: true })
-  title: string;
+  userId: string;
 
   @Prop({ required: true })
-  content: string;
+  courseId: string;
 
-  @Prop({ type: [String], required: false })
-  resources?: string[];
+  @Prop({ required: true, min: 0, max: 100 })
+  completionPercentage: number;
+
+  @Prop({ required: true })
+  lastAccessed: Date;
 }
 
-export const ModuleSchema = SchemaFactory.createForClass(Module);
+export const ProgressSchema = SchemaFactory.createForClass(Progress);
+
