@@ -4,6 +4,12 @@ import { Document } from 'mongoose';
 
 export type CourseDocument = Course & Document;
 
+export enum Difficulty {
+  BEGINNER = 'beginner',
+  INTERMEDIATE = 'intermediate',
+  ADVANCED = 'advanced'
+}
+
 @Schema({ timestamps: true })
 export class Course {
   @Prop({ required: true })
@@ -15,7 +21,7 @@ export class Course {
   @Prop({ required: true })
   category: string;
 
-  @Prop({ required: true, enum: ['Beginner', 'Intermediate', 'Advanced'] })
+  @Prop({ required: true, enum: Difficulty })
   difficulty_level: string;
 
   @Prop({ required: true })
