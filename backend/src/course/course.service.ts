@@ -2,7 +2,7 @@ import { Injectable, NotFoundException, BadRequestException } from '@nestjs/comm
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Course, CourseDocument, Difficulty } from './course.schema';
-import { isIdValid } from 'src/user/user.service';
+import { isIdValid } from 'src/helper';
 
 @Injectable()
 export class CourseService {
