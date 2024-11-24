@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
 import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { Document, Types } from 'mongoose';
 
 export type CourseDocument = Course & Document;
 
@@ -22,10 +22,10 @@ export class Course {
   category: string;
 
   @Prop({ required: true, enum: Difficulty })
-  difficulty_level: string;
+  difficulty_level: Difficulty;
 
-  @Prop({ required: true })
-  created_by: string;
+  @Prop({ type: Types.ObjectId, required: true })
+  created_by: Types.ObjectId;
 }
 
 export const CourseSchema = SchemaFactory.createForClass(Course);

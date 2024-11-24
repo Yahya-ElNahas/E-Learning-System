@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UserSchema } from './user/user.schema';
 import { CourseSchema } from './course/course.schema';
@@ -7,26 +8,24 @@ import { QuizSchema } from './quiz/quiz.schema';
 import { ResponseSchema } from './response/response.schema';
 import { ProgressSchema } from './progress/progress.schema';
 import { NoteSchema } from './note/note.schema';
-import { UserInteractionSchema } from './user_interaction/user_interaction.Scehma';
-import { RecommendationSchema } from './recommendation/recommendation.Schema';
-import { AuthenticationLogSchema } from './authentication_log/authentication_log.schema';
 import { QuizController } from './quiz/quiz.controller';
 import { QuizService } from './quiz/quiz.service';
+import { CourseController } from './course/course.controller';
+import { CourseService } from './course/course.service';
+
 @Module({
   imports: [
-      MongooseModule.forRoot('mongodb://localhost:27017/e-learning'),
-      MongooseModule.forFeature([{name:'User',schema:UserSchema}])
-      ,MongooseModule.forFeature([{name:'Course',schema:CourseSchema}]),
-      MongooseModule.forFeature([{name:'Module',schema:ModuleSchema}]),
-      MongooseModule.forFeature([{name:'Quiz',schema:QuizSchema}]),
-      MongooseModule.forFeature([{name:'Response',schema:ResponseSchema}]),
-      MongooseModule.forFeature([{name:'Progress',schema:ProgressSchema}]),
-      MongooseModule.forFeature([{name:'Note',schema:NoteSchema}]),
-      MongooseModule.forFeature([{name:'UserInteraction',schema:UserInteractionSchema}]),
-      MongooseModule.forFeature([{name:'Recommendation',schema:RecommendationSchema}]),
-      MongooseModule.forFeature([{name:'Authenticationlog',schema:AuthenticationLogSchema}])
+    ConfigModule.forRoot({ isGlobal: true }),
+    MongooseModule.forRoot(process.env.MONGODB_URI),
+    MongooseModule.forFeature([{ name: 'User', schema: UserSchema }]),
+    MongooseModule.forFeature([{ name: 'Course', schema: CourseSchema }]),
+    MongooseModule.forFeature([{ name: 'Module', schema: ModuleSchema }]),
+    MongooseModule.forFeature([{ name: 'Quiz', schema: QuizSchema }]),
+    MongooseModule.forFeature([{ name: 'Response', schema: ResponseSchema }]),
+    MongooseModule.forFeature([{ name: 'Progress', schema: ProgressSchema }]),
+    MongooseModule.forFeature([{ name: 'Note', schema: NoteSchema }])
   ],
-  controllers: [QuizController],
-  providers: [QuizService]
+  controllers: [QuizController, CourseController],
+  providers: [QuizService, CourseService]
 })
 export class AppModule {}

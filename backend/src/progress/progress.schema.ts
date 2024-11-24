@@ -1,18 +1,15 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { Document, Types } from 'mongoose';
 
 export type ProgressDocument = Progress & Document;
 
 @Schema({ timestamps: true })
 export class Progress {
-  @Prop({ required: true, unique: true })
-  progressId: string;
+  @Prop({ type: Types.ObjectId, ref: 'User', required: true })
+  user_id: Types.ObjectId;
 
-  @Prop({ required: true })
-  userId: string;
-
-  @Prop({ required: true })
-  courseId: string;
+  @Prop({ type: Types.ObjectId, ref: 'Course', required: true })
+  courseId: Types.ObjectId;
 
   @Prop({ required: true, min: 0, max: 100 })
   completionPercentage: number;
