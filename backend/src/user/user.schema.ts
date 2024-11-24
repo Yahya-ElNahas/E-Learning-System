@@ -7,22 +7,19 @@ export type UserDocument = User & Document;
 export enum Role {
   ADMIN = 'Admin',
   STUDENT = 'Student',
-  INTSTRUCTOR = 'instructor'
+  INSTRUCTOR = 'Instructor'
 }
 
 @Schema({ timestamps: true })
 export class User {
   @Prop({ required: true, unique: true })
-  user_id: string;
-
-  @Prop({ required: true, unique: true })
   email: string;
 
-  @Prop({ default:false })
-  isVerified:boolean;
+  @Prop({ default: false })
+  isVerified: boolean;
 
-  @Prop({ required:false })
-  verificationToken:string | null;
+  @Prop({ required: false })
+  verificationToken: string | null;
 
   @Prop({ required: true })
   password: string;
@@ -35,9 +32,6 @@ export class User {
 
   @Prop({ required: false })
   profile_picture_url?: string;
-
-  @Prop({ default: Date.now })
-  created_at: Date;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

@@ -1,28 +1,25 @@
 /* eslint-disable prettier/prettier */
 import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { Document, Types } from 'mongoose';
 
 export type ResponseDocument = Response & Document;
 
 @Schema({ timestamps: true })
 export class Response {
-  @Prop({ required: true, unique: true })
-  response_id: string;
+  @Prop({ type: Types.ObjectId, ref: 'User', required: true })
+  user_id: Types.ObjectId;
 
-  @Prop({ required: true })
-  user_id: string;
+  @Prop({ type: Types.ObjectId, ref: 'Quiz', required: true })
+  quiz_id: Types.ObjectId;
 
-  @Prop({ required: true })
-  quiz_id: string;
-
-  @Prop({ required: true })
-  answers: Array<any>; 
+  @Prop({ type: [{ questionNumber: String, answer: String }], required: true })
+  answers: Array<{
+    questionNumber: string;
+    answer: string;
+  }>;
 
   @Prop({ required: true })
   score: number;
-
-  @Prop({ default: Date.now })
-  submitted_at: Date;
 }
 
 export const ResponseSchema = SchemaFactory.createForClass(Response);

@@ -1,21 +1,20 @@
+/* eslint-disable prettier/prettier */
 import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { Document, Types } from 'mongoose';
 
 export type QuizDocument = Quiz & Document;
 
 @Schema({ timestamps: true })
 export class Quiz {
-  @Prop({ required: true, unique: true })
-  quiz_id: string;
+  @Prop({ type: Types.ObjectId, ref: 'Module', required: true })
+  module_id: Types.ObjectId;
 
-  @Prop({ required: true })
-  module_id: string; 
-
-  @Prop({ required: true })
-  questions: Array<any>; 
-
-  @Prop({ default: Date.now })
-  created_at: Date;
+  @Prop({ type: [{ question: String, options: [String], correctAnswer: String }], required: true })
+  questions: Array<{
+    question: string;
+    options: string[];
+    correctAnswer: string;
+  }>;
 }
 
 export const QuizSchema = SchemaFactory.createForClass(Quiz);

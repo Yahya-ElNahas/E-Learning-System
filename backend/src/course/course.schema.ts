@@ -1,5 +1,4 @@
 /* eslint-disable prettier/prettier */
-
 import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 
@@ -7,9 +6,6 @@ export type CourseDocument = Course & Document;
 
 @Schema({ timestamps: true })
 export class Course {
-  @Prop({ required: true, unique: true })
-  course_id: string;
-
   @Prop({ required: true })
   title: string;
 
@@ -24,9 +20,6 @@ export class Course {
 
   @Prop({ required: true })
   created_by: string;
-
-  @Prop({ default: Date.now })
-  created_at: Date;
 }
 
 export const CourseSchema = SchemaFactory.createForClass(Course);

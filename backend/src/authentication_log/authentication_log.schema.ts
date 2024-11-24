@@ -1,25 +1,19 @@
 /* eslint-disable prettier/prettier */
 import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { Document, Types } from 'mongoose';
 
 export type AuthenticationLogDocument = AuthenticationLog & Document;
 
 @Schema({ timestamps: true })
 export class AuthenticationLog {
-  @Prop({ required: true, unique: true })
-  log_id: string;
+  @Prop({ type: Types.ObjectId, ref: 'User', required: true })
+  user_id: Types.ObjectId;
 
-  @Prop({ required: true })
-  user_id: string; 
+  @Prop({ required: true, enum: ['LOGIN', 'LOGOUT', 'FAILED_LOGIN', 'PASSWORD_RESET'] })
+  event: string;
 
-  @Prop({ required: true })
-  event: string; 
-
-  @Prop({ required: true })
-  timestamp: Date;
-
-  @Prop({ required: true })
-  status: string; 
+  @Prop({ required: true, enum: ['SUCCESS', 'FAILURE'] })
+  status: string;
 }
 
 export const AuthenticationLogSchema = SchemaFactory.createForClass(AuthenticationLog);
