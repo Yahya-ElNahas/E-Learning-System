@@ -13,7 +13,7 @@ export class CourseService {
     title: string;
     description: string;
     category: string;
-    difficulty_level: Difficulty;
+    difficulty_level: string;
     created_by: string;
   }): Promise<Course> {
     isIdValid(body.created_by);
@@ -42,7 +42,7 @@ export class CourseService {
     title?: string;
     description?: string;
     category?: string;
-    difficulty_level?: Difficulty;
+    difficulty_level?: string;
     created_by?: string;
   }): Promise<Course> {
     isIdValid(id);

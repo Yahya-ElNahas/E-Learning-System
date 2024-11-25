@@ -1,21 +1,6 @@
 import { Controller, Get, Post, Put, Delete, Param, Body } from '@nestjs/common';
 import { ProgressService } from './progress.service';
 
-class CreateProgressDto {
-  progressId: string;
-  userId: string;
-  courseId: string;
-  completionPercentage: number;
-  lastAccessed: Date;
-}
-
-class UpdateProgressDto {
-  userId?: string;
-  courseId?: string;
-  completionPercentage?: number;
-  lastAccessed?: Date;
-}
-
 @Controller('progress')
 export class ProgressController {
   constructor(private readonly progressService: ProgressService) {}
@@ -31,13 +16,21 @@ export class ProgressController {
   }
 
   @Post()
-  async create(@Body() createProgressDto: CreateProgressDto) {
-    return this.progressService.create(createProgressDto);
+  async create(@Body() body: {
+    user_id: string,
+    course_id: string,
+    completion_percentage: number
+  }) {
+    return this.progressService.create(body);
   }
 
   @Put(':id')
-  async update(@Param('id') id: string, @Body() updateProgressDto: UpdateProgressDto) {
-    return this.progressService.update(id, updateProgressDto);
+  async update(@Param('id') id: string, @Body() body: {
+    user_id?: string,
+    course_id?: string,
+    completion_percentage?: number
+  }) {
+    return this.progressService.update(id, body);
   }
 
   @Delete(':id')

@@ -42,7 +42,7 @@ export class CourseController {
       category?: string;
       difficulty_level?: Difficulty;
       created_by?: string;
-    },
+    }
   ): Promise<Course> {
     return this.courseService.update(id, body);
   }

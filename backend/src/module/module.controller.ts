@@ -7,8 +7,13 @@ export class ModuleController {
   constructor(private readonly moduleService: ModuleService) {}
 
   @Post()
-  async create(@Body() createModuleDto: Partial<Module>): Promise<Module> {
-    return this.moduleService.create(createModuleDto);
+  async create(@Body() body: {
+    course_id: string,
+    title: string,
+    content: string,
+    resources?: string[]
+  }): Promise<Module> {
+    return this.moduleService.create(body);
   }
 
   @Get()
@@ -24,9 +29,14 @@ export class ModuleController {
   @Put(':id')
   async update(
     @Param('id') id: string,
-    @Body() updateModuleDto: Partial<Module>,
+    @Body() body: {
+      course_id?: string,
+      title?: string,
+      content?: string,
+      resources?: string[]
+    }
   ): Promise<Module> {
-    return this.moduleService.update(id, updateModuleDto);
+    return this.moduleService.update(id, body);
   }
 
   @Delete(':id')

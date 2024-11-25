@@ -7,8 +7,15 @@ export class QuizController {
   constructor(private readonly quizService: QuizService) {}
 
   @Post()
-  async create(@Body() createQuizDto: Partial<Quiz>): Promise<Quiz> {
-    return this.quizService.create(createQuizDto);
+  async create(@Body() body: {
+    module_id: string,
+    questions: Array<{
+      question: string,
+      options: string[],
+      correctAnswer: string
+    }>
+  }): Promise<Quiz> {
+    return this.quizService.create(body);
   }
 
   @Get()
@@ -24,9 +31,16 @@ export class QuizController {
   @Put(':id')
   async update(
     @Param('id') id: string,
-    @Body() updateQuizDto: Partial<Quiz>
+    @Body() body: {
+      module_id?: string,
+      questions?: Array<{
+        question: string,
+        options: string[],
+        correctAnswer: string
+      }>
+    }
   ): Promise<Quiz> {
-    return this.quizService.update(id, updateQuizDto);
+    return this.quizService.update(id, body);
   }
 
   @Delete(':id')

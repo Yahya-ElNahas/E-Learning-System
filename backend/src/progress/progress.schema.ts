@@ -9,13 +9,10 @@ export class Progress {
   user_id: Types.ObjectId;
 
   @Prop({ type: Types.ObjectId, ref: 'Course', required: true })
-  courseId: Types.ObjectId;
+  course_id: Types.ObjectId;
 
   @Prop({ required: true, min: 0, max: 100 })
-  completionPercentage: number;
-
-  @Prop({ required: true })
-  lastAccessed: Date;
+  completion_percentage: number;
 }
 
 export const ProgressSchema = SchemaFactory.createForClass(Progress);
