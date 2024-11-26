@@ -120,7 +120,6 @@ export class AuthService {
       if (!isOtpValid) {
         throw new BadRequestException('Invalid verification credentials.');
       }
-      console.log("valid");
   
       await this.userService.update(decoded.sub, { isVerified: true, otp: null });
   
