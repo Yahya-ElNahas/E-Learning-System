@@ -17,7 +17,7 @@ export class AuthService {
     // Configure Nodemailer
     this.transporter = nodemailer.createTransport({
       host: 'smtp.gmail.com',
-      port: 587,
+      port: 587,//plp;';'
       secure: false,
       service: 'gmail', 
       auth: {
