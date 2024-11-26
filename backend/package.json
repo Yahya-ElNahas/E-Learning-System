@@ -29,6 +29,7 @@
     "@sendgrid/mail": "^8.1.4",
     "backend": "file:",
     "bcrypt": "^5.1.1",
+    "crypto": "^1.0.1",
     "dotenv": "^16.4.5",
     "nodemailer": "^6.9.16",
     "passport-jwt": "^4.0.1",

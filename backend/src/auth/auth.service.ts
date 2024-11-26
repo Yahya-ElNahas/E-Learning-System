@@ -38,18 +38,16 @@ export class AuthService {
     return crypto.randomBytes(3).toString('hex').toUpperCase();
   }
 
-  async sendOtpMail(id: string, email: string) {
-    const otp = this.generateOtp();
+  async sendOtpMail(email: string, otp: string) {
     const mailOptions = {
       from: process.env.EMAIL_SENDER,
       to: email,
-      subject: 'ام لولو',
+      subject: `Email Verification`,
       text: `Your email verification token: ${otp}`,
-      html: `<p>Your email verification token: <strong>${otp}</strong></p><h1>كسم لولو</p>`,
+      html: `<p>Your email verification token: <strong>${otp}</strong></p>`,
     };
     try {
       await this.transporter.sendMail(mailOptions);
-      this.userService.update(id, { otp: await bcrypt.hash(otp, 10) });
     } catch (error) {
       throw new BadRequestException('Failed to send verification email.');
     }
@@ -70,7 +68,10 @@ export class AuthService {
     if(!newUser) throw new InternalServerErrorException("Error Registering Account");
 
     if (role === Role.STUDENT) {
-      this.sendOtpMail(newUser._id.toString(), newUser.email);
+      const otp = this.generateOtp();
+      const hashedOtp = await bcrypt.hash(otp, 10);
+      this.userService.update(newUser._id.toString(), { otp: hashedOtp });
+      this.sendOtpMail(newUser.email, otp);
     }
   
     return {
@@ -89,7 +90,10 @@ export class AuthService {
     if (!isPasswordValid) throw new UnauthorizedException('Invalid credentials.');
   
     if (user.role === Role.STUDENT && !user.isVerified) {
-      this.sendOtpMail(user._id.toString(), user.email);
+      const otp = this.generateOtp();
+      const hashedOtp = await bcrypt.hash(otp, 10);
+      this.userService.update(user._id.toString(), { otp: hashedOtp });
+      this.sendOtpMail(user.email, otp);
       const verificationToken = await this.generateJwt(user._id.toString(), user.email, user.role);
       throw new UnauthorizedException({
         message: 'Email verification required.',
@@ -116,6 +120,7 @@ export class AuthService {
       if (!isOtpValid) {
         throw new BadRequestException('Invalid verification credentials.');
       }
+      console.log("valid");
   
       await this.userService.update(decoded.sub, { isVerified: true, otp: null });
   

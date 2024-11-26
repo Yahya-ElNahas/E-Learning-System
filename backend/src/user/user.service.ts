@@ -31,11 +31,11 @@ export class UserService {
     return await this.userModel.findById(id).exec();
   }
 
-async update(email: string, updateData: any): Promise<UserDocument | null> {
-  return await this.userModel.findOneAndUpdate({ email }, updateData, {
-    new: true, 
-  }).exec();
-}
+  async update(id: string, updateData: any): Promise<UserDocument | null> {
+    return await this.userModel.findByIdAndUpdate(id, updateData, {
+      new: true, 
+    }).exec();
+  }
 
 
   async updateByEmail(email: string, updateData: any): Promise<UserDocument> {
