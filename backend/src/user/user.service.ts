@@ -38,6 +38,12 @@ export class UserService {
     });
   }
 
+  async updateByEmail(email: string, updateData: any): Promise<UserDocument> {
+    return await this.userModel.findOneAndUpdate({ email }, updateData, {
+      new: true,
+    });
+  }
+
   // Delete a user by ID
   async delete(id: string): Promise<void> {
     await this.userModel.findByIdAndDelete(id).exec();

@@ -23,8 +23,8 @@ import { AuthService } from './auth/auth.service';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({}), 
-    MongooseModule.forRoot('mongodb://localhost:27017/e-learning'), 
+    ConfigModule.forRoot({ isGlobal: true }), 
+    MongooseModule.forRoot(process.env.MONGODB_URI ?? 'mongodb://localhost:27017/e-learning'), 
     MongooseModule.forFeature([{ name: 'User', schema: UserSchema }]),
     MongooseModule.forFeature([{ name: 'Course', schema: CourseSchema }]), 
     MongooseModule.forFeature([{ name: 'Module', schema: ModuleSchema }]), 

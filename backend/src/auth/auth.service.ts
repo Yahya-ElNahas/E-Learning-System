@@ -1,10 +1,11 @@
 /* eslint-disable prettier/prettier */
 import * as nodemailer from 'nodemailer';
-import { Injectable, UnauthorizedException, BadRequestException } from '@nestjs/common';
+import { Injectable, UnauthorizedException, BadRequestException, InternalServerErrorException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { UserService } from '../user/user.service';
-import { UserDocument } from '../user/user.schema';
+import { Role, UserDocument } from '../user/user.schema';
+import * as crypto from 'crypto';
 
 @Injectable()
 export class AuthService {
@@ -14,95 +15,113 @@ export class AuthService {
     private readonly userService: UserService,
     private readonly jwtService: JwtService,
   ) {
-    // Configure Nodemailer
     this.transporter = nodemailer.createTransport({
-      host: 'smtp.gmail.com',
-      port: 587,
-      secure: false,
-      service: 'gmail', 
+      host: process.env.SMTP_HOST,
+      port: process.env.SMTP_PORT,
+      secure: false, 
       auth: {
-        user: 'drehabsaad73@gmail.com', 
-        pass: 'xbnzrndobccfvigb',
-      },
+        user: process.env.SMTP_USER, 
+        pass: process.env.SMTP_PASS,
+      }
     });
   }
 
-  async generateJwt(userId: string, email: string): Promise<string> {
-    const payload = { userId, email };
-    return this.jwtService.sign(payload);
+  private async generateJwt(userId: string, email: string, role: string): Promise<string> {
+    const payload = { sub: userId, email, role };
+    return this.jwtService.sign(payload, {
+      secret: process.env.JWT_SECRET,
+      expiresIn: '1h',
+    });
+  }
+
+  private generateOtp(): string {
+    return crypto.randomBytes(3).toString('hex').toUpperCase();
+  }
+
+  async sendOtpMail(id: string, email: string) {
+    const otp = this.generateOtp();
+    const mailOptions = {
+      from: process.env.EMAIL_SENDER,
+      to: email,
+      subject: 'ام لولو',
+      text: `Your email verification token: ${otp}`,
+      html: `<p>Your email verification token: <strong>${otp}</strong></p><h1>كسم لولو</p>`,
+    };
+    try {
+      await this.transporter.sendMail(mailOptions);
+      this.userService.update(id, { otp: await bcrypt.hash(otp, 10) });
+    } catch (error) {
+      throw new BadRequestException('Failed to send verification email.');
+    }
   }
 
   async register(userDto: any): Promise<any> {
     const { email, password, role } = userDto;
-
-    // Hash password
+  
+    if (![Role.STUDENT, Role.INSTRUCTOR, Role.ADMIN].includes(role)) {
+      throw new BadRequestException('Invalid role specified.');
+    }
+  
     const hashedPassword = await bcrypt.hash(password, 10);
     userDto.password = hashedPassword;
-    userDto.isVerified = role !== 'student';
-
-    // Create user
+    userDto.isVerified = role !== Role.STUDENT;
+  
     const newUser = await this.userService.create(userDto);
+    if(!newUser) throw new InternalServerErrorException("Error Registering Account");
 
-    // If student, send verification email
-    if (role === 'student') {
-      const otp = Math.random().toString(36).slice(-6).toUpperCase();  // 6-character OTP
-
-      const mailOptions = {
-        from: 'drehabsaad73@gmail.com',
-        to: email,
-        subject: 'Verify Your Email',
-        text: `Your email verification token: ${otp}`,
-        html: `<p>Your email verification token: <strong>${otp}</strong></p>`,
-      };
-
-      try {
-        await this.transporter.sendMail(mailOptions);
-      } catch (error) {
-        console.error('Error sending verification email:', error);
-        throw new BadRequestException('Failed to send verification email.');
-      }
-
-      // Store the OTP in the user document
-      await this.userService.update(email, { otp });
+    if (role === Role.STUDENT) {
+      this.sendOtpMail(newUser._id.toString(), newUser.email);
     }
-
-    return newUser;
+  
+    return {
+      status: "success",
+      verificationToken: await this.generateJwt(newUser._id.toString(), newUser.email, newUser.role)
+    };
   }
 
   async login(credentials: any): Promise<any> {
     const { email, password } = credentials;
-
+  
     const user = await this.userService.findByEmail(email) as UserDocument;
     if (!user) throw new UnauthorizedException('Invalid credentials.');
-
+  
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) throw new UnauthorizedException('Invalid credentials.');
-
-    if (user.role === 'student' && !user.isVerified) {
-      throw new BadRequestException('Email verification required.');
+  
+    if (user.role === Role.STUDENT && !user.isVerified) {
+      this.sendOtpMail(user._id.toString(), user.email);
+      const verificationToken = await this.generateJwt(user._id.toString(), user.email, user.role);
+      throw new UnauthorizedException({
+        message: 'Email verification required.',
+        verificationToken,
+      });
     }
-
-    return { accessToken: await this.generateJwt(user._id.toString(), user.email) };
+  
+    return await this.generateJwt(user._id.toString(), user.email, user.role);
   }
 
   async verifyEmail(token: string, otp: string): Promise<any> {
-    const decoded = this.jwtService.verify(token);
-    const email = decoded.email;
+    try {
+      const decoded = this.jwtService.verify(token, { secret: process.env.JWT_SECRET });
+      const email = decoded.email;
 
-    const user = await this.userService.findByEmail(email) as UserDocument;
-    if (!user) throw new BadRequestException('Invalid verification token.');
-
-    if (user.isVerified) {
-      throw new BadRequestException('Email already verified.');
+      const user = await this.userService.findByEmail(email);
+      if (!user) throw new BadRequestException('Invalid verification token.');
+  
+      if (user.isVerified) {
+        throw new BadRequestException('Email already verified.');
+      }
+  
+      const isOtpValid = await bcrypt.compare(otp, user.otp);
+      if (!isOtpValid) {
+        throw new BadRequestException('Invalid verification credentials.');
+      }
+  
+      await this.userService.update(decoded.sub, { isVerified: true, otp: null });
+  
+      return { message: 'Email verified successfully.' };
+    } catch (error) {
+      throw new BadRequestException(error.message || 'Verification failed.');
     }
-
-    // Check OTP validity
-    if (user.otp !== otp) {
-      throw new BadRequestException('Invalid OTP.');
-    }
-
-    await this.userService.update(email, { isVerified: true, otp: null });
-
-    return { message: 'Email verified successfully.' };
   }
 }
