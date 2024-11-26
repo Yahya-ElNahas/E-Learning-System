@@ -18,6 +18,8 @@ import { CourseService } from './course/course.service';
 import { AuthService } from './auth/auth.service';
 import { AuthController } from './auth/auth.controller';
 import { JwtModule } from '@nestjs/jwt'; 
+import { ResponseServic } from './response/response.service'
+import  ResponseController from './response/response.controller'
 
 @Module({
   imports: [
@@ -40,12 +42,14 @@ import { JwtModule } from '@nestjs/jwt';
     CourseController,
     UserController,
     AuthController,
+    ResponseController
   ],
   providers: [
     QuizService,
     CourseService,
     UserService,
     AuthService,  
+    ResponseServic
   ],
 })
 export class AppModule {}
