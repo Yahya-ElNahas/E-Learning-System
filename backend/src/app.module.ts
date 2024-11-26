@@ -22,7 +22,7 @@ import  ResponseController from './response/response.controller'
 @Module({
   imports: [
     ConfigModule.forRoot({}), 
-    MongooseModule.forRoot('mongodb://localhost:27017/e-learning'), 
+    MongooseModule.forRoot(process.env.MONGODB_URI), 
     MongooseModule.forFeature([{ name: 'User', schema: UserSchema }]),
     MongooseModule.forFeature([{ name: 'Course', schema: CourseSchema }]), 
     MongooseModule.forFeature([{ name: 'Module', schema: ModuleSchema }]), 
