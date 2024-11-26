@@ -1,5 +1,6 @@
 /* eslint-disable prettier/prettier */
 import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';
+import { setEngine } from 'crypto';
 import { Document, Types } from 'mongoose';
 
 export type CourseDocument = Course & Document;

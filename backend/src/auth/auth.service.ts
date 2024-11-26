@@ -1,15 +1,17 @@
 /* eslint-disable prettier/prettier */
 import * as nodemailer from 'nodemailer';
-import { Injectable, UnauthorizedException, BadRequestException, InternalServerErrorException } from '@nestjs/common';
+import { Injectable, UnauthorizedException, BadRequestException, InternalServerErrorException, Res, Req } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { UserService } from '../user/user.service';
 import { Role, UserDocument } from '../user/user.schema';
 import * as crypto from 'crypto';
+import { Response } from 'express';
 
 @Injectable()
 export class AuthService {
   private transporter: nodemailer.Transporter;
+ 
 
   constructor(
     private readonly userService: UserService,
@@ -26,7 +28,7 @@ export class AuthService {
     });
   }
 
-  private async generateJwt(userId: string, email: string, role: string): Promise<string> {
+  private async generateJwt(userId: string, email?: string, role?: string): Promise<string> {
     const payload = { sub: userId, email, role };
     return this.jwtService.sign(payload, {
       secret: process.env.JWT_SECRET,
@@ -53,9 +55,9 @@ export class AuthService {
     }
   }
 
-  async register(userDto: any): Promise<any> {
+  async register(userDto: any,@Res({ passthrough: true }) res: Response, @Req() req: Request): Promise<any> {
     const { email, password, role } = userDto;
-  
+     
     if (![Role.STUDENT, Role.INSTRUCTOR, Role.ADMIN].includes(role)) {
       throw new BadRequestException('Invalid role specified.');
     }
@@ -73,10 +75,25 @@ export class AuthService {
       this.userService.update(newUser._id.toString(), { otp: hashedOtp });
       this.sendOtpMail(newUser.email, otp);
     }
-  
+
+
+    const verificationTokenCookies =  await this.generateJwt(newUser._id.toString(), newUser.role)
+
+    const verificationToken = await this.generateJwt(newUser._id.toString() , newUser.email , newUser.role)
+
+    res.cookie('verification_token', verificationTokenCookies, {
+      httpOnly: true, 
+      secure: process.env.NODE_ENV === 'production', 
+      maxAge: 360000000, 
+      sameSite: 'strict', 
+    });
+
+
+     console.log(req)
     return {
       status: "success",
-      verificationToken: await this.generateJwt(newUser._id.toString(), newUser.email, newUser.role)
+      verificationToken: verificationToken,
+
     };
   }
 
@@ -100,8 +117,9 @@ export class AuthService {
         verificationToken,
       });
     }
-  
-    return await this.generateJwt(user._id.toString(), user.email, user.role);
+    const token =  await this.generateJwt(user._id.toString(), user.email, user.role);
+
+    return token;
   }
 
   async verifyEmail(token: string, otp: string): Promise<any> {

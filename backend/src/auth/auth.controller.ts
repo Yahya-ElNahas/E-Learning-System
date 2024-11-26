@@ -1,14 +1,28 @@
 /* eslint-disable prettier/prettier */
-import { Controller, Post, Body } from '@nestjs/common';
+import { Controller, Post, Body, Res, Get, Req } from '@nestjs/common';
 import { AuthService } from './auth.service';
-
+import { Request,Response } from 'express';
+let s = {
+  ssss:"rrr"
+}
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
+  
 
+  @Get('check-verification')
+  checkVerification(@Req() req: Request) {
+    const verificationToken = req.cookies['verification_token'];
+    console.log(verificationToken); 
+    return {
+      status: 'oh yah',
+      verificationToken: verificationToken
+    };
+  }
+  
   @Post('register')
-  async register(@Body() userDto: any) {
-    return this.authService.register(userDto);
+  async register(@Body() userDto: any, @Res({ passthrough: true }) res: Response,@Req() req:Request): Promise<any> {
+    return this.authService.register(userDto, res , req.cookies['verification_token']); 
   }
 
   @Post('login')
