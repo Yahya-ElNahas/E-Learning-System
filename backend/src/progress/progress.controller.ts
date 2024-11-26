@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Put, Delete, Param, Body } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Delete, Param, Body } from '@nestjs/common';
 import { ProgressService } from './progress.service';
 
 @Controller('progress')
@@ -24,7 +24,7 @@ export class ProgressController {
     return this.progressService.create(body);
   }
 
-  @Put(':id')
+  @Patch(':id')
   async update(@Param('id') id: string, @Body() body: {
     user_id?: string,
     course_id?: string,

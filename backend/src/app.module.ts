@@ -15,13 +15,13 @@ import { QuizController } from './quiz/quiz.controller';
 import { QuizService } from './quiz/quiz.service';
 import { CourseController } from './course/course.controller';
 import { CourseService } from './course/course.service';
-import { AuthService } from './auth/auth.service';
-import { AuthController } from './auth/auth.controller';
 import { JwtModule } from '@nestjs/jwt'; 
+import { ResponseServic } from './response/response.service'
+import  ResponseController from './response/response.controller'
 
 @Module({
   imports: [
-    ConfigModule.forRoot({isGlobal:true}), 
+    ConfigModule.forRoot({}), 
     MongooseModule.forRoot('mongodb://localhost:27017/e-learning'), 
     MongooseModule.forFeature([{ name: 'User', schema: UserSchema }]),
     MongooseModule.forFeature([{ name: 'Course', schema: CourseSchema }]), 
@@ -39,13 +39,14 @@ import { JwtModule } from '@nestjs/jwt';
     QuizController,
     CourseController,
     UserController,
-    AuthController,
+    
+    ResponseController
   ],
   providers: [
     QuizService,
     CourseService,
-    UserService,
-    AuthService,  
+    UserService, 
+    ResponseServic
   ],
 })
 export class AppModule {}

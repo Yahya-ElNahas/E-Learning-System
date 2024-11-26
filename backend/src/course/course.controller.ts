@@ -4,7 +4,7 @@ import {
   Post,
   Body,
   Param,
-  Put,
+  Patch,
   Delete,
 } from '@nestjs/common';
 import { CourseService } from './course.service';
@@ -39,7 +39,7 @@ export class CourseController {
     return this.courseService.findOne(id);
   }
 
-  @Put(':id')
+  @Patch(':id')
   async update(
     @Param('id') id: string,
     @Body()
