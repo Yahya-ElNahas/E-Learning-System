@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Course, CourseDocument, Difficulty } from './course.schema';
@@ -6,7 +10,10 @@ import { isIdValid } from 'src/helper';
 
 @Injectable()
 export class CourseService {
-  constructor(@InjectModel(Course.name) private readonly courseModel: Model<CourseDocument>) {}
+  constructor(
+    @InjectModel(Course.name)
+    private readonly courseModel: Model<CourseDocument>,
+  ) {}
 
   // Create a new course
   async create(body: {
@@ -38,17 +45,23 @@ export class CourseService {
   }
 
   // Update a course
-  async update(id: string, body: {
-    title?: string;
-    description?: string;
-    category?: string;
-    difficulty_level?: string;
-    created_by?: string;
-  }): Promise<Course> {
+  async update(
+    id: string,
+    body: {
+      title?: string;
+      description?: string;
+      category?: string;
+      difficulty_level?: string;
+      created_by?: string;
+    },
+  ): Promise<Course> {
     isIdValid(id);
-    if(body.created_by) isIdValid(body.created_by);
-    if(body.difficulty_level) body.difficulty_level = fixDifficultyLevel(body.difficulty_level);
-    const updatedCourse = await this.courseModel.findByIdAndUpdate(id, body, { new: true }).exec();
+    if (body.created_by) isIdValid(body.created_by);
+    if (body.difficulty_level)
+      body.difficulty_level = fixDifficultyLevel(body.difficulty_level);
+    const updatedCourse = await this.courseModel
+      .findByIdAndUpdate(id, body, { new: true })
+      .exec();
     if (!updatedCourse) {
       throw new NotFoundException(`Course with ID ${id} not found`);
     }
@@ -66,10 +79,13 @@ export class CourseService {
 }
 
 function fixDifficultyLevel(difficulty: string): Difficulty {
-  switch(difficulty) {
-    case "beginner": return Difficulty.BEGINNER;
-    case "intermediate": return Difficulty.INTERMEDIATE;
-    case "advanced": return Difficulty.ADVANCED;
+  switch (difficulty) {
+    case 'beginner':
+      return Difficulty.BEGINNER;
+    case 'intermediate':
+      return Difficulty.INTERMEDIATE;
+    case 'advanced':
+      return Difficulty.ADVANCED;
   }
   throw new BadRequestException(`Invalid difficulty_level: ${difficulty}`);
 }
