@@ -20,7 +20,6 @@ export class UserService {
   async findAll(): Promise<UserDocument[]> {
     return await this.userModel.find().exec();
   }
-
   // Find a user by email
   async findByEmail(email: string): Promise<UserDocument | null> {
     return await this.userModel.findOne({ email }).exec();
