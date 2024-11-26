@@ -1,8 +1,8 @@
 /* eslint-disable prettier/prettier */
-import * as sgMail from '@sendgrid/mail';
 import { Injectable, UnauthorizedException, BadRequestException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
+import * as nodemailer from 'nodemailer';
 import { UserService } from '../user/user.service';
 import { isIdValid } from '../helper';
 import { UserDocument } from '../user/user.schema';
@@ -12,8 +12,28 @@ export class AuthService {
   constructor(
     private readonly userService: UserService,
     private readonly jwtService: JwtService,
+    private transporter: nodemailer.Transporter
   ) {
-    sgMail.setApiKey('');
+    this.transporter = nodemailer.createTransport({
+      host: process.env.SMTP_HOST,
+      port: process.env.SMTP_PORT,
+      secure: false,
+      auth: {
+        user: process.env.SMTP_USER,
+        pass: process.env.SMTP_PASS,
+      },
+    });
+  }
+
+  async sendEmail(to: string, subject: string, text: string, html?: string) {
+    const mailOptions: nodemailer.SendMailOptions = {
+      from: '"E-Learning-System" <e_learning@gmail.com>',
+      to,
+      subject,
+      text,
+      html,
+    };
+    return await this.transporter.sendMail(mailOptions);
   }
 
   async generateJwt(userId: string, email: string): Promise<string> {
@@ -34,17 +54,16 @@ export class AuthService {
 
     // If student, send verification email
     if (role === 'student') {
-      const token = this.jwtService.sign({ email });
+      const token = this.jwtService.sign({ email }, { expiresIn: '1h' });
 
       const msg = {
         to: email,
-        from: 'abdelrahamanehab@gmail.com', // Update sender email
         subject: 'Verify Your Email',
         text: `Your email verification token: ${token}`,
-        html: `<p>Your email verification token: <strong>${token}</strong></p>`,
+        html: `<p>Your email verification token: <strong>${token}</strong></p>`
       };
 
-      await sgMail.send(msg);
+      await this.sendEmail(msg.to, msg.subject, msg.text, msg.html);
     }
 
     return newUser;
@@ -80,16 +99,5 @@ export class AuthService {
     await this.userService.update(user._id.toString(), { isVerified: true });
 
     return { message: 'Email verified successfully.' };
-  }
-
-  async findUserById(userId: string): Promise<any> {
-    // Validate ID format
-    isIdValid(userId);
-
-    // Fetch user
-    const user = await this.userService.findById(userId) as UserDocument;
-    if (!user) throw new BadRequestException( `User with ID ${userId} not found.`);
-
-    return user;
   }
 }
