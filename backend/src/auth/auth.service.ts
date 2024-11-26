@@ -1,9 +1,8 @@
 /* eslint-disable prettier/prettier */
-import * as sgMail from '@sendgrid/mail';
+import * as nodemailer from 'nodemailer';
 import { Injectable, UnauthorizedException, BadRequestException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
-import * as nodemailer from 'nodemailer';
 import { UserService } from '../user/user.service';
 import { UserDocument } from '../user/user.schema';
 
@@ -15,7 +14,17 @@ export class AuthService {
     private readonly userService: UserService,
     private readonly jwtService: JwtService,
   ) {
-    sgMail.setApiKey('');
+    // Configure Nodemailer
+    this.transporter = nodemailer.createTransport({
+      host: 'smtp.gmail.com',
+      port: 587,
+      secure: false,
+      service: 'gmail', 
+      auth: {
+        user: 'drehabsaad73@gmail.com', 
+        pass: 'xbnzrndobccfvigb',
+      },
+    });
   }
 
   async generateJwt(userId: string, email: string): Promise<string> {
@@ -36,17 +45,25 @@ export class AuthService {
 
     // If student, send verification email
     if (role === 'student') {
-      const token = this.jwtService.sign({ email });
+      const otp = Math.random().toString(36).slice(-6).toUpperCase();  // 6-character OTP
 
       const mailOptions = {
         from: 'drehabsaad73@gmail.com',
         to: email,
         subject: 'Verify Your Email',
-        text: `Your email verification token: ${token}`,
-        html: `<p>Your email verification token: <strong>${token}</strong></p>`,
+        text: `Your email verification token: ${otp}`,
+        html: `<p>Your email verification token: <strong>${otp}</strong></p>`,
       };
 
-      await sgMail.send(msg);
+      try {
+        await this.transporter.sendMail(mailOptions);
+      } catch (error) {
+        console.error('Error sending verification email:', error);
+        throw new BadRequestException('Failed to send verification email.');
+      }
+
+      // Store the OTP in the user document
+      await this.userService.update(email, { otp });
     }
 
     return newUser;
