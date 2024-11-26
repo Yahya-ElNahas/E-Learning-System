@@ -21,18 +21,18 @@ import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({}), // Global config module
-    MongooseModule.forRoot('mongodb://localhost:27017/e-learning'), // MongoDB connection using environment variable
-    MongooseModule.forFeature([{ name: 'User', schema: UserSchema }]), // User schema
-    MongooseModule.forFeature([{ name: 'Course', schema: CourseSchema }]), // Course schema
-    MongooseModule.forFeature([{ name: 'Module', schema: ModuleSchema }]), // Module schema
-    MongooseModule.forFeature([{ name: 'Quiz', schema: QuizSchema }]), // Quiz schema
-    MongooseModule.forFeature([{ name: 'Response', schema: ResponseSchema }]), // Response schema
-    MongooseModule.forFeature([{ name: 'Progress', schema: ProgressSchema }]), // Progress schema
-    MongooseModule.forFeature([{ name: 'Note', schema: NoteSchema }]), // Note schema
+    ConfigModule.forRoot({}), 
+    MongooseModule.forRoot('mongodb://localhost:27017/e-learning'), 
+    MongooseModule.forFeature([{ name: 'User', schema: UserSchema }]),
+    MongooseModule.forFeature([{ name: 'Course', schema: CourseSchema }]), 
+    MongooseModule.forFeature([{ name: 'Module', schema: ModuleSchema }]), 
+    MongooseModule.forFeature([{ name: 'Quiz', schema: QuizSchema }]), 
+    MongooseModule.forFeature([{ name: 'Response', schema: ResponseSchema }]), 
+    MongooseModule.forFeature([{ name: 'Progress', schema: ProgressSchema }]),
+    MongooseModule.forFeature([{ name: 'Note', schema: NoteSchema }]), 
     JwtModule.register({  
-      secret: process.env.JWT_SECRET||'default-secret', // Use the secret key from environment
-      signOptions: { expiresIn: process.env.JWT_EXPIRATION||'1h' },  // Set the token expiration (optional)
+      secret: process.env.JWT_SECRET||'default-secret', 
+      signOptions: { expiresIn: process.env.JWT_EXPIRATION||'1h' },  
     }),
   ],
   controllers: [

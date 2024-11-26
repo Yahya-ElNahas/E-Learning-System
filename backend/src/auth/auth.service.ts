@@ -15,7 +15,7 @@ export class AuthService {
   }
 
   async generateJwt(userId: string): Promise<string> {
-    const payload = { userId }; // You can add other fields to the payload
+    const payload = { userId }; 
     return this.jwtService.sign(payload);
   }
 
@@ -24,22 +24,22 @@ export class AuthService {
   async register(userDto: any): Promise<any> {
     const { email, password, role } = userDto;
 
-    // Hash the password
+   
     const hashedPassword = await bcrypt.hash(password, 10);
     userDto.password = hashedPassword;
-    userDto.isVerified = role !== 'student'; // Auto-verify non-students
+    userDto.isVerified = role !== 'student'; 
 
-    // Create user in the database
+  
     const newUser = await this.userService.create(userDto);
 
-    // If student, generate verification token and send email
+    
     if (role === 'student') {
       const token = this.jwtService.sign({ email });
 
       // Send email
       const msg = {
         to: email,
-        from: 'your-email@example.com', // Replace with your email
+        from: 'abdelrahamanehab"gmail.com', 
         subject: 'Verify Your Email',
         text: `Your email verification token: ${token}`,
         html: `<p>Your email verification token: <strong>${token}</strong></p>`,
