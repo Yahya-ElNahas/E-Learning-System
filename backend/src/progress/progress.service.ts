@@ -6,7 +6,10 @@ import { isIdValid } from 'src/helper';
 
 @Injectable()
 export class ProgressService {
-  constructor( @InjectModel(Progress.name) private readonly progressModel: Model<ProgressDocument> ) {}
+  constructor(
+    @InjectModel(Progress.name)
+    private readonly progressModel: Model<ProgressDocument>,
+  ) {}
 
   async findAll(): Promise<Progress[]> {
     return this.progressModel.find().exec();
@@ -21,9 +24,9 @@ export class ProgressService {
   }
 
   async create(body: {
-    user_id: string,
-    course_id: string,
-    completion_percentage: number
+    user_id: string;
+    course_id: string;
+    completion_percentage: number;
   }): Promise<Progress> {
     isIdValid(body.user_id);
     isIdValid(body.course_id);
@@ -31,14 +34,19 @@ export class ProgressService {
     return newProgress.save();
   }
 
-  async update(id: string, body: {
-    user_id?: string,
-    course_id?: string,
-    completion_percentage?: number
-  }): Promise<Progress> {
-    if(body.user_id) isIdValid(body.user_id);
-    if(body.course_id) isIdValid(body.course_id);
-    const updatedProgress = await this.progressModel.findByIdAndUpdate(id, body, { new: true }).exec();
+  async update(
+    id: string,
+    body: {
+      user_id?: string;
+      course_id?: string;
+      completion_percentage?: number;
+    },
+  ): Promise<Progress> {
+    if (body.user_id) isIdValid(body.user_id);
+    if (body.course_id) isIdValid(body.course_id);
+    const updatedProgress = await this.progressModel
+      .findByIdAndUpdate(id, body, { new: true })
+      .exec();
     if (!updatedProgress) {
       throw new NotFoundException(`Progress with ID ${id} not found`);
     }

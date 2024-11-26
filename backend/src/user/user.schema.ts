@@ -19,7 +19,7 @@ export class User {
   isVerified: boolean;
 
   @Prop({ required: false })
-  verificationToken: string | null;
+  otp: string | null;
 
   @Prop({ required: true })
   password: string;

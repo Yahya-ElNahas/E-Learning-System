@@ -17,7 +17,7 @@ export class AuthController {
   }
 
   @Post('verify-email')
-  async verifyEmail(@Body('token') token: string) {
-    return this.authService.verifyEmail(token);
+  async verifyEmail(@Body() { token, otp }: { token: string; otp: string }) {
+    return this.authService.verifyEmail(token, otp);
   }
 }
