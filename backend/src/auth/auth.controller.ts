@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import { Controller, Post, Body, Query } from '@nestjs/common';
+import { Controller, Post, Body } from '@nestjs/common';
 import { AuthService } from './auth.service';
 
 @Controller('auth')
@@ -8,16 +8,16 @@ export class AuthController {
 
   @Post('register')
   async register(@Body() userDto: any) {
-    return await this.authService.register(userDto);
+    return this.authService.register(userDto);
   }
 
   @Post('login')
-  async login(@Body() credentials: any) {
-    return await this.authService.login(credentials);
+  async login(@Body() credentials: { email: string; password: string }) {
+    return this.authService.login(credentials);
   }
 
   @Post('verify-email')
-  async verifyEmail(@Query('token') token: string) {
-    return await this.authService.verifyEmail(token);
+  async verifyEmail(@Body('token') token: string) {
+    return this.authService.verifyEmail(token);
   }
 }

@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { isValidObjectId } from 'mongoose';
 import { BadRequestException } from '@nestjs/common';
 
