@@ -22,7 +22,7 @@ export class AuthController {
   
   @Post('register')
   async register(@Body() userDto: any, @Res({ passthrough: true }) res: Response,@Req() req:Request): Promise<any> {
-    return this.authService.register(userDto, res , req.cookies['verification_token']); 
+    return this.authService.register(userDto, res , req.cookies); 
   }
 
   @Post('login')
