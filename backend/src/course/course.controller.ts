@@ -1,12 +1,4 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Param,
-  Patch,
-  Delete,
-} from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Patch, Delete, Query } from '@nestjs/common';
 import { CourseService } from './course.service';
 import { Course } from './course.schema';
 import { Difficulty } from './course.schema';
@@ -57,5 +49,14 @@ export class CourseController {
   @Delete(':id')
   async remove(@Param('id') id: string): Promise<void> {
     return this.courseService.remove(id);
+  }
+
+  // New search route
+  @Get('search')
+  async search(
+    @Query('topic') topic?: string,
+    @Query('instructor') instructor?: string,
+  ): Promise<Course[]> {
+    return this.courseService.searchCourses({ topic, instructor });
   }
 }
