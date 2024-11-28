@@ -27,7 +27,7 @@ import { PusherService } from './communication/pusher/pusher.service';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
-    MongooseModule.forRoot(process.env.MONGODB_URI ?? 'mongodb://localhost:27017/e-learning'),
+    MongooseModule.forRoot(process.env.MONGODB_URI),
     MongooseModule.forFeature([
       { name: 'User', schema: UserSchema },
       { name: 'Course', schema: CourseSchema },
