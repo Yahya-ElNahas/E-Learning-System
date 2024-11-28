@@ -32,7 +32,7 @@ export class AuthService {
     const payload = { id, role };
     return this.jwtService.sign(payload, {
       secret: process.env.JWT_SECRET,
-      expiresIn: '1h',
+      expiresIn: '6h',
     });
   }
 
@@ -40,19 +40,23 @@ export class AuthService {
     return crypto.randomBytes(3).toString('hex').toUpperCase();
   }
 
-  async sendOtpMail(email: string, otp: string) {
+  async sendMail(to: string, subject: string, text: string) {
     const mailOptions = {
       from: process.env.EMAIL_SENDER,
-      to: email,
-      subject: `Email Verification`,
-      text: `Your email verification token: ${otp}`,
-      html: `<p>Your email verification token: <strong>${otp}</strong></p>`,
+      to,
+      subject,
+      text,
+      html: `<h1>${text}</h1>`
     };
     try {
       await this.transporter.sendMail(mailOptions);
     } catch (error) {
-      throw new BadRequestException('Failed to send verification email.');
+      throw new BadRequestException('Failed to send email.');
     }
+  }
+
+  async sendOtpMail(email: string, otp: string) {
+    this.sendMail(email, `Email Verification`, `Your email verification token: ${otp}`);
   }
 
   private async addCookie(res: Response, id: string, role?: Role) {

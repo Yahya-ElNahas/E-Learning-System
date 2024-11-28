@@ -23,6 +23,8 @@ import { JwtStrategy } from './auth/jwt.strategy';
 import { AuthService } from './auth/auth.service'; 
 import { PusherController } from './communication/pusher/pusher.controller';
 import { PusherService } from './communication/pusher/pusher.service';
+import { ProgressController } from './progress/progress.controller';
+import { ProgressService } from './progress/progress.service';
 
 @Module({
   imports: [
@@ -49,6 +51,7 @@ import { PusherService } from './communication/pusher/pusher.service';
     AuthController,
     ResponseController,
     PusherController,
+    ProgressController
   ],
   providers: [
     QuizService,
@@ -58,6 +61,7 @@ import { PusherService } from './communication/pusher/pusher.service';
     ResponseService,
     PusherService,
     JwtStrategy, 
+    ProgressService
   ],
 })
 export class AppModule {}

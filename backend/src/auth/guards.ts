@@ -29,16 +29,4 @@ export class RolesGuard implements CanActivate {
 }
 
 @Injectable()
-export class JwtAuthGuard extends AuthGuard('jwt') {
-  canActivate(context: ExecutionContext) {
-    const activate = super.canActivate(context);
-    return activate;  
-  }
-
-  handleRequest(err, user, info) {
-    if (err || !user) {
-      throw err || new Error('Unauthorized'); 
-    }
-    return user; 
-  }
-}
+export class JwtAuthGuard extends AuthGuard('jwt') {}
