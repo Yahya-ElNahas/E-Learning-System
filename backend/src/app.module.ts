@@ -2,6 +2,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
+import { ScheduleModule } from '@nestjs/schedule';  // Import ScheduleModule
 import { UserSchema } from './user/user.schema';
 import { CourseSchema } from './course/course.schema';
 import { ModuleSchema } from './module/module.schema';
@@ -23,6 +24,7 @@ import { JwtStrategy } from './auth/jwt.strategy';
 import { AuthService } from './auth/auth.service'; 
 import { PusherController } from './communication/pusher/pusher.controller';
 import { PusherService } from './communication/pusher/pusher.service';
+import { BackupService } from './backup/backup.service';  // Import BackupService
 
 @Module({
   imports: [
@@ -41,6 +43,7 @@ import { PusherService } from './communication/pusher/pusher.service';
       secret: process.env.JWT_SECRET || 'default-secret',
       signOptions: { expiresIn: process.env.JWT_EXPIRATION || '1h' },
     }),
+    ScheduleModule.forRoot(),  // Add ScheduleModule to handle cron jobs
   ],
   controllers: [
     QuizController,
@@ -49,6 +52,7 @@ import { PusherService } from './communication/pusher/pusher.service';
     AuthController,
     ResponseController,
     PusherController,
+    // Removed BackupController here
   ],
   providers: [
     QuizService,
@@ -58,6 +62,8 @@ import { PusherService } from './communication/pusher/pusher.service';
     ResponseService,
     PusherService,
     JwtStrategy, 
+    BackupService,  // Include BackupService here
   ],
 })
 export class AppModule {}
+
