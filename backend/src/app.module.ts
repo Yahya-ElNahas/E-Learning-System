@@ -16,12 +16,10 @@ import { QuizService } from './quiz/quiz.service';
 import { CourseController } from './course/course.controller';
 import { CourseService } from './course/course.service';
 import { JwtModule } from '@nestjs/jwt'; 
-import { ResponseServic } from './response/response.service'
+import { ResponseService } from './response/response.service'
 import  ResponseController from './response/response.controller'
 import { AuthController } from './auth/auth.controller';
 import { AuthService } from './auth/auth.service';
-import { PusherController } from './communication/pusher/pusher.controller';
-import { PusherService } from './communication/pusher/pusher.service';
 
 @Module({
   imports: [
@@ -52,8 +50,8 @@ import { PusherService } from './communication/pusher/pusher.service';
     CourseService,
     UserService, 
     AuthService,
-    ResponseServic,
-    PusherService
+    ResponseServic
   ],
+  exports: [JwtStrategy]
 })
 export class AppModule {}

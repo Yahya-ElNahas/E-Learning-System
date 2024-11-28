@@ -1,4 +1,14 @@
-import { Controller, Get, Post, Body, Param, Patch, Delete, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Patch,
+  Delete,
+  Query,
+  BadRequestException,
+} from '@nestjs/common';
 import { CourseService } from './course.service';
 import { Course } from './course.schema';
 import { Difficulty } from './course.schema';
@@ -51,12 +61,20 @@ export class CourseController {
     return this.courseService.remove(id);
   }
 
-  // New search route
-  @Get('search')
-  async search(
-    @Query('topic') topic?: string,
-    @Query('instructor') instructor?: string,
-  ): Promise<Course[]> {
-    return this.courseService.searchCourses({ topic, instructor });
+  @Get('search/title')
+  async searchByTitle(@Query('title') title: string): Promise<Course[]> {
+    if (!title) {
+      throw new BadRequestException('Title query parameter is required');
+    }
+    return this.courseService.searchByTitle(title);
+  }
+
+  @Get('search/instructor')
+  async searchByInstructor(@Query('createdBy') createdBy: string): Promise<Course[]> {
+    if (!createdBy) {
+      throw new BadRequestException('CreatedBy query parameter is required');
+    }
+    return this.courseService.searchByInstructor(createdBy);
   }
 }
+

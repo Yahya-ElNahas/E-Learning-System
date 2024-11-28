@@ -32,9 +32,6 @@ export class Thread {
 
   @Prop({ type: Types.ObjectId, ref: 'User', required: true })
   createdBy: Types.ObjectId; 
-
-  @Prop({ type: [{ type: Types.ObjectId, ref: 'Reply' }], default: [] })
-  replies: Types.ObjectId[]; 
 }
 
 export const ThreadSchema = SchemaFactory.createForClass(Thread);

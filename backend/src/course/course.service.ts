@@ -77,29 +77,15 @@ export class CourseService {
     }
   }
 
-  // New search method
-  async searchCourses(query: {
-    topic?: string;
-    instructor?: string;
-  }): Promise<Course[]> {
-    const filters: any = {};
+  // Search courses by title
+  async searchByTitle(title: string): Promise<Course[]> {
+    return this.courseModel.find({ title: title }).exec();
+  }
 
-    // Add topic-based search filters
-    if (query.topic) {
-      const regex = new RegExp(query.topic, 'i'); // Case-insensitive regex
-      filters.$or = [
-        { title: regex },
-        { category: regex },
-        { description: regex },
-      ];
-    }
-
-    // Add instructor-based search filters
-    if (query.instructor) {
-      filters.created_by = query.instructor;
-    }
-
-    return this.courseModel.find(filters).exec();
+  // Search courses by instructor (created_by)
+  async searchByInstructor(createdBy: string): Promise<Course[]> {
+    isIdValid(createdBy);
+    return this.courseModel.find({ created_by: createdBy }).exec();
   }
 }
 
@@ -114,3 +100,4 @@ function fixDifficultyLevel(difficulty: string): Difficulty {
   }
   throw new BadRequestException(`Invalid difficulty_level: ${difficulty}`);
 }
+
