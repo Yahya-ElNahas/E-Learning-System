@@ -6,18 +6,24 @@ export class PusherController {
   constructor(private readonly pusherService: PusherService) {}
 
   @Post('PrivateChat')
-  async PrivateChat(
-    @Body('studentName') studentName: string,
-    @Body('instructorName') instructorName: string,
-    @Body('message') message: string,
-  ) {
-    const channelName = `${studentName.trim().toLowerCase()}_${instructorName.trim().toLowerCase()}`;
-    await this.pusherService.trigger(channelName, 'private-message', {
-      sender: studentName,
-      message,
-    });
-    return { status: 'Private message sent successfully!', channel: channelName };
+async PrivateChat(
+  @Body('studentName') studentName: string,
+  @Body('instructorName') instructorName: string,
+  @Body('message') message: string,
+) {
+  if (!studentName || typeof studentName !== 'string' || !instructorName || typeof instructorName !== 'string') {
+    return { status: 'Error', message: 'Invalid studentName or instructorName' };
   }
+
+  const channelName = `${studentName.trim().toLowerCase()}_${instructorName.trim().toLowerCase()}`;
+  await this.pusherService.trigger(channelName, 'message', {
+    sender: studentName,
+    message,
+  });
+
+  return { status: 'Private message sent successfully!', channel: channelName };
+}
+
 
   @Post('PublicChat')
   async PublicChat(@Body('username') username: string, @Body('message') message: string) {

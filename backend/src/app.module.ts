@@ -20,6 +20,8 @@ import { ResponseServic } from './response/response.service'
 import  ResponseController from './response/response.controller'
 import { AuthController } from './auth/auth.controller';
 import { AuthService } from './auth/auth.service';
+import { PusherController } from './communication/pusher/pusher.controller';
+import { PusherService } from './communication/pusher/pusher.service';
 
 @Module({
   imports: [
@@ -42,14 +44,16 @@ import { AuthService } from './auth/auth.service';
     CourseController,
     UserController,
     AuthController,
-    ResponseController
+    ResponseController,
+    PusherController
   ],
   providers: [
     QuizService,
     CourseService,
     UserService, 
     AuthService,
-    ResponseServic
+    ResponseServic,
+    PusherService
   ],
 })
 export class AppModule {}
