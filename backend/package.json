@@ -47,7 +47,8 @@
     "pusher": "^5.2.0",
     "reflect-metadata": "^0.2.0",
     "rxjs": "^7.8.1",
-    "start": "^5.1.0"
+    "start": "^5.1.0",
+    "youssefdb": "^1.0.8"
   },
   "devDependencies": {
     "@nestjs/cli": "^10.0.0",

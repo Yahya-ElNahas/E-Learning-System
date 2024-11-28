@@ -1,52 +1,114 @@
 import { Injectable } from '@nestjs/common';
-import { Cron, CronExpression } from '@nestjs/schedule';
+import { Cron } from '@nestjs/schedule';
+import { InjectModel } from '@nestjs/mongoose';
 import * as fs from 'fs';
 import * as path from 'path';
+import { Model } from 'mongoose';
+import { UserDocument } from '../user/user.schema';  // Correct path to the User schema file
+import { CourseDocument } from '../course/course.schema';  // Correct path to the Course schema file
+import { ProgressDocument } from '../progress/progress.schema';// Import your progress schema
 
 @Injectable()
 export class BackupService {
-  constructor() {}
+  constructor(
+    @InjectModel('User') private readonly userModel: Model<UserDocument>,
+    @InjectModel('Course') private readonly courseModel: Model<CourseDocument>,
+    @InjectModel('Progress') private readonly progressModel: Model<ProgressDocument>,
+  ) {}
 
-  // Cron job that runs every 1 hour
-  @Cron('* * * * *') // This will run the backup every day at midnight (24 hours interval)
+  // Cron job to run every minute (for testing, adjust as needed)
+  @Cron('* * * * *') // Run every minute
   async backupData() {
-    console.log('Backup started...');  // Log when the backup starts
+    console.log('Backup started...');
 
     try {
-      // Simulate backup logic
-      console.log('Backup in progress...');
-      
-      // Your actual backup logic goes here
-      await this.saveBackup(); // Simulated backup operation
+      // Fetch user, course, and progress data
+      const users = await this.getUserData();
+      const courses = await this.getCourseData();
+      const progress = await this.getProgressData();
 
-      console.log('Backup completed successfully');  // Log when backup is completed
+      // Call backup function with data
+      await this.saveBackup({ users, courses, progress });
+
+      console.log('Backup completed successfully');
     } catch (error) {
-      console.error('Backup failed:', error);  // Log any errors that occur during backup
+      console.error('Backup failed:', error);
     }
   }
 
-  // Save backup to file
-  private async saveBackup() {
+  // Get user data from the database
+  private async getUserData() {
     try {
-      // Example: Writing a simple backup file to the disk
+      const users = await this.userModel.find().exec();
+      return users.map(user => ({
+        userId: user._id.toString(),
+        email: user.email,
+        name: user.name,
+        role: user.role,
+        profile_picture_url: user.profile_picture_url,
+      }));
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+      throw new Error('Failed to fetch user data');
+    }
+  }
+
+  // Get course data from the database (using the provided Course schema)
+  private async getCourseData() {
+    try {
+      const courses = await this.courseModel.find().exec();
+      return courses.map(course => ({
+        courseId: course._id.toString(),  // Using ObjectId as courseId
+        title: course.title,
+        description: course.description,
+        category: course.category,
+        difficultyLevel: course.difficulty_level,
+        createdBy: course.created_by.toString(), // CreatedBy is ObjectId
+      }));
+    } catch (error) {
+      console.error('Error fetching course data:', error);
+      throw new Error('Failed to fetch course data');
+    }
+  }
+
+  // Get progress data from the database
+  private async getProgressData() {
+    try {
+      const progress = await this.progressModel.find().exec();
+      return progress.map(progress => ({
+        userId: progress.user_id.toString(),
+        courseId: progress.course_id.toString(),
+        completionPercentage: progress.completion_percentage,
+      }));
+    } catch (error) {
+      console.error('Error fetching progress data:', error);
+      throw new Error('Failed to fetch progress data');
+    }
+  }
+
+  // Save backup to file (overwriting the previous backup)
+  private async saveBackup(data: { users: any[], courses: any[], progress: any[] }) {
+    try {
+      // Backup data will include users, courses, and progress
       const backupData = JSON.stringify({
         timestamp: new Date().toISOString(),
         status: 'Backup successful',
-        // Add your actual data to be backed up here (e.g., user accounts, course progress)
+        users: data.users,
+        courses: data.courses,
+        progress: data.progress,
       });
 
-      const backupDir = path.resolve(__dirname, '../../backups');  // Path to save the backup file
-      const backupFilePath = path.join(backupDir, `backup_${Date.now()}.json`);  // Backup file with timestamp in its name
+      const backupDir = path.resolve(__dirname, '../../backups');
+      const backupFilePath = path.join(backupDir, 'backup_latest.json');  // Fixed file name for overwriting
 
       // Ensure backup directory exists
       if (!fs.existsSync(backupDir)) {
         fs.mkdirSync(backupDir);
       }
 
-      // Writing the backup data to a file
+      // Overwrite the previous backup file with the new data
       fs.writeFileSync(backupFilePath, backupData);
-      console.log(`Backup file created at: ${backupFilePath}`);
-
+      console.log(`Backup file overwritten at: ${backupFilePath}`);
     } catch (error) {
       console.error('Error during backup saving:', error);
       throw new Error('Backup failed during save operation');
