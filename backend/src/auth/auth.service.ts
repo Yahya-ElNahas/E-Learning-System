@@ -102,7 +102,9 @@ export class AuthService {
   
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) throw new UnauthorizedException('Invalid credentials.');
-  
+    
+    this.addCookie(res, user._id.toString(), user.role);
+
     if (user.role === Role.STUDENT && !user.isVerified) {
       const otp = this.generateOtp();
       const hashedOtp = await bcrypt.hash(otp, 10);
@@ -114,8 +116,6 @@ export class AuthService {
         verificationToken,
       });
     }
-
-    this.addCookie(res, user._id.toString(), user.role);
 
     return { status: "success" };
   }

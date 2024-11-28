@@ -1,10 +1,9 @@
 /* eslint-disable prettier/prettier */
-import { Controller, Post, Body, Res, Get, Req } from '@nestjs/common';
+import { Controller, Post, Body, Res, Get, Req, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { Request,Response } from 'express';
-let s = {
-  ssss:"rrr"
-}
+import { JwtAuthGuard } from './guards';
+
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
@@ -39,6 +38,7 @@ export class AuthController {
   }
 
   @Post('verify-email')
+  @UseGuards(JwtAuthGuard)
   async verifyEmail(@Body() { token, otp }: { token: string; otp: string }) {
     return this.authService.verifyEmail(token, otp);
   }
