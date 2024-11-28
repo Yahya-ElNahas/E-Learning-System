@@ -1,12 +1,17 @@
-import { Controller, Get, Post, Body, Param, Patch, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Patch, Delete, UseGuards } from '@nestjs/common';
 import { QuizService } from './quiz.service';
 import { Quiz } from './quiz.schema';
+import { JwtAuthGuard, RolesGuard } from 'src/auth/guards';
+import { Role } from 'src/auth/reflectors';
+import { Role as UserRole } from 'src/user/user.schema';
 
 @Controller('quizzes')
 export class QuizController {
   constructor(private readonly quizService: QuizService) {}
 
   @Post()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Role(UserRole.INSTRUCTOR)
   async create(@Body() body: {
     module_id: string,
     questions: Array<{
@@ -19,16 +24,20 @@ export class QuizController {
   }
 
   @Get()
+  @UseGuards(JwtAuthGuard)
   async findAll(): Promise<Quiz[]> {
     return this.quizService.findAll();
   }
 
   @Get(':id')
+  @UseGuards(JwtAuthGuard)
   async findOne(@Param('id') id: string): Promise<Quiz> {
     return this.quizService.findOne(id);
   }
 
   @Patch(':id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Role(UserRole.INSTRUCTOR)
   async update(
     @Param('id') id: string,
     @Body() body: {
@@ -44,6 +53,8 @@ export class QuizController {
   }
 
   @Delete(':id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Role(UserRole.INSTRUCTOR)
   async delete(@Param('id') id: string): Promise<void> {
     await this.quizService.delete(id);
   }

@@ -21,13 +21,21 @@ export class AuthController {
   }
   
   @Post('register')
-  async register(@Body() userDto: any, @Res({ passthrough: true }) res: Response,@Req() req:Request): Promise<any> {
-    return this.authService.register(userDto, res , req.cookies); 
+  async register(
+    @Body() userDto: any, 
+    @Req() req:Request,
+    @Res({ passthrough: true }) res: Response
+  ): Promise<any> {
+    return this.authService.register(userDto, req.cookies , res); 
   }
 
   @Post('login')
-  async login(@Body() credentials: { email: string; password: string }) {
-    return this.authService.login(credentials);
+  async login(
+    @Body() credentials: { email: string; password: string }, 
+    @Req() req:Request,
+    @Res({ passthrough: true }) res: Response
+  ): Promise<{ access_token: string }> {
+    return this.authService.login(credentials, req.cookies, res);
   }
 
   @Post('verify-email')

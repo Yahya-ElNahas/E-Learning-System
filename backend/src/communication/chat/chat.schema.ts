@@ -21,6 +21,8 @@ export class Chat {
 
 export const ChatSchema = SchemaFactory.createForClass(Chat);
 
+export type GroupDocument = Group & Document;
+
 @Schema({ timestamps: true })
 export class Group {
   @Prop({ type: String, required: true })

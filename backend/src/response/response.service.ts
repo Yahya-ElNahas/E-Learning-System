@@ -1,11 +1,11 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, ObjectId, Types } from 'mongoose';
+import { Model } from 'mongoose';
 import { Response, ResponseDocument } from './response.schema';
-import { isIdValid } from '../helper';  // Adjust import path
+import { isIdValid } from '../helper'; 
 
 @Injectable()
-export class ResponseServic {
+export class ResponseService {
   constructor(
     @InjectModel(Response.name) private readonly responseModel: Model<ResponseDocument>,
   ) {}
