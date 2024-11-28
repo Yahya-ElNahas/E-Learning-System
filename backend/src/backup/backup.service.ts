@@ -8,7 +8,7 @@ export class BackupService {
   constructor() {}
 
   // Cron job that runs every 1 hour
-  @Cron('0 * * * *') // This will run the backup every day at midnight (24 hours interval)
+  @Cron('* * * * *') // This will run the backup every day at midnight (24 hours interval)
   async backupData() {
     console.log('Backup started...');  // Log when the backup starts
 
