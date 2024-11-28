@@ -8,16 +8,22 @@ import {
   Delete,
   Query,
   BadRequestException,
+  UseGuards,
 } from '@nestjs/common';
 import { CourseService } from './course.service';
 import { Course } from './course.schema';
 import { Difficulty } from './course.schema';
+import { Role } from 'src/auth/reflectors';
+import { Role as UserRole } from 'src/user/user.schema';
+import { JwtAuthGuard, RolesGuard } from 'src/auth/guards';
 
 @Controller('courses')
+@UseGuards(JwtAuthGuard, RolesGuard) // Ensure all routes in the controller are protected by these guards
 export class CourseController {
   constructor(private readonly courseService: CourseService) {}
 
   @Post()
+  @Role(UserRole.INSTRUCTOR) // Only instructors can create courses
   async create(
     @Body()
     body: {
@@ -42,6 +48,7 @@ export class CourseController {
   }
 
   @Patch(':id')
+  @Role(UserRole.INSTRUCTOR) // Only instructors can update courses
   async update(
     @Param('id') id: string,
     @Body()
@@ -57,6 +64,7 @@ export class CourseController {
   }
 
   @Delete(':id')
+  @Role(UserRole.INSTRUCTOR) // Only instructors can delete courses
   async remove(@Param('id') id: string): Promise<void> {
     return this.courseService.remove(id);
   }
@@ -77,4 +85,5 @@ export class CourseController {
     return this.courseService.searchByInstructor(createdBy);
   }
 }
+
 
