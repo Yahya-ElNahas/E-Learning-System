@@ -76,6 +76,31 @@ export class CourseService {
       throw new NotFoundException(`Course with ID ${id} not found`);
     }
   }
+
+  // New search method
+  async searchCourses(query: {
+    topic?: string;
+    instructor?: string;
+  }): Promise<Course[]> {
+    const filters: any = {};
+
+    // Add topic-based search filters
+    if (query.topic) {
+      const regex = new RegExp(query.topic, 'i'); // Case-insensitive regex
+      filters.$or = [
+        { title: regex },
+        { category: regex },
+        { description: regex },
+      ];
+    }
+
+    // Add instructor-based search filters
+    if (query.instructor) {
+      filters.created_by = query.instructor;
+    }
+
+    return this.courseModel.find(filters).exec();
+  }
 }
 
 function fixDifficultyLevel(difficulty: string): Difficulty {

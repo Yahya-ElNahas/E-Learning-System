@@ -1,21 +1,25 @@
-import { Controller, Get, Post, Patch, Delete, Param, Body } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Delete, Param, Body, UseGuards } from '@nestjs/common';
 import { ProgressService } from './progress.service';
+import { JwtAuthGuard, RolesGuard } from 'src/auth/guards';
 
 @Controller('progress')
 export class ProgressController {
   constructor(private readonly progressService: ProgressService) {}
 
   @Get()
+  @UseGuards(JwtAuthGuard)
   async findAll() {
     return this.progressService.findAll();
   }
 
   @Get(':id')
+  @UseGuards(JwtAuthGuard)
   async findOne(@Param('id') id: string) {
     return this.progressService.findOne(id);
   }
 
   @Post()
+  @UseGuards(JwtAuthGuard)
   async create(@Body() body: {
     user_id: string,
     course_id: string,
@@ -25,6 +29,7 @@ export class ProgressController {
   }
 
   @Patch(':id')
+  @UseGuards(JwtAuthGuard)
   async update(@Param('id') id: string, @Body() body: {
     user_id?: string,
     course_id?: string,
@@ -34,6 +39,7 @@ export class ProgressController {
   }
 
   @Delete(':id')
+  @UseGuards(JwtAuthGuard)
   async remove(@Param('id') id: string) {
     return this.progressService.remove(id);
   }
