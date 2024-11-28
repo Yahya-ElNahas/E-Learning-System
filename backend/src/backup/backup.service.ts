@@ -6,7 +6,7 @@ import * as path from 'path';
 import { Model } from 'mongoose';
 import { UserDocument } from '../user/user.schema';  // Correct path to the User schema file
 import { CourseDocument } from '../course/course.schema';  // Correct path to the Course schema file
-import { ProgressDocument } from '../progress/progress.schema';// Import your progress schema
+import { ProgressDocument } from '../progress/progress.schema'; // Import your progress schema
 
 @Injectable()
 export class BackupService {
@@ -17,7 +17,7 @@ export class BackupService {
   ) {}
 
   // Cron job to run every minute (for testing, adjust as needed)
-  @Cron('* * * * *') // Run every minute
+  @Cron('* * * * *') // Run every minute (use a different cron expression for real use case)
   async backupData() {
     console.log('Backup started...');
 
