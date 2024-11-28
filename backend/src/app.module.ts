@@ -19,23 +19,27 @@ import { JwtModule } from '@nestjs/jwt';
 import { ResponseService } from './response/response.service'
 import  ResponseController from './response/response.controller'
 import { AuthController } from './auth/auth.controller';
-import { AuthService } from './auth/auth.service';
 import { JwtStrategy } from './auth/jwt.strategy';
+import { AuthService } from './auth/auth.service'; 
+import { PusherController } from './communication/pusher/pusher.controller';
+import { PusherService } from './communication/pusher/pusher.service';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true }), 
-    MongooseModule.forRoot(process.env.MONGODB_URI ?? 'mongodb://localhost:27017/e-learning'), 
-    MongooseModule.forFeature([{ name: 'User', schema: UserSchema }]),
-    MongooseModule.forFeature([{ name: 'Course', schema: CourseSchema }]), 
-    MongooseModule.forFeature([{ name: 'Module', schema: ModuleSchema }]), 
-    MongooseModule.forFeature([{ name: 'Quiz', schema: QuizSchema }]), 
-    MongooseModule.forFeature([{ name: 'Response', schema: ResponseSchema }]), 
-    MongooseModule.forFeature([{ name: 'Progress', schema: ProgressSchema }]),
-    MongooseModule.forFeature([{ name: 'Note', schema: NoteSchema }]), 
-    JwtModule.register({  
-      secret: process.env.JWT_SECRET||'default-secret', 
-      signOptions: { expiresIn: process.env.JWT_EXPIRATION||'1h' },  
+    ConfigModule.forRoot({ isGlobal: true }),
+    MongooseModule.forRoot(process.env.MONGODB_URI),
+    MongooseModule.forFeature([
+      { name: 'User', schema: UserSchema },
+      { name: 'Course', schema: CourseSchema },
+      { name: 'Module', schema: ModuleSchema },
+      { name: 'Quiz', schema: QuizSchema },
+      { name: 'Response', schema: ResponseSchema },
+      { name: 'Progress', schema: ProgressSchema },
+      { name: 'Note', schema: NoteSchema },
+    ]),
+    JwtModule.register({
+      secret: process.env.JWT_SECRET || 'default-secret',
+      signOptions: { expiresIn: process.env.JWT_EXPIRATION || '1h' },
     }),
   ],
   controllers: [
@@ -43,16 +47,17 @@ import { JwtStrategy } from './auth/jwt.strategy';
     CourseController,
     UserController,
     AuthController,
-    ResponseController
+    ResponseController,
+    PusherController,
   ],
   providers: [
     QuizService,
     CourseService,
-    UserService, 
+    UserService,
     AuthService,
-    ResponseService, 
-    JwtStrategy
+    ResponseService,
+    PusherService,
+    JwtStrategy, 
   ],
-  exports: [JwtStrategy]
 })
 export class AppModule {}
