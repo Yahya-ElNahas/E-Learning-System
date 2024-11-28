@@ -12,7 +12,7 @@ export class ModuleService {
     course_id: string,
     title: string,
     content: string,
-    resources?: string[]
+    resources?: [{link: string; type: string}]
   }): Promise<Module> {
     isIdValid(body.course_id);
     const newModule = new this.moduleModel(body);
@@ -36,7 +36,7 @@ export class ModuleService {
     course_id?: string,
     title?: string,
     content?: string,
-    resources?: string[]
+    resources?: [{link: string; type: string}]
   }): Promise<Module> {
     isIdValid(id);
     if(body.course_id) isIdValid(body.course_id);

@@ -9,6 +9,18 @@ import { Role as UserRole } from 'src/user/user.schema';
 export class QuizController {
   constructor(private readonly quizService: QuizService) {}
 
+  @Get()
+  @UseGuards(JwtAuthGuard)
+  async findAll(): Promise<Quiz[]> {
+    return this.quizService.findAll();
+  }
+
+  @Get(':id')
+  @UseGuards(JwtAuthGuard)
+  async findOne(@Param('id') id: string): Promise<Quiz> {
+    return this.quizService.findOne(id);
+  }
+  
   @Post()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Role(UserRole.INSTRUCTOR)
@@ -21,18 +33,6 @@ export class QuizController {
     }>
   }): Promise<Quiz> {
     return this.quizService.create(body);
-  }
-
-  @Get()
-  @UseGuards(JwtAuthGuard)
-  async findAll(): Promise<Quiz[]> {
-    return this.quizService.findAll();
-  }
-
-  @Get(':id')
-  @UseGuards(JwtAuthGuard)
-  async findOne(@Param('id') id: string): Promise<Quiz> {
-    return this.quizService.findOne(id);
   }
 
   @Patch(':id')

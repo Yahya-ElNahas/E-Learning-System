@@ -16,7 +16,7 @@ export class ModuleController {
     course_id: string,
     title: string,
     content: string,
-    resources?: string[]
+    resources?: [{link: string; type: string}]
   }): Promise<Module> {
     return this.moduleService.create(body);
   }
@@ -42,7 +42,7 @@ export class ModuleController {
       course_id?: string,
       title?: string,
       content?: string,
-      resources?: string[]
+      resources?: [{link: string; type: string}]
     }
   ): Promise<Module> {
     return this.moduleService.update(id, body);

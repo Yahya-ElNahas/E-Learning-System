@@ -24,13 +24,13 @@ export class ProgressService {
   }
 
   async create(body: {
-    user_id: string;
-    course_id: string;
-    completion_percentage: number;
+    user_id: string,
+    course_id: string
   }): Promise<Progress> {
     isIdValid(body.user_id);
     isIdValid(body.course_id);
-    const newProgress = new this.progressModel(body);
+    const newBody = {...body, completion_percentage: 0}
+    const newProgress = new this.progressModel(newBody);
     return newProgress.save();
   }
 
