@@ -24,7 +24,12 @@ import { JwtStrategy } from './auth/jwt.strategy';
 import { AuthService } from './auth/auth.service'; 
 import { PusherController } from './communication/pusher/pusher.controller';
 import { PusherService } from './communication/pusher/pusher.service';
+<<<<<<< HEAD
 import { BackupService } from './backup/backup.service';  // Import BackupService
+=======
+import { ProgressController } from './progress/progress.controller';
+import { ProgressService } from './progress/progress.service';
+>>>>>>> bcaa920f1cb102ac738ddfa54a45ef1fbe7d4b87
 
 @Module({
   imports: [
@@ -52,7 +57,11 @@ import { BackupService } from './backup/backup.service';  // Import BackupServic
     AuthController,
     ResponseController,
     PusherController,
+<<<<<<< HEAD
     // Removed BackupController here
+=======
+    ProgressController
+>>>>>>> bcaa920f1cb102ac738ddfa54a45ef1fbe7d4b87
   ],
   providers: [
     QuizService,
@@ -62,7 +71,11 @@ import { BackupService } from './backup/backup.service';  // Import BackupServic
     ResponseService,
     PusherService,
     JwtStrategy, 
+<<<<<<< HEAD
     BackupService,  // Include BackupService here
+=======
+    ProgressService
+>>>>>>> bcaa920f1cb102ac738ddfa54a45ef1fbe7d4b87
   ],
 })
 export class AppModule {}
