@@ -1,4 +1,16 @@
-import { Controller, Get, Post, Body, Param, Patch, Delete, UseGuards, UseInterceptors, UploadedFile } from '@nestjs/common';
+/* eslint-disable prettier/prettier */
+import { 
+  Controller, 
+  Get, 
+  Post, 
+  Body, 
+  Param, 
+  Patch, 
+  Delete, 
+  UseGuards, 
+  UseInterceptors, 
+  UploadedFile 
+} from '@nestjs/common';
 import { ModuleService } from './module.service';
 import { Module } from './module.schema';
 import { Role as UserRole } from 'src/user/user.schema';
@@ -11,54 +23,65 @@ import { diskStorage } from 'multer';
 export class ModuleController {
   constructor(private readonly moduleService: ModuleService) {}
 
-<<<<<<< Updated upstream
-=======
+  /**
+   * Create a new module.
+   * Restricted to instructors.
+   */
   @Post()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Role(UserRole.INSTRUCTOR)
   async create(
-    @Body() createModuleDto: { course_id: string; title: string; content: string; resources?: string[] }
+    @Body() createModuleDto: { 
+      course_id: string; 
+      title: string; 
+      content: string; 
+      resources?: { path: string; type: string }[] 
+    }
   ): Promise<Module> {
     return this.moduleService.create(createModuleDto);
   }
->>>>>>> Stashed changes
+
+  /**
+   * Retrieve all modules.
+   */
   @Get()
   @UseGuards(JwtAuthGuard)
   async findAll(): Promise<Module[]> {
     return this.moduleService.findAll();
   }
 
+  /**
+   * Retrieve a module by its ID.
+   */
   @Get(':id')
   @UseGuards(JwtAuthGuard)
   async findOne(@Param('id') id: string): Promise<Module> {
     return this.moduleService.findOne(id);
   }
 
-  @Post()
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Role(UserRole.INSTRUCTOR)
-  async create(@Body() body: {
-    course_id: string,
-    title: string,
-    content: string,
-    resources?: [{path: string; type: string}]
-  }): Promise<Module> {
-    return this.moduleService.create(body);
-  }
-
+  /**
+   * Update a module by ID.
+   * Restricted to instructors.
+   */
   @Patch(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Role(UserRole.INSTRUCTOR)
   async update(
     @Param('id') id: string,
-    @Body() body: {
-      course_id?: string,
-      title?: string,
-      content?: string,
-      resources?: [{path: string; type: string}]
+    @Body() updateModuleDto: {
+      course_id?: string;
+      title?: string;
+      content?: string;
+      resources?: { path: string; type: string }[];
     }
   ): Promise<Module> {
-    return this.moduleService.update(id, body);
+    return this.moduleService.update(id, updateModuleDto);
   }
 
+  /**
+   * Upload a resource file for a specific module.
+   * Restricted to instructors.
+   */
   @Post(':id/upload')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Role(UserRole.INSTRUCTOR)
@@ -73,7 +96,7 @@ export class ModuleController {
       }),
       fileFilter: (req, file, cb) => {
         if (!file.mimetype.match(/\/(pdf|jpeg|png|jpg|mp4)$/)) {
-          return cb(new Error('Only PDF, JPEG, PNG and MP4 files are allowed'), false);
+          return cb(new Error('Only PDF, JPEG, PNG, and MP4 files are allowed'), false);
         }
         cb(null, true);
       },
@@ -83,10 +106,14 @@ export class ModuleController {
     @Param('id') moduleId: string,
     @UploadedFile() file: Express.Multer.File,
     @Body('type') type: string,
-  ) {
+  ): Promise<Module> {
     return this.moduleService.uploadResource(moduleId, file, type);
   }
 
+  /**
+   * Delete a module by ID.
+   * Restricted to instructors.
+   */
   @Delete(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Role(UserRole.INSTRUCTOR)

@@ -69,7 +69,9 @@ import { ModuleService } from './module/module.service';
     AuthController,
     ResponseController,
     PusherController,
-    ChatController
+    ChatController,
+    ModuleController,
+    ProgressController
 
   ],
 
@@ -86,9 +88,6 @@ import { ModuleService } from './module/module.service';
     ProgressService,
     ModuleService
   ],
-
-  controllers: [QuizController, CourseController,ResponseController],
-  providers: [QuizService, CourseService , ResponseService]
 
 })
 export class AppModule {}

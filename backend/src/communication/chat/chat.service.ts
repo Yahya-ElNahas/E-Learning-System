@@ -1,8 +1,9 @@
+/* eslint-disable prettier/prettier */
 import { Injectable, Type } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Chat, ChatDocument, Group, GroupDocument } from './chat.schema';
-import { User, UserDocument } from 'backend/src/user/user.schema';
+import { User, UserDocument } from '../../user/user.schema';
 
 import * as moment from 'moment';
 
