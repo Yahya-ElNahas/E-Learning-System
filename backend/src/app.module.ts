@@ -2,6 +2,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
+import { ScheduleModule } from '@nestjs/schedule';  // Import ScheduleModule
 import { UserSchema } from './user/user.schema';
 import { CourseSchema } from './course/course.schema';
 import { ModuleSchema } from './module/module.schema';
@@ -24,10 +25,18 @@ import { JwtStrategy } from './auth/jwt.strategy';
 import { AuthService } from './auth/auth.service'; 
 import { PusherController } from './communication/pusher/pusher.controller';
 import { PusherService } from './communication/pusher/pusher.service';
+<<<<<<< HEAD
 import {ChatController} from './communication/chat/chat.controller'
 import { ChatService } from './communication/chat/chat.service';
 import { Chat, ChatSchema, Group, GroupSchema } from './communication/chat/chat.schema';
 
+=======
+import { BackupService } from './backup/backup.service';  // Import BackupService
+import { ProgressController } from './progress/progress.controller';
+import { ProgressService } from './progress/progress.service';
+import { ModuleController } from './module/module.controller';
+import { ModuleService } from './module/module.service';
+>>>>>>> 1222708f21cc2d8786e8e82ea019a81da720f8a5
 
 
 @Module({
@@ -49,6 +58,7 @@ import { Chat, ChatSchema, Group, GroupSchema } from './communication/chat/chat.
       secret: process.env.JWT_SECRET || 'default-secret',
       signOptions: { expiresIn: process.env.JWT_EXPIRATION || '1h' },
     }),
+    ScheduleModule.forRoot(),  // Add ScheduleModule to handle cron jobs
   ],
   controllers: [
     QuizController,
@@ -57,9 +67,15 @@ import { Chat, ChatSchema, Group, GroupSchema } from './communication/chat/chat.
     AuthController,
     ResponseController,
     PusherController,
+<<<<<<< HEAD
     ChatController
    
   ],  
+=======
+    ProgressController,
+    ModuleController
+  ],
+>>>>>>> 1222708f21cc2d8786e8e82ea019a81da720f8a5
   providers: [
     QuizService,
     CourseService,
@@ -69,6 +85,10 @@ import { Chat, ChatSchema, Group, GroupSchema } from './communication/chat/chat.
     PusherService,
     ChatService,
     JwtStrategy, 
+    BackupService,  
+    ProgressService,
+    ModuleService
   ],
 })
 export class AppModule {}
+

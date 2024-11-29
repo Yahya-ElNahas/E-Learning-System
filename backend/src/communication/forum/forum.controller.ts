@@ -16,18 +16,7 @@ import { JwtAuthGuard, RolesGuard } from 'src/auth/guards';
 @Controller('forums')
 export class ForumController {
     constructor(private readonly forumService: ForumService) {}
-  
-    @Post()
-    @UseGuards(JwtAuthGuard, RolesGuard)
-    @Role(UserRole.INSTRUCTOR)
-    async createForum(
-      @Body('title') title: string,
-      @Body('description') description: string,
-      @Body('moderator') moderator: string,
-    ) {
-      return this.forumService.createForum({ title, description, moderator });
-    }
-  
+
     @Get()
     @UseGuards(JwtAuthGuard)
     async findAllForums() {
@@ -38,6 +27,63 @@ export class ForumController {
     @UseGuards(JwtAuthGuard)
     async findForumById(@Param('id') id: string) {
       return this.forumService.findForumById(id);
+    }
+
+    @Get('threads/:id')
+    @UseGuards(JwtAuthGuard)
+    async findThreadById(@Param('id') id: string) {
+      return this.forumService.findThreadById(id);
+    }
+  
+    @Patch('threads/:id')
+    @UseGuards(JwtAuthGuard)
+    async updateThread(
+      @Param('id') id: string,
+      @Body('title') title: string,
+      @Body('content') content: string,
+    ) {
+      return this.forumService.updateThread(id, { title, content });
+    }
+  
+    @Delete('threads/:id')
+    @UseGuards(JwtAuthGuard)
+    async deleteThread(@Param('id') id: string) {
+      return this.forumService.deleteThread(id);
+    }
+  
+    @Get(':forumId/threads')
+    @UseGuards(JwtAuthGuard)
+    async findThreadsByForum(@Param('forumId') forumId: string) {
+      return this.forumService.findThreadsByForum(forumId);
+    }
+  
+    @Get('threads/:threadId/replies')
+    @UseGuards(JwtAuthGuard)
+    async findRepliesByThread(@Param('threadId') threadId: string) {
+      return this.forumService.findRepliesByThread(threadId);
+    }
+  
+    @Get('replies/:id')
+    @UseGuards(JwtAuthGuard)
+    async findReplyById(@Param('id') id: string) {
+      return this.forumService.findReplyById(id);
+    }
+  
+    @Delete('replies/:id')
+    @UseGuards(JwtAuthGuard)
+    async deleteReply(@Param('id') id: string) {
+      return this.forumService.deleteReply(id);
+    }
+  
+    @Post()
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Role(UserRole.INSTRUCTOR)
+    async createForum(
+      @Body('title') title: string,
+      @Body('description') description: string,
+      @Body('moderator') moderator: string,
+    ) {
+      return this.forumService.createForum({ title, description, moderator });
     }
   
     @Patch(':id')
@@ -70,34 +116,6 @@ export class ForumController {
       return this.forumService.createThread({ forum: forumId, title, content, createdBy });
     }
   
-    @Get(':forumId/threads')
-    @UseGuards(JwtAuthGuard)
-    async findThreadsByForum(@Param('forumId') forumId: string) {
-      return this.forumService.findThreadsByForum(forumId);
-    }
-  
-    @Get('threads/:id')
-    @UseGuards(JwtAuthGuard)
-    async findThreadById(@Param('id') id: string) {
-      return this.forumService.findThreadById(id);
-    }
-  
-    @Patch('threads/:id')
-    @UseGuards(JwtAuthGuard)
-    async updateThread(
-      @Param('id') id: string,
-      @Body('title') title: string,
-      @Body('content') content: string,
-    ) {
-      return this.forumService.updateThread(id, { title, content });
-    }
-  
-    @Delete('threads/:id')
-    @UseGuards(JwtAuthGuard)
-    async deleteThread(@Param('id') id: string) {
-      return this.forumService.deleteThread(id);
-    }
-  
     @Post('threads/:threadId/replies')
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Role(UserRole.INSTRUCTOR, UserRole.STUDENT)
@@ -107,24 +125,6 @@ export class ForumController {
       @Body('createdBy') createdBy: string,
     ) {
       return this.forumService.createReply({ thread: threadId, content, createdBy });
-    }
-  
-    @Get('threads/:threadId/replies')
-    @UseGuards(JwtAuthGuard)
-    async findRepliesByThread(@Param('threadId') threadId: string) {
-      return this.forumService.findRepliesByThread(threadId);
-    }
-  
-    @Get('replies/:id')
-    @UseGuards(JwtAuthGuard)
-    async findReplyById(@Param('id') id: string) {
-      return this.forumService.findReplyById(id);
-    }
-  
-    @Delete('replies/:id')
-    @UseGuards(JwtAuthGuard)
-    async deleteReply(@Param('id') id: string) {
-      return this.forumService.deleteReply(id);
     }
 }
   

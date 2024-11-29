@@ -15,8 +15,16 @@ export class Module {
   @Prop({ required: true })
   content: string;
 
-  @Prop({ type: [String], required: false })
-  resources?: string[];
+  @Prop({
+    type: [
+      {
+        path: { type: String, required: true },
+        type: { type: String, required: true },
+      }
+    ],
+    required: false
+  })
+  resources?: { path: string; type: string }[];
 }
 
 export const ModuleSchema = SchemaFactory.createForClass(Module);

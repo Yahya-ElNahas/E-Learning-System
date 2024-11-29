@@ -1,14 +1,17 @@
 /* eslint-disable prettier/prettier */
 import { Controller, Get, Post, Patch, Delete, Body, Param, UseGuards } from '@nestjs/common';
 import { NoteService } from './note.service';
-import { JwtAuthGuard } from 'src/auth/guards';
+import { JwtAuthGuard, RolesGuard } from 'src/auth/guards';
+import { Role } from 'src/auth/reflectors';
+import { Role as UserRole } from 'src/user/user.schema';
 
 @Controller('notes')
 export class NoteController {
   constructor(private readonly noteService: NoteService) {}
 
   @Post()
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Role(UserRole.STUDENT)
   async create(@Body() body: { 
     user_id: string, 
     course_id?: string, 
@@ -18,19 +21,22 @@ export class NoteController {
   }
 
   @Get()
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Role(UserRole.STUDENT)
   async findAll() {
     return this.noteService.findAll();
   }
 
   @Get(':id')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Role(UserRole.STUDENT)
   async findOne(@Param('id') id: string) {
     return this.noteService.findOne(id);
   }
 
   @Patch(':id')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Role(UserRole.STUDENT)
   async update(
     @Param('id') id: string,
     @Body() body: { 
@@ -42,7 +48,8 @@ export class NoteController {
   }
 
   @Delete(':id')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Role(UserRole.STUDENT)
   async remove(@Param('id') id: string) {
     return this.noteService.remove(id);
   }

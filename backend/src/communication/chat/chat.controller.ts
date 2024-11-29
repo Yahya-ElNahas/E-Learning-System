@@ -17,6 +17,18 @@ import { JwtAuthGuard, RolesGuard } from 'src/auth/guards';
 export class ChatController {
 constructor(private readonly chatService: ChatService) {}
 
+    @Get()
+    @UseGuards(JwtAuthGuard)
+    async findAllChats() {
+        return this.chatService.findAllChats();
+    }
+
+    @Get(':id')
+    @UseGuards(JwtAuthGuard)
+    async findChat(@Param('id') id: string) {
+        return this.chatService.findChat(id);
+    }
+
     // Create a new chat message
     @Post()
     @UseGuards(JwtAuthGuard, RolesGuard)
@@ -28,19 +40,6 @@ constructor(private readonly chatService: ChatService) {}
         @Body('isGroupMessage') isGroupMessage: boolean = false,
     ) {
         return this.chatService.createChat({ sender_id, recipient_id, message, isGroupMessage });
-    }
-
-    // Get all chat messages
-    @Get()
-    @UseGuards(JwtAuthGuard)
-    async findAllChats() {
-        return this.chatService.findAllChats();
-    }
-
-    @Get(':id')
-    @UseGuards(JwtAuthGuard)
-    async findChat(@Param('id') id: string) {
-        return this.chatService.findChat(id);
     }
 
     // Update a chat message
