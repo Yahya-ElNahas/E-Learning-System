@@ -27,14 +27,19 @@ export type GroupDocument = Group & Document;
 
 @Schema({ timestamps: true })
 export class Group {
+  
   @Prop({ type: String, required: true })
-  name: string;
+  GroupName: string;
 
-  @Prop({ type: [{ type: Types.ObjectId, ref: 'User' }], required: true })
+  @Prop({ type: [{ type: Types.ObjectId }], required: true })
   members: Types.ObjectId[];
 
-  @Prop({ type: Types.ObjectId, ref: 'User', required: true })
+  @Prop({ type: Types.ObjectId, required: true })
   createdBy: Types.ObjectId;
+
+  @Prop({ type: [Object], required: true })
+   message: object[];
+
 }
 
 export const GroupSchema = SchemaFactory.createForClass(Group);

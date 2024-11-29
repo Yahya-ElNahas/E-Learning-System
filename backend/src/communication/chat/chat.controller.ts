@@ -63,16 +63,16 @@ constructor(private readonly chatService: ChatService) {}
     }
 
     // Create a new group
-    @Post('group')
-    @UseGuards(JwtAuthGuard, RolesGuard)
-    @Role(UserRole.STUDENT, UserRole.ADMIN)
-    async createGroup(
-        @Body('name') name: string,
-        @Body('members') members: string[],
-        @Body('createdBy') createdBy: string,
-    ) {
-        return this.chatService.createGroup({ name, members, createdBy });
-    }
+    // @Post('group')
+    // @UseGuards(JwtAuthGuard, RolesGuard)
+    // @Role(UserRole.STUDENT, UserRole.ADMIN)
+    // async createGroup(
+    //     @Body('name') name: string,
+    //     @Body('members') members: string[],
+    //     @Body('createdBy') createdBy: string,
+    // ) {
+    //     return this.chatService.createGroup({ name, members, createdBy });
+    // }
 
     // Get all groups
     @Get('group')
@@ -90,16 +90,16 @@ constructor(private readonly chatService: ChatService) {}
     }
 
     // Update a group
-    @Patch('group/:id')
-    @UseGuards(JwtAuthGuard, RolesGuard)
-    @Role(UserRole.STUDENT, UserRole.ADMIN)
-    async updateGroup(
-        @Param('id') id: string,
-        @Body('name') name: string,
-        @Body('members') members: string[],
-    ) {
-        return this.chatService.updateGroup(id, { name, members });
-    }
+    // @Patch('group/:id')
+    // @UseGuards(JwtAuthGuard, RolesGuard)
+    // @Role(UserRole.STUDENT, UserRole.ADMIN)
+    // async updateGroup(
+    //     @Param('id') id: string,
+    //     @Body('name') name: string,
+    //     @Body('members') members: string[],
+    // ) {
+    //     return this.chatService.updateGroup(id, { name, members });
+    // }
 
     // Delete a group
     @Delete('group/:id')

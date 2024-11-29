@@ -51,4 +51,8 @@ export class UserService {
   async findByRole(role: Role): Promise<UserDocument[]> {
     return this.userModel.find({ role }).exec(); 
   }
+  async findByName(name : string):Promise<any>{
+    return this.userModel.find({name}).exec()
+  }
 }
+

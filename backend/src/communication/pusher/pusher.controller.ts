@@ -7,6 +7,7 @@ import { UserDocument } from '../../user/user.schema';
 import { ChatDocument } from '../chat/chat.schema';
 import { from } from 'rxjs';
 import { UserService } from '../../user/user.service';
+import { Types } from 'mongoose';
 
 @Controller('chat')
 export class PusherController {
@@ -15,6 +16,16 @@ export class PusherController {
     @Inject(ChatService) private readonly chatService: ChatService,
     @Inject(UserService) private readonly userService: UserService,
   ) {}
+
+  private formatDate(date: Date): string {
+    return new Intl.DateTimeFormat('en-EG', {
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true, 
+      timeZone: 'Africa/Cairo', 
+    }).format(date);
+  }
 
   @Post('PrivateChat')
   async PrivateChat(
@@ -71,12 +82,60 @@ export class PusherController {
       channel: channelName,
     };
   }
-  @Post('PrivateGroupChat')
-  async PrivateGroup(
-    @Body('usernames') members?: string[],
-    @Body('groupName') groupName?: string,
-    @Body('message') message?: string,
-  ) {
-    const channelName = members.map((name) => name.trim()).join(',');
+  @Post('CreateGroup')
+async CreateGroup(
+  @Body('groupName') groupName?: string, 
+  @Body('usernames') members?: string[]
+) {
+  
+  const idS = await this.chatService.allGroupMembersIds(members);
+  let membersObjectArr = [];
+  for (let i = 0; i < members.length; i++) {
+    const user = await this.userService.findByName(members[i]);  
+    console.log(user)
+    if (user.length === 0) {
+      throw new Error(`User with name ${members[i]} does not exist!`)
+
+    }
+    membersObjectArr.push({ _id: idS[i], name: members[i] });
   }
+
+  await this.chatService.createGroup(groupName, membersObjectArr, members[0]);
+
+  return {
+    status: `Group ${groupName} successfully created!`
+  };
 }
+
+    @Post('send')
+    async SendOnGroup(
+      @Body('groupName') groupName?: string,
+      @Body('message')  message?: object,
+      @Body('senderId') id?: string
+    ){
+
+      const arr = (await this.chatService.findGroupByName(groupName)).members;
+
+      const members = arr.map(item => item._id);
+
+     
+
+      const isMember =members.some(mId => mId.toString() === (id))
+
+       if(!isMember){
+        throw new Error('Unauthorized')
+       }     
+
+      const senderData = this.userService.findById(id)
+
+      const fullMessage = {
+        sender : (await senderData).name,
+        message,
+        data : this.formatDate(new Date()),
+      }
+
+      await this.chatService.sendGroupMessage(groupName , fullMessage)
+
+    }
+
+  }

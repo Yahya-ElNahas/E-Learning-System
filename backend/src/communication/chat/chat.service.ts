@@ -53,7 +53,6 @@ export class ChatService {
     }
 
     const id = existingChat._id.toString()
-    console.log(id)
    return  await this.chatModel.findByIdAndUpdate(id,
         { $push:{ message: data } },  
         { new: true, useFindAndModify: false } 
@@ -93,15 +92,52 @@ export class ChatService {
     return this.chatModel.findByIdAndDelete(id).exec();
   }
 
-  async createGroup({ name, members, createdBy }: any) {
-    const group = new this.groupModel({
-      name,
-      members,
-      createdBy,
-    });
-    return group.save();
+  async allGroupMembersIds(members: string[]) {
+    let arr = [];
+    for (let i = 0; i < members.length; i++) {
+      const user = await this.userModel.findOne({ name: members[i] });
+      if (user) {
+       let added = String(user._id.toString())
+        arr.push(added);
+        console.log(added)
+      } else {
+        console.log(`User with name ${members[i]} not found`);
+      }
+    }
+    return arr;
   }
 
+  async createGroup(GroupName:String, members:string[], createdBy:string, message ? : string) {
+    const data = {
+      GroupName,
+      members,
+      createdBy,
+      message: message || [], 
+    };
+    const existingGroup = await this.groupModel.findOne({ GroupName, createdBy });
+    if (!existingGroup) {
+      const group = new this.groupModel(data);
+      return group.save();
+    }
+  
+    throw new Error('A group with this name already exists.');
+  }
+  
+  async sendGroupMessage(GroupName:String ,message : object){
+    const existingGroup = await this.groupModel.findOne({GroupName});
+    if(!existingGroup){
+      throw new Error('this group do not exists.');
+    }
+
+    const GroupId = existingGroup._id;
+
+    const updatedChat = await this.groupModel.findByIdAndUpdate(
+      GroupId,
+      { $push:{message} },  
+      { new: true, useFindAndModify: false } )
+
+      updatedChat
+  }
   async findAllGroups() {
     return this.groupModel.find().exec();
   }
@@ -110,15 +146,32 @@ export class ChatService {
     return this.groupModel.findById(id).exec();
   }
 
-  async updateGroup(id: string, { name, members }: any) {
-    return this.groupModel.findByIdAndUpdate(
-      id,
-      { name, members },
-      { new: true },
-    ).exec();
+
+
+  async findAllGroupMembersNames(GroupName:string){
+    const existingGroup = await this.groupModel.findOne({GroupName});
+    if(!existingGroup){
+      throw new Error('this group do not exists.');
+    }
+    
+    const message = existingGroup.message
+    let names = [];
+    
+    for(let  i = 0 ; i < message.length ; i++){
+      let senderName = message[i]['sender']
+      if(!names.includes(senderName))
+      names.push(message[i]['sender']);
+    }
+    return names;
   }
+
+  
 
   async deleteGroup(id: string) {
     return this.groupModel.findByIdAndDelete(id).exec();
+  }
+
+  async findGroupByName(name : string){
+    return this.groupModel.findOne({GroupName:name})
   }
 }
