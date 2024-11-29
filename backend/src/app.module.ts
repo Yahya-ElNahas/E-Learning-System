@@ -14,8 +14,8 @@ import { UserController } from './user/user.controller';
 import { UserService } from './user/user.service';
 import { QuizController } from './quiz/quiz.controller';
 import { QuizService } from './quiz/quiz.service';
-<<<<<<< Updated upstream
-import { CourseController } from './course/course.controller';
+
+import  CourseController  from './course/course.controller';
 
 import { CourseService } from './course/course.service';
 import { JwtModule } from '@nestjs/jwt'; 
@@ -26,24 +26,19 @@ import { JwtStrategy } from './auth/jwt.strategy';
 import { AuthService } from './auth/auth.service'; 
 import { PusherController } from './communication/pusher/pusher.controller';
 import { PusherService } from './communication/pusher/pusher.service';
-<<<<<<< HEAD
+
 import {ChatController} from './communication/chat/chat.controller'
 import { ChatService } from './communication/chat/chat.service';
 import { Chat, ChatSchema, Group, GroupSchema } from './communication/chat/chat.schema';
 
-=======
+
 import { BackupService } from './backup/backup.service';  // Import BackupService
 import { ProgressController } from './progress/progress.controller';
 import { ProgressService } from './progress/progress.service';
 import { ModuleController } from './module/module.controller';
 import { ModuleService } from './module/module.service';
->>>>>>> 1222708f21cc2d8786e8e82ea019a81da720f8a5
-=======
-import CourseController from './course/course.controller';
-import { CourseService } from './course/course.service';
-import  ResponseController   from './response/response.controller'
-import {ResponseServic} from './response/response.service'
->>>>>>> Stashed changes
+
+
 
 
 @Module({
@@ -74,15 +69,10 @@ import {ResponseServic} from './response/response.service'
     AuthController,
     ResponseController,
     PusherController,
-<<<<<<< HEAD
     ChatController
-   
-  ],  
-=======
-    ProgressController,
-    ModuleController
+
   ],
->>>>>>> 1222708f21cc2d8786e8e82ea019a81da720f8a5
+
   providers: [
     QuizService,
     CourseService,
@@ -96,11 +86,10 @@ import {ResponseServic} from './response/response.service'
     ProgressService,
     ModuleService
   ],
-<<<<<<< Updated upstream
-=======
+
   controllers: [QuizController, CourseController,ResponseController],
-  providers: [QuizService, CourseService , ResponseServic]
->>>>>>> Stashed changes
+  providers: [QuizService, CourseService , ResponseService]
+
 })
 export class AppModule {}
 
