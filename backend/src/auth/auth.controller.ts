@@ -28,11 +28,9 @@ export class AuthController {
 
   @Post('register')
   async register(
-    @Body() userDto: any,
-    @Req() req: Request,
-    @Res({ passthrough: true }) res: Response,
+    @Body() userDto: any
   ): Promise<any> {
-    return this.authService.register(userDto, req.cookies, res);
+    return this.authService.register(userDto);
   }
 
   @Post('login')

@@ -19,8 +19,6 @@ export class BackupService {
   // Cron job to run every minute (for testing, adjust as needed)
   @Cron('* * * * *') // Run every minute (use a different cron expression for real use case)
   async backupData() {
-    console.log('Backup started...');
-
     try {
       // Fetch user, course, and progress data
       const users = await this.getUserData();
@@ -29,8 +27,6 @@ export class BackupService {
 
       // Call backup function with data
       await this.saveBackup({ users, courses, progress });
-
-      console.log('Backup completed successfully');
     } catch (error) {
       console.error('Backup failed:', error);
     }
@@ -48,7 +44,7 @@ export class BackupService {
         profile_picture_url: user.profile_picture_url,
       }));
     } catch (error) {
-      console.error('Error fetching user data:', error);
+      console.error('Error fetching user data for backup:', error);
       throw new Error('Failed to fetch user data');
     }
   }
@@ -66,7 +62,7 @@ export class BackupService {
         createdBy: course.created_by.toString(), // CreatedBy is ObjectId
       }));
     } catch (error) {
-      console.error('Error fetching course data:', error);
+      console.error('Error fetching course data for backup:', error);
       throw new Error('Failed to fetch course data');
     }
   }
@@ -81,7 +77,7 @@ export class BackupService {
         completionPercentage: progress.completion_percentage,
       }));
     } catch (error) {
-      console.error('Error fetching progress data:', error);
+      console.error('Error fetching progress data for backup:', error);
       throw new Error('Failed to fetch progress data');
     }
   }
@@ -99,7 +95,7 @@ export class BackupService {
       });
 
       const backupDir = path.resolve(__dirname, '../../backups');
-      const backupFilePath = path.join(backupDir, 'backup_latest.json');  // Fixed file name for overwriting
+      const backupFilePath = path.join(backupDir, 'backup_latest.json');  
 
       // Ensure backup directory exists
       if (!fs.existsSync(backupDir)) {
@@ -108,7 +104,7 @@ export class BackupService {
 
       // Overwrite the previous backup file with the new data
       fs.writeFileSync(backupFilePath, backupData);
-      console.log(`Backup file overwritten at: ${backupFilePath}`);
+      console.log(`Backup Successful`);
     } catch (error) {
       console.error('Error during backup saving:', error);
       throw new Error('Backup failed during save operation');

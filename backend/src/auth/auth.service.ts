@@ -24,8 +24,8 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {
     this.transporter = nodemailer.createTransport({
-      host: 'smtp.gmail.com',
-      port: 587,
+      host: process.env.SMTP_HOST ?? 'smtp.gmail.com',
+      port: process.env.SMTP_PORT ?? 587,
       secure: false,
       service: 'gmail',
       auth: {
@@ -81,9 +81,7 @@ export class AuthService {
   }
 
   async register(
-    userDto: any,
-    @Req() req: Request,
-    @Res({ passthrough: true }) res: Response,
+    userDto: any
   ): Promise<any> {
     const { password, role } = userDto;
 
@@ -95,23 +93,28 @@ export class AuthService {
     userDto.password = hashedPassword;
     userDto.isVerified = role !== Role.STUDENT;
 
-    const newUser = await this.userService.create(userDto);
+    let newUser;
+    try {
+      newUser = await this.userService.create(userDto);
+
+    } catch(e) {
+      throw new BadRequestException('email exists');
+    }
     if (!newUser)
       throw new InternalServerErrorException('Error Registering Account');
+
+    const res = {status: 'success'};
 
     if (!userDto.isVerified) {
       const otp = this.generateOtp();
       const hashedOtp = await bcrypt.hash(otp, 10);
       this.userService.update(newUser._id.toString(), { otp: hashedOtp });
       this.sendOtpMail(newUser.email, otp);
+      const verificationToken = await this.generateJwt(newUser._id.toString());
+      res['token'] = verificationToken;
     }
 
-    const verificationToken = await this.generateJwt(newUser._id.toString());
-
-    return {
-      status: 'success',
-      verificationToken: verificationToken,
-    };
+    return res;
   }
 
   async login(
@@ -135,10 +138,10 @@ export class AuthService {
       const hashedOtp = await bcrypt.hash(otp, 10);
       this.userService.update(user._id.toString(), { otp: hashedOtp });
       this.sendOtpMail(user.email, otp);
-      const verificationToken = await this.generateJwt(user._id.toString());
+      const token = await this.generateJwt(user._id.toString());
       throw new UnauthorizedException({
         message: 'Email verification required.',
-        verificationToken,
+        token,
       });
     }
 
