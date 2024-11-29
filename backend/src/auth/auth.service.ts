@@ -1,6 +1,13 @@
 /* eslint-disable prettier/prettier */
 import * as nodemailer from 'nodemailer';
-import { Injectable, UnauthorizedException, BadRequestException, InternalServerErrorException, Res, Req } from '@nestjs/common';
+import {
+  Injectable,
+  UnauthorizedException,
+  BadRequestException,
+  InternalServerErrorException,
+  Res,
+  Req,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { UserService } from '../user/user.service';
@@ -11,7 +18,7 @@ import { Response } from 'express';
 @Injectable()
 export class AuthService {
   private transporter: nodemailer.Transporter;
- 
+
   constructor(
     private readonly userService: UserService,
     private readonly jwtService: JwtService,
@@ -20,11 +27,11 @@ export class AuthService {
       host: 'smtp.gmail.com',
       port: 587,
       secure: false,
-      service: 'gmail', 
+      service: 'gmail',
       auth: {
-        user: process.env.SMTP_USER, 
+        user: process.env.SMTP_USER,
         pass: process.env.SMTP_PASS,
-      }
+      },
     });
   }
 
@@ -46,7 +53,7 @@ export class AuthService {
       to,
       subject,
       text,
-      html: `<h1>${text}</h1>`
+      html: `<h1>${text}</h1>`,
     };
     try {
       await this.transporter.sendMail(mailOptions);
@@ -56,11 +63,15 @@ export class AuthService {
   }
 
   async sendOtpMail(email: string, otp: string) {
-    this.sendMail(email, `Email Verification`, `Your email verification token: ${otp}`);
+    this.sendMail(
+      email,
+      `Email Verification`,
+      `Your email verification token: ${otp}`,
+    );
   }
 
   private async addCookie(res: Response, id: string, role?: Role) {
-    const verificationTokenCookies =  await this.generateJwt(id, role);
+    const verificationTokenCookies = await this.generateJwt(id, role);
     res.cookie('verification_token', verificationTokenCookies, {
       httpOnly: true, 
       secure: process.env.NODE_ENV === 'production', 
@@ -69,19 +80,24 @@ export class AuthService {
     });
   }
 
-  async register(userDto: any, @Req() req: Request, @Res({ passthrough: true }) res: Response): Promise<any> {
+  async register(
+    userDto: any,
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<any> {
     const { password, role } = userDto;
-     
+
     if (![Role.STUDENT, Role.INSTRUCTOR, Role.ADMIN].includes(role)) {
       throw new BadRequestException('Invalid role specified.');
     }
-  
+
     const hashedPassword = await bcrypt.hash(password, 10);
     userDto.password = hashedPassword;
     userDto.isVerified = role === Role.ADMIN;
-  
+
     const newUser = await this.userService.create(userDto);
-    if(!newUser) throw new InternalServerErrorException("Error Registering Account");
+    if (!newUser)
+      throw new InternalServerErrorException('Error Registering Account');
 
     if (!userDto.isVerified) {
       const otp = this.generateOtp();
@@ -93,20 +109,25 @@ export class AuthService {
     const verificationToken = await this.generateJwt(newUser._id.toString());
 
     return {
-      status: "success",
-      verificationToken: verificationToken
+      status: 'success',
+      verificationToken: verificationToken,
     };
   }
 
-  async login(credentials: any, @Req() req: Request, @Res({ passthrough: true }) res: Response): Promise<any> {
+  async login(
+    credentials: any,
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<any> {
     const { email, password } = credentials;
-  
-    const user = await this.userService.findByEmail(email) as UserDocument;
+
+    const user = (await this.userService.findByEmail(email)) as UserDocument;
     if (!user) throw new UnauthorizedException('Invalid credentials.');
-  
+
     const isPasswordValid = await bcrypt.compare(password, user.password);
-    if (!isPasswordValid) throw new UnauthorizedException('Invalid credentials.');
-    
+    if (!isPasswordValid)
+      throw new UnauthorizedException('Invalid credentials.');
+
     this.addCookie(res, user._id.toString(), user.role);
 
     if (user.role === Role.STUDENT && !user.isVerified) {
@@ -121,28 +142,30 @@ export class AuthService {
       });
     }
 
-    return { status: "success" };
+    return { status: 'success' };
   }
 
   async verifyEmail(token: string, otp: string): Promise<any> {
     try {
-      const decoded = this.jwtService.verify(token, { secret: process.env.JWT_SECRET });
+      const decoded = this.jwtService.verify(token, {
+        secret: process.env.JWT_SECRET,
+      });
       const id = decoded.id;
 
       const user = await this.userService.findById(id);
       if (!user) throw new BadRequestException('Invalid verification token.');
-  
+
       if (user.isVerified) {
         throw new BadRequestException('Email already verified.');
       }
-  
+
       const isOtpValid = await bcrypt.compare(otp, user.otp);
       if (!isOtpValid) {
         throw new BadRequestException('Invalid verification credentials.');
       }
-  
+
       await this.userService.update(id, { isVerified: true, otp: null });
-  
+
       return { message: 'Email verified successfully.' };
     } catch (error) {
       throw new BadRequestException(error.message || 'Verification failed.');

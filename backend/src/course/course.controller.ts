@@ -44,7 +44,9 @@ export class CourseController {
 
   @Get('search/instructor')
   @UseGuards(JwtAuthGuard)
-  async searchByInstructor(@Query('createdBy') createdBy: string): Promise<Course[]> {
+  async searchByInstructor(
+    @Query('createdBy') createdBy: string,
+  ): Promise<Course[]> {
     if (!createdBy) {
       throw new BadRequestException('CreatedBy query parameter is required');
     }
@@ -52,8 +54,8 @@ export class CourseController {
   }
 
   @Post()
-  @UseGuards(JwtAuthGuard, RolesGuard) 
-  @Role(UserRole.INSTRUCTOR) 
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Role(UserRole.INSTRUCTOR)
   async create(
     @Body()
     body: {
@@ -69,7 +71,7 @@ export class CourseController {
 
   @Patch(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Role(UserRole.INSTRUCTOR) 
+  @Role(UserRole.INSTRUCTOR)
   async update(
     @Param('id') id: string,
     @Body()
@@ -86,10 +88,8 @@ export class CourseController {
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Role(UserRole.INSTRUCTOR) 
+  @Role(UserRole.INSTRUCTOR)
   async remove(@Param('id') id: string): Promise<void> {
     return this.courseService.remove(id);
   }
 }
-
-
