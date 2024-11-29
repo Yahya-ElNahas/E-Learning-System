@@ -1,9 +1,10 @@
+/* eslint-disable prettier/prettier */
 import { Controller, Get, Post, Body, Param, Patch, Delete, UseGuards } from '@nestjs/common';
 import { QuizService } from './quiz.service';
 import { Quiz } from './quiz.schema';
-import { JwtAuthGuard, RolesGuard } from 'src/auth/guards';
-import { Role } from 'src/auth/reflectors';
-import { Role as UserRole } from 'src/user/user.schema';
+import { JwtAuthGuard, RolesGuard } from '../auth/guards';
+import { Role } from '../auth/reflectors';
+import { Role as UserRole } from '../user/user.schema';
 
 @Controller('quizzes')
 export class QuizController {

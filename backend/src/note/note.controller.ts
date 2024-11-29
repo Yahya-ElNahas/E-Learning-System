@@ -1,9 +1,9 @@
 /* eslint-disable prettier/prettier */
 import { Controller, Get, Post, Patch, Delete, Body, Param, UseGuards } from '@nestjs/common';
 import { NoteService } from './note.service';
-import { JwtAuthGuard, RolesGuard } from 'src/auth/guards';
-import { Role } from 'src/auth/reflectors';
-import { Role as UserRole } from 'src/user/user.schema';
+import { JwtAuthGuard, RolesGuard } from '../auth/guards';
+import { Role } from '../auth/reflectors';
+import { Role as UserRole } from '../user/user.schema';
 
 @Controller('notes')
 export class NoteController {

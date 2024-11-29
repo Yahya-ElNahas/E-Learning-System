@@ -10,7 +10,7 @@ import {
     UseGuards
 } from '@nestjs/common';
 import { ChatService } from './chat.service';
-import { Role } from 'src/auth/reflectors';
+import { Role } from '../../auth/reflectors';
 import { Role as UserRole } from '../../user/user.schema';
 import { JwtAuthGuard, RolesGuard } from '../../auth/guards';
 

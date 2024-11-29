@@ -13,9 +13,9 @@ import {
 } from '@nestjs/common';
 import { ModuleService } from './module.service';
 import { Module } from './module.schema';
-import { Role as UserRole } from 'src/user/user.schema';
-import { Role } from 'src/auth/reflectors';
-import { JwtAuthGuard, RolesGuard } from 'src/auth/guards';
+import { Role as UserRole } from '../user/user.schema';
+import { Role } from '../auth/reflectors';
+import { JwtAuthGuard, RolesGuard } from '../auth/guards';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 

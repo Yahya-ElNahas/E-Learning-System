@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import {
     Controller,
     Post,
@@ -9,9 +10,9 @@ import {
     UseGuards
 } from '@nestjs/common';
 import { ForumService } from './forum.service';
-import { Role } from 'src/auth/reflectors';
-import { Role as UserRole } from 'src/user/user.schema';
-import { JwtAuthGuard, RolesGuard } from 'src/auth/guards';
+import { Role } from '../../auth/reflectors';
+import { Role as UserRole } from '../../user/user.schema';
+import { JwtAuthGuard, RolesGuard } from '../../auth/guards';
 
 @Controller('forums')
 export class ForumController {

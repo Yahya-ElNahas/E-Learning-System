@@ -12,7 +12,7 @@ import {
 } from '@nestjs/common';
 import { ResponseService } from './response.service';
 import { Response } from './response.schema';
-import { JwtAuthGuard } from 'src/auth/guards';
+import { JwtAuthGuard } from '../auth/guards';
 
 @Controller('responses')
 export default class ResponseModel {
