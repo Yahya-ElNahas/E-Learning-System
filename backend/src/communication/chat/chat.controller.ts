@@ -11,8 +11,8 @@ import {
 } from '@nestjs/common';
 import { ChatService } from './chat.service';
 import { Role } from 'src/auth/reflectors';
-import { Role as UserRole } from 'src/user/user.schema';
-import { JwtAuthGuard, RolesGuard } from 'src/auth/guards';
+import { Role as UserRole } from '../../user/user.schema';
+import { JwtAuthGuard, RolesGuard } from '../../auth/guards';
 
 @Controller('chats')
 export class ChatController {

@@ -5,6 +5,7 @@ import { Model } from 'mongoose';
 import { Module, ModuleDocument } from './module.schema';
 import { isIdValid } from 'src/helper';
 import * as path from 'path';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import * as fs from 'fs';
 
 @Injectable()

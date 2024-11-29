@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable prettier/prettier */
 import * as nodemailer from 'nodemailer';
 import {
   Injectable,
@@ -82,9 +81,7 @@ export class AuthService {
     });
   }
 
-  async register(
-    userDto: any
-  ): Promise<any> {
+  async register(userDto: any): Promise<any> {
     const { password, role } = userDto;
 
     if (![Role.STUDENT, Role.INSTRUCTOR, Role.ADMIN].includes(role)) {
@@ -98,14 +95,13 @@ export class AuthService {
     let newUser;
     try {
       newUser = await this.userService.create(userDto);
-
-    } catch(e) {
+    } catch (e) {
       throw new BadRequestException('email exists');
     }
     if (!newUser)
       throw new InternalServerErrorException('Error Registering Account');
 
-    const res = {status: 'success'};
+    const res = { status: 'success' };
 
     if (!userDto.isVerified) {
       const otp = this.generateOtp();

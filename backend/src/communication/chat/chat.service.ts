@@ -1,10 +1,12 @@
 /* eslint-disable prettier/prettier */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { Injectable, Type } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Chat, ChatDocument, Group, GroupDocument } from './chat.schema';
 import { User, UserDocument } from '../../user/user.schema';
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import * as moment from 'moment';
 
 
