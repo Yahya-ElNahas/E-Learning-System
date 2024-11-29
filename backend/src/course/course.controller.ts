@@ -18,7 +18,7 @@ import { Role as UserRole } from 'src/user/user.schema';
 import { JwtAuthGuard, RolesGuard } from 'src/auth/guards';
 
 @Controller('courses')
-export class CourseController {
+export default class CourseController {
   constructor(private readonly courseService: CourseService) {}
 
   @Get()
@@ -57,9 +57,14 @@ export class CourseController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Role(UserRole.INSTRUCTOR)
   async create(
+<<<<<<< Updated upstream
     @Body()
     body: {
       title: string;
+=======
+    @Body() body: {
+      title: string; 
+>>>>>>> Stashed changes
       description: string;
       category: string;
       difficulty_level: Difficulty;

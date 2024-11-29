@@ -9,7 +9,7 @@ async function bootstrap() {
   const port = process.env.PORT ?? 5000;
   app.use(cookieParser());
   await app.listen(port);
-  Logger.log(`Server is running on port: ${port}`);
+  Logger.log(`Server is running on port: http://localhost:${port}`);
 }
 
 bootstrap();

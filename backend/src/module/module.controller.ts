@@ -11,6 +11,15 @@ import { diskStorage } from 'multer';
 export class ModuleController {
   constructor(private readonly moduleService: ModuleService) {}
 
+<<<<<<< Updated upstream
+=======
+  @Post()
+  async create(
+    @Body() createModuleDto: { course_id: string; title: string; content: string; resources?: string[] }
+  ): Promise<Module> {
+    return this.moduleService.create(createModuleDto);
+  }
+>>>>>>> Stashed changes
   @Get()
   @UseGuards(JwtAuthGuard)
   async findAll(): Promise<Module[]> {

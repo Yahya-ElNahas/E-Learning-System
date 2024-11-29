@@ -14,6 +14,7 @@ import { UserController } from './user/user.controller';
 import { UserService } from './user/user.service';
 import { QuizController } from './quiz/quiz.controller';
 import { QuizService } from './quiz/quiz.service';
+<<<<<<< Updated upstream
 import { CourseController } from './course/course.controller';
 
 import { CourseService } from './course/course.service';
@@ -37,6 +38,12 @@ import { ProgressService } from './progress/progress.service';
 import { ModuleController } from './module/module.controller';
 import { ModuleService } from './module/module.service';
 >>>>>>> 1222708f21cc2d8786e8e82ea019a81da720f8a5
+=======
+import CourseController from './course/course.controller';
+import { CourseService } from './course/course.service';
+import  ResponseController   from './response/response.controller'
+import {ResponseServic} from './response/response.service'
+>>>>>>> Stashed changes
 
 
 @Module({
@@ -89,6 +96,11 @@ import { ModuleService } from './module/module.service';
     ProgressService,
     ModuleService
   ],
+<<<<<<< Updated upstream
+=======
+  controllers: [QuizController, CourseController,ResponseController],
+  providers: [QuizService, CourseService , ResponseServic]
+>>>>>>> Stashed changes
 })
 export class AppModule {}
 

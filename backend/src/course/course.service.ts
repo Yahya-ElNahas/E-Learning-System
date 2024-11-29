@@ -6,7 +6,8 @@ import {
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Course, CourseDocument, Difficulty } from './course.schema';
-import { isIdValid } from 'src/helper';
+import { isIdValid } from '../helper';
+
 
 @Injectable()
 export class CourseService {
