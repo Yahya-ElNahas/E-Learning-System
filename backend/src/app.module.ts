@@ -24,9 +24,7 @@ import { JwtStrategy } from './auth/jwt.strategy';
 import { AuthService } from './auth/auth.service'; 
 import { PusherController } from './communication/pusher/pusher.controller';
 import { PusherService } from './communication/pusher/pusher.service';
-
 import { BackupService } from './backup/backup.service';  // Import BackupService
-
 import { ProgressController } from './progress/progress.controller';
 import { ProgressService } from './progress/progress.service';
 
@@ -57,9 +55,6 @@ import { ProgressService } from './progress/progress.service';
     AuthController,
     ResponseController,
     PusherController,
-
-    // Removed BackupController here
-
     ProgressController
 
   ],
@@ -71,11 +66,8 @@ import { ProgressService } from './progress/progress.service';
     ResponseService,
     PusherService,
     JwtStrategy, 
-
     BackupService,  // Include BackupService here
-
     ProgressService
-
   ],
 })
 export class AppModule {}
