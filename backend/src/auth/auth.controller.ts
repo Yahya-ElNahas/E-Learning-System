@@ -45,7 +45,7 @@ export class AuthController {
   }
 
   @Post('verify-email')
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   async verifyEmail(@Body() { token, otp }: { token: string; otp: string }) {
     return this.authService.verifyEmail(token, otp);
   }

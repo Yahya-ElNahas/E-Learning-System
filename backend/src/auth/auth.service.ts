@@ -93,7 +93,7 @@ export class AuthService {
 
     const hashedPassword = await bcrypt.hash(password, 10);
     userDto.password = hashedPassword;
-    userDto.isVerified = role === Role.ADMIN;
+    userDto.isVerified = role !== Role.STUDENT;
 
     const newUser = await this.userService.create(userDto);
     if (!newUser)
