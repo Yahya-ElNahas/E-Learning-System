@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 import { Injectable } from '@nestjs/common';
 import { Cron } from '@nestjs/schedule';
 import { InjectModel } from '@nestjs/mongoose';
@@ -18,7 +17,7 @@ export class BackupService {
   ) {}
 
   
-  @Cron('* * * * *') 
+  @Cron('0 0 * * *') 
   async backupData() {
     console.log('Backup started...');
 

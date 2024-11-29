@@ -75,10 +75,10 @@ export class AuthService {
   private async addCookie(res: Response, id: string, role?: Role) {
     const verificationTokenCookies = await this.generateJwt(id, role);
     res.cookie('verification_token', verificationTokenCookies, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      maxAge: 360000000,
-      sameSite: 'strict',
+      httpOnly: true, 
+      secure: process.env.NODE_ENV === 'production', 
+      maxAge: 21600000, 
+      sameSite: 'strict', 
     });
   }
 
@@ -95,7 +95,7 @@ export class AuthService {
 
     const hashedPassword = await bcrypt.hash(password, 10);
     userDto.password = hashedPassword;
-    userDto.isVerified = role === Role.ADMIN;
+    userDto.isVerified = role !== Role.STUDENT;
 
     const newUser = await this.userService.create(userDto);
     if (!newUser)
