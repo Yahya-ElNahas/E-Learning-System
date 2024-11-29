@@ -6,18 +6,20 @@ export type ChatDocument = Chat & Document;
 
 @Schema({ timestamps: true })
 export class Chat {
-  @Prop({ type: Types.ObjectId, ref: 'User', required: true })
-  sender: Types.ObjectId; 
-
-  @Prop({ type: Types.ObjectId , required: true })
-  recipient: Types.ObjectId;
+  @Prop({ type: String, required: true })
+  sender: string; 
 
   @Prop({ type: String, required: true })
-  message: string;
+  recipient: string; 
+
+  @Prop({ type: [Object], required: true })
+   message: object[];
+
 
   @Prop({ type: Boolean, default: false })
   isGroupMessage: boolean;
 }
+
 
 export const ChatSchema = SchemaFactory.createForClass(Chat);
 

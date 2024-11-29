@@ -1,9 +1,21 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Inject, Post } from '@nestjs/common';
 import { PusherService } from './pusher.service';
+import {ChatService} from '../chat/chat.service'
+import {UserDocument} from 'backend/src/user/user.schema'
+import { ChatDocument } from '../chat/chat.schema';
+import { from } from 'rxjs';
+import { UserService } from 'src/user/user.service';
 
 @Controller('chat')
 export class PusherController {
-  constructor(private readonly pusherService: PusherService) {}
+
+  
+
+
+  constructor(private readonly pusherService: PusherService,
+    @Inject(ChatService) private readonly chatService: ChatService,
+    @Inject(UserService) private readonly userService: UserService
+  ) {}
 
   @Post('PrivateChat')
 async PrivateChat(
@@ -12,7 +24,7 @@ async PrivateChat(
   @Body('message') message: string,
 ) {
   if (!studentName || typeof studentName !== 'string' || !instructorName || typeof instructorName !== 'string') {
-    return { status: 'Error', message: 'Invalid studentName or instructorName' };
+    return { status: 'Error', message: 'Invalid channel name !!' };
   }
 
   const channelName = `${studentName.trim().toLowerCase()}_${instructorName.trim().toLowerCase()}`;
@@ -20,6 +32,20 @@ async PrivateChat(
     sender: studentName,
     message,
   });
+  const isGroupMessage = false;
+
+  // const user1 = await this.userService.findById(studentName)
+  // const user2 = await this.userService.findById(instructorName)
+ 
+  const chat = await this.chatService.createChat({
+    sender_name: studentName,
+    recipient_name: instructorName,
+    message,
+    isGroupMessage,
+  }) as ChatDocument;
+
+  chat
+  
 
   return { status: 'Private message sent successfully!', channel: channelName };
 }
@@ -33,5 +59,14 @@ async PrivateChat(
       message,
     });
     return { status: 'Public message sent successfully!', channel: channelName };
+
   }
+  @Post('PrivateGroupChat')
+  async PrivateGroup(
+    @Body('usernames') members?:string [] ,  
+    @Body('groupName') groupName?: string,
+    @Body('message') message?: string){
+      const channelName = members.map(name => name.trim()).join(',');
+      
+    }
 }

@@ -14,6 +14,7 @@ import { UserService } from './user/user.service';
 import { QuizController } from './quiz/quiz.controller';
 import { QuizService } from './quiz/quiz.service';
 import { CourseController } from './course/course.controller';
+
 import { CourseService } from './course/course.service';
 import { JwtModule } from '@nestjs/jwt'; 
 import { ResponseService } from './response/response.service'
@@ -23,6 +24,11 @@ import { JwtStrategy } from './auth/jwt.strategy';
 import { AuthService } from './auth/auth.service'; 
 import { PusherController } from './communication/pusher/pusher.controller';
 import { PusherService } from './communication/pusher/pusher.service';
+import {ChatController} from './communication/chat/chat.controller'
+import { ChatService } from './communication/chat/chat.service';
+import { Chat, ChatSchema, Group, GroupSchema } from './communication/chat/chat.schema';
+
+
 
 @Module({
   imports: [
@@ -36,6 +42,8 @@ import { PusherService } from './communication/pusher/pusher.service';
       { name: 'Response', schema: ResponseSchema },
       { name: 'Progress', schema: ProgressSchema },
       { name: 'Note', schema: NoteSchema },
+      { name: Chat.name, schema: ChatSchema },
+      { name: Group.name, schema: GroupSchema },
     ]),
     JwtModule.register({
       secret: process.env.JWT_SECRET || 'default-secret',
@@ -49,7 +57,9 @@ import { PusherService } from './communication/pusher/pusher.service';
     AuthController,
     ResponseController,
     PusherController,
-  ],
+    ChatController
+   
+  ],  
   providers: [
     QuizService,
     CourseService,
@@ -57,6 +67,7 @@ import { PusherService } from './communication/pusher/pusher.service';
     AuthService,
     ResponseService,
     PusherService,
+    ChatService,
     JwtStrategy, 
   ],
 })
