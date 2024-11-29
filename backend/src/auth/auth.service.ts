@@ -64,7 +64,7 @@ export class AuthService {
     res.cookie('verification_token', verificationTokenCookies, {
       httpOnly: true, 
       secure: process.env.NODE_ENV === 'production', 
-      maxAge: 360000000, 
+      maxAge: 21600000, 
       sameSite: 'strict', 
     });
   }
