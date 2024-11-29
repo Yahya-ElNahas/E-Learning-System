@@ -18,13 +18,13 @@ export class Module {
   @Prop({
     type: [
       {
-        link: { type: String, required: true },
+        path: { type: String, required: true },
         type: { type: String, required: true },
       }
     ],
     required: false
   })
-  resources?: { link: string; type: string }[];
+  resources?: { path: string; type: string }[];
 }
 
 export const ModuleSchema = SchemaFactory.createForClass(Module);

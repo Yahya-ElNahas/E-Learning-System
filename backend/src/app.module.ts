@@ -27,6 +27,8 @@ import { PusherService } from './communication/pusher/pusher.service';
 import { BackupService } from './backup/backup.service';  // Import BackupService
 import { ProgressController } from './progress/progress.controller';
 import { ProgressService } from './progress/progress.service';
+import { ModuleController } from './module/module.controller';
+import { ModuleService } from './module/module.service';
 
 
 @Module({
@@ -55,8 +57,8 @@ import { ProgressService } from './progress/progress.service';
     AuthController,
     ResponseController,
     PusherController,
-    ProgressController
-
+    ProgressController,
+    ModuleController
   ],
   providers: [
     QuizService,
@@ -66,8 +68,9 @@ import { ProgressService } from './progress/progress.service';
     ResponseService,
     PusherService,
     JwtStrategy, 
-    BackupService,  // Include BackupService here
-    ProgressService
+    BackupService,  
+    ProgressService,
+    ModuleService
   ],
 })
 export class AppModule {}

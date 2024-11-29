@@ -3,6 +3,8 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Module, ModuleDocument } from './module.schema';
 import { isIdValid } from 'src/helper';
+import * as path from 'path';
+import * as fs from 'fs';
 
 @Injectable()
 export class ModuleService {
@@ -12,7 +14,7 @@ export class ModuleService {
     course_id: string,
     title: string,
     content: string,
-    resources?: [{link: string; type: string}]
+    resources?: [{path: string; type: string}]
   }): Promise<Module> {
     isIdValid(body.course_id);
     const newModule = new this.moduleModel(body);
@@ -36,7 +38,7 @@ export class ModuleService {
     course_id?: string,
     title?: string,
     content?: string,
-    resources?: [{link: string; type: string}]
+    resources?: [{path: string; type: string}]
   }): Promise<Module> {
     isIdValid(id);
     if(body.course_id) isIdValid(body.course_id);
@@ -53,5 +55,19 @@ export class ModuleService {
     if (!result) {
       throw new NotFoundException(`Module with ID "${id}" not found`);
     }
+  }
+
+  async uploadResource(
+    moduleId: string,
+    file: Express.Multer.File,
+    type: string,
+  ): Promise<Module> {
+    const module = await this.moduleModel.findById(moduleId);
+    if (!module) throw new NotFoundException('Module not found');
+    const filePath = path.join('uploads', file.filename);
+    const resource = { type, path: filePath };
+    if (!module.resources) module.resources = [];
+    module.resources.push(resource);
+    return await module.save();
   }
 }
