@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { Injectable } from '@nestjs/common';
 import { Cron } from '@nestjs/schedule';
 import { InjectModel } from '@nestjs/mongoose';
@@ -16,8 +17,8 @@ export class BackupService {
     @InjectModel('Progress') private readonly progressModel: Model<ProgressDocument>,
   ) {}
 
-  // Cron job to run every minute (for testing, adjust as needed)
-  @Cron('* * * * *') // Run every minute (use a different cron expression for real use case)
+  
+  @Cron('0 0 * * *') 
   async backupData() {
     console.log('Backup started...');
 

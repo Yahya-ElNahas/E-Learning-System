@@ -1,4 +1,5 @@
-/* eslint-disable prettier/prettier */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
 import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';
 import { setEngine } from 'crypto';
 import { Document, Types } from 'mongoose';
@@ -8,7 +9,7 @@ export type CourseDocument = Course & Document;
 export enum Difficulty {
   BEGINNER = 'beginner',
   INTERMEDIATE = 'intermediate',
-  ADVANCED = 'advanced'
+  ADVANCED = 'advanced',
 }
 
 @Schema({ timestamps: true })

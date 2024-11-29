@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { Controller, Get, Post, Patch, Delete, Param, Body, UseGuards } from '@nestjs/common';
 import { ProgressService } from './progress.service';
 import { JwtAuthGuard, RolesGuard } from 'src/auth/guards';

@@ -6,18 +6,16 @@ import { Request } from 'express';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-  constructor(
-    private readonly userService: UserService,
-  ) {
-        super({
-        jwtFromRequest: (req: Request) => {
-          return req.cookies['verification_token']; 
-        },
-        secretOrKey: process.env.JWT_SECRET, 
-        });
-    }
+  constructor(private readonly userService: UserService) {
+    super({
+      jwtFromRequest: (req: Request) => {
+        return req.cookies['verification_token'];
+      },
+      secretOrKey: process.env.JWT_SECRET,
+    });
+  }
 
-    async validate(payload: any): Promise<any> {
-        return this.userService.findById(payload.id); 
+  async validate(payload: any): Promise<any> {
+    return this.userService.findById(payload.id);
   }
 }
