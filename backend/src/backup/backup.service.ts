@@ -18,7 +18,7 @@ export class BackupService {
   ) {}
 
   
-  @Cron('0 0 * * *') 
+  @Cron('* * * * *') 
   async backupData() {
     console.log('Backup started...');
 

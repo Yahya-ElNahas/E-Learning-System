@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable prettier/prettier */
 import * as nodemailer from 'nodemailer';
 import {
@@ -7,6 +8,7 @@ import {
   InternalServerErrorException,
   Res,
   Req,
+  Post,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
@@ -142,7 +144,7 @@ export class AuthService {
       });
     }
 
-    return { status: 'success' };
+    return { message: 'Logged in successfully.'};
   }
 
   async verifyEmail(token: string, otp: string): Promise<any> {
@@ -171,4 +173,14 @@ export class AuthService {
       throw new BadRequestException(error.message || 'Verification failed.');
     }
   }
+  @Post('logout')
+  async logout(@Res({ passthrough: true }) res: Response): Promise<{ message: string }> {
+    res.clearCookie('verification_token', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+    });
+    return { message: 'Logged out successfully.' };
+  }
+  
 }
