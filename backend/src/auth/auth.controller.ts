@@ -1,4 +1,4 @@
-/* eslint-disable prettier/prettier */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import {
   Controller,
   Post,
@@ -46,5 +46,10 @@ export class AuthController {
   // @UseGuards(JwtAuthGuard)
   async verifyEmail(@Body() { token, otp }: { token: string; otp: string }) {
     return this.authService.verifyEmail(token, otp);
+  }
+
+  @Post('logout')
+  async logout(@Res({ passthrough: true }) res: Response) {
+    return this.authService.logout(res);
   }
 }

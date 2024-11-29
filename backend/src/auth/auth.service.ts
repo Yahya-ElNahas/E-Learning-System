@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable prettier/prettier */
 import * as nodemailer from 'nodemailer';
 import {
@@ -7,6 +8,7 @@ import {
   InternalServerErrorException,
   Res,
   Req,
+  Post,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
@@ -73,10 +75,10 @@ export class AuthService {
   private async addCookie(res: Response, id: string, role?: Role) {
     const verificationTokenCookies = await this.generateJwt(id, role);
     res.cookie('verification_token', verificationTokenCookies, {
-      httpOnly: true, 
-      secure: process.env.NODE_ENV === 'production', 
-      maxAge: 21600000, 
-      sameSite: 'strict', 
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      maxAge: 21600000,
+      sameSite: 'strict',
     });
   }
 
@@ -145,7 +147,7 @@ export class AuthService {
       });
     }
 
-    return { status: 'success' };
+    return { message: 'Logged in successfully.' };
   }
 
   async verifyEmail(token: string, otp: string): Promise<any> {
@@ -173,5 +175,16 @@ export class AuthService {
     } catch (error) {
       throw new BadRequestException(error.message || 'Verification failed.');
     }
+  }
+  @Post('logout')
+  async logout(
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<{ message: string }> {
+    res.clearCookie('verification_token', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+    });
+    return { message: 'Logged out successfully.' };
   }
 }
