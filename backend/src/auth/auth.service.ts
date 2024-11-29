@@ -75,10 +75,10 @@ export class AuthService {
   private async addCookie(res: Response, id: string, role?: Role) {
     const verificationTokenCookies = await this.generateJwt(id, role);
     res.cookie('verification_token', verificationTokenCookies, {
-      httpOnly: true, 
-      secure: process.env.NODE_ENV === 'production', 
-      maxAge: 21600000, 
-      sameSite: 'strict', 
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      maxAge: 21600000,
+      sameSite: 'strict',
     });
   }
 
@@ -144,7 +144,7 @@ export class AuthService {
       });
     }
 
-    return { message: 'Logged in successfully.'};
+    return { message: 'Logged in successfully.' };
   }
 
   async verifyEmail(token: string, otp: string): Promise<any> {
@@ -174,7 +174,9 @@ export class AuthService {
     }
   }
   @Post('logout')
-  async logout(@Res({ passthrough: true }) res: Response): Promise<{ message: string }> {
+  async logout(
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<{ message: string }> {
     res.clearCookie('verification_token', {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
@@ -182,5 +184,4 @@ export class AuthService {
     });
     return { message: 'Logged out successfully.' };
   }
-  
 }

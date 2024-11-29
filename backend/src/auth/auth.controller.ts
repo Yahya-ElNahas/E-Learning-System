@@ -1,4 +1,4 @@
-/* eslint-disable prettier/prettier */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import {
   Controller,
   Post,
@@ -50,7 +50,7 @@ export class AuthController {
     return this.authService.verifyEmail(token, otp);
   }
 
-@Post('logout')
+  @Post('logout')
   async logout(@Res({ passthrough: true }) res: Response) {
     return this.authService.logout(res);
   }
