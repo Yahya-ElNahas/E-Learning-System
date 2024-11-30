@@ -99,7 +99,7 @@ export class ChatService {
       if (user) {
        let added = String(user._id.toString())
         arr.push(added);
-        console.log(added)
+
       } else {
         console.log(`User with name ${members[i]} not found`);
       }
@@ -107,12 +107,11 @@ export class ChatService {
     return arr;
   }
 
-  async createGroup(GroupName:String, members:string[], createdBy:string, message ? : string) {
+  async createGroup(GroupName:String, members:string[], createdBy:string) {
     const data = {
       GroupName,
       members,
       createdBy,
-      message: message || [], 
     };
     const existingGroup = await this.groupModel.findOne({ GroupName, createdBy });
     if (!existingGroup) {

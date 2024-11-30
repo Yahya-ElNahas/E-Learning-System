@@ -95,7 +95,6 @@ async CreateGroup(
   let membersObjectArr = [];
   for (let i = 0; i < members.length; i++) {
     const user = await this.userService.findByName(members[i]);  
-    console.log(user)
     if (user.length === 0) {
       throw new Error(`User with name ${members[i]} does not exist!`)
 

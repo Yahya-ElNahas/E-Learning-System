@@ -37,7 +37,7 @@ export class Group {
   @Prop({ type: Types.ObjectId, required: true })
   createdBy: Types.ObjectId;
 
-  @Prop({ type: [Object], required: true })
+  @Prop({ type: [Object]})
    message: object[];
 
 }
