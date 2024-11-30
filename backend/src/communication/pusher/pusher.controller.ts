@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Body, Controller, Inject, Post } from '@nestjs/common';
+import { Body, Controller, HttpException, HttpStatus, Inject, Post, UnauthorizedException } from '@nestjs/common';
 import { PusherService } from './pusher.service';
 import { ChatService } from '../chat/chat.service';
 import { UserDocument } from '../../user/user.schema';
@@ -117,9 +117,13 @@ async CreateGroup(
       @Body('senderId') id?: string
     ){
 
-      const arr = (await this.chatService.findGroupByName(groupName)).members;
+      const arr = (await this.chatService.findGroupByName(groupName));
 
-      const members = arr.map(item => item._id);
+      if(!arr){
+           throw new HttpException(`Group {${groupName}} does not exist.`, HttpStatus.NOT_FOUND);
+      }
+
+      const members = arr.members.map(item => item._id);
 
      
 
