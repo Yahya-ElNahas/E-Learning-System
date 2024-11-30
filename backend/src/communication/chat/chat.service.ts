@@ -7,7 +7,7 @@ import { Chat, ChatDocument, Group, GroupDocument } from './chat.schema';
 import { User, UserDocument } from '../../user/user.schema';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import * as moment from 'moment';
+
 
 
 
@@ -22,10 +22,12 @@ export class ChatService {
   private formatDate(date: Date): string {
     return new Intl.DateTimeFormat('en-EG', {
       day: '2-digit',
+      month: '2-digit', 
+      year: 'numeric', 
       hour: '2-digit',
       minute: '2-digit',
-      hour12: true, 
-      timeZone: 'Africa/Cairo', 
+      hour12: true,
+      timeZone: 'Africa/Cairo',
     }).format(date);
   }
   
