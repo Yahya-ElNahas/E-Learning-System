@@ -134,7 +134,7 @@ async CreateGroup(
       const fullMessage = {
         sender : (await senderData).name,
         message,
-        data : this.formatDate(new Date()),
+        date : this.formatDate(new Date()),
       }
 
       await this.chatService.sendGroupMessage(groupName , fullMessage)
