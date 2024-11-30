@@ -1,131 +1,144 @@
-/* eslint-disable prettier/prettier */
 import {
-    Controller,
-    Post,
-    Get,
-    Patch,
-    Delete,
-    Param,
-    Body,
-    UseGuards
+  Body,
+  Controller,
+  Post,
+  Get,
+  Put,
+  Delete,
+  Param,
+  HttpException,
+  HttpStatus,
 } from '@nestjs/common';
 import { ForumService } from './forum.service';
-import { Role } from '../../auth/reflectors';
-import { Role as UserRole } from '../../user/user.schema';
-import { JwtAuthGuard, RolesGuard } from '../../auth/guards';
+import { User, UserDocument } from 'src/user/user.schema';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
 
-@Controller('forums')
+@Controller('forum')
 export class ForumController {
-    constructor(private readonly forumService: ForumService) {}
+  constructor(private readonly forumService: ForumService,
+    @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
+  ) {}
 
-    @Get()
-    @UseGuards(JwtAuthGuard)
-    async findAllForums() {
-      return this.forumService.findAllForums();
-    }
-  
-    @Get(':id')
-    @UseGuards(JwtAuthGuard)
-    async findForumById(@Param('id') id: string) {
-      return this.forumService.findForumById(id);
+  @Post('create')
+  async createForum(
+    @Body('title') title: string,
+    @Body('description') description: string,
+    @Body('moderator') moderator: string,
+  ) {
+    if (!title || !description || !moderator) {
+      throw new HttpException('Missing required fields', HttpStatus.BAD_REQUEST);
     }
 
-    @Get('threads/:id')
-    @UseGuards(JwtAuthGuard)
-    async findThreadById(@Param('id') id: string) {
-      return this.forumService.findThreadById(id);
+    const stat = await this.userModel.findById(moderator)
+
+    if(!stat){
+      throw new HttpException(`This moderator does not exist.`, HttpStatus.NOT_FOUND);
     }
-  
-    @Patch('threads/:id')
-    @UseGuards(JwtAuthGuard)
-    async updateThread(
-      @Param('id') id: string,
-      @Body('title') title: string,
-      @Body('content') content: string,
-    ) {
-      return this.forumService.updateThread(id, { title, content });
+
+    const addObj = { _id : stat._id,name : stat.name}
+    const forum = await this.forumService.createForum(
+      title,
+      description,
+      addObj,
+    );
+    return { status: 'Forum created successfully!', forum };
+  }
+
+  @Get()
+  async findAllForums() {
+    const forums = await this.forumService.findAllForums();
+    return { status: 'Forums fetched successfully!', forums };
+  }
+
+  @Get(':id')
+  async findForumById(@Param('id') id: string) {
+    const forum = await this.forumService.findForumById(id);
+    if (!forum) {
+      throw new HttpException('Forum not found', HttpStatus.NOT_FOUND);
     }
-  
-    @Delete('threads/:id')
-    @UseGuards(JwtAuthGuard)
-    async deleteThread(@Param('id') id: string) {
-      return this.forumService.deleteThread(id);
+    return { status: 'Forum fetched successfully!', forum };
+  }
+
+  @Put(':id')
+  async updateForum(
+    @Param('id') id: string,
+    @Body('title') title?: string,
+    @Body('description') description?: string,
+  ) {
+    const updatedForum = await this.forumService.updateForum(id, {
+      title,
+      description,
+    });
+    if (!updatedForum) {
+      throw new HttpException('Forum not found', HttpStatus.NOT_FOUND);
     }
-  
-    @Get(':forumId/threads')
-    @UseGuards(JwtAuthGuard)
-    async findThreadsByForum(@Param('forumId') forumId: string) {
-      return this.forumService.findThreadsByForum(forumId);
+    return { status: 'Forum updated successfully!', updatedForum };
+  }
+
+  @Delete(':id')
+  async deleteForum(@Param('id') id: string) {
+    const deletedForum = await this.forumService.deleteForum(id);
+    if (!deletedForum) {
+      throw new HttpException('Forum not found', HttpStatus.NOT_FOUND);
     }
-  
-    @Get('threads/:threadId/replies')
-    @UseGuards(JwtAuthGuard)
-    async findRepliesByThread(@Param('threadId') threadId: string) {
-      return this.forumService.findRepliesByThread(threadId);
+    return { status: 'Forum deleted successfully!' };
+  }
+
+  @Post('thread/create')
+  async createThread(
+    @Body('forum') forum: string,
+    @Body('title') title: string,
+    @Body('content') content: string,
+    @Body('createdBy') createdBy: string,
+  ) {
+    if (!forum || !title || !content || !createdBy) {
+      throw new HttpException('Missing required fields', HttpStatus.BAD_REQUEST);
     }
-  
-    @Get('replies/:id')
-    @UseGuards(JwtAuthGuard)
-    async findReplyById(@Param('id') id: string) {
-      return this.forumService.findReplyById(id);
+    const thread = await this.forumService.createThread({
+      forum,
+      title,
+      content,
+      createdBy,
+    });
+    return { status: 'Thread created successfully!', thread };
+  }
+
+  @Get('thread/:forumId')
+  async findThreadsByForum(@Param('forumId') forumId: string) {
+    const threads = await this.forumService.findThreadsByForum(forumId);
+    return { status: 'Threads fetched successfully!', threads };
+  }
+
+  @Post('reply/create')
+  async createReply(
+    @Body('thread') thread: string,
+    @Body('content') content: string,
+    @Body('createdBy') createdBy: string,
+  ) {
+    if (!thread || !content || !createdBy) {
+      throw new HttpException('Missing required fields', HttpStatus.BAD_REQUEST);
     }
-  
-    @Delete('replies/:id')
-    @UseGuards(JwtAuthGuard)
-    async deleteReply(@Param('id') id: string) {
-      return this.forumService.deleteReply(id);
+    const reply = await this.forumService.createReply({
+      thread,
+      content,
+      createdBy,
+    });
+    return { status: 'Reply created successfully!', reply };
+  }
+
+  @Get('reply/:threadId')
+  async findRepliesByThread(@Param('threadId') threadId: string) {
+    const replies = await this.forumService.findRepliesByThread(threadId);
+    return { status: 'Replies fetched successfully!', replies };
+  }
+
+  @Delete('reply/:id')
+  async deleteReply(@Param('id') id: string) {
+    const deletedReply = await this.forumService.deleteReply(id);
+    if (!deletedReply) {
+      throw new HttpException('Reply not found', HttpStatus.NOT_FOUND);
     }
-  
-    @Post()
-    @UseGuards(JwtAuthGuard, RolesGuard)
-    @Role(UserRole.INSTRUCTOR)
-    async createForum(
-      @Body('title') title: string,
-      @Body('description') description: string,
-      @Body('moderator') moderator: string,
-    ) {
-      return this.forumService.createForum({ title, description, moderator });
-    }
-  
-    @Patch(':id')
-    @UseGuards(JwtAuthGuard, RolesGuard)
-    @Role(UserRole.INSTRUCTOR, UserRole.ADMIN)
-    async updateForum(
-      @Param('id') id: string,
-      @Body('title') title: string,
-      @Body('description') description: string,
-    ) {
-      return this.forumService.updateForum(id, { title, description });
-    }
-  
-    @Delete(':id')
-    @UseGuards(JwtAuthGuard, RolesGuard)
-    @Role(UserRole.INSTRUCTOR, UserRole.ADMIN)
-    async deleteForum(@Param('id') id: string) {
-      return this.forumService.deleteForum(id);
-    }
-  
-    @Post(':forumId/threads')
-    @UseGuards(JwtAuthGuard, RolesGuard)
-    @Role(UserRole.INSTRUCTOR, UserRole.STUDENT)
-    async createThread(
-      @Param('forumId') forumId: string,
-      @Body('title') title: string,
-      @Body('content') content: string,
-      @Body('createdBy') createdBy: string,
-    ) {
-      return this.forumService.createThread({ forum: forumId, title, content, createdBy });
-    }
-  
-    @Post('threads/:threadId/replies')
-    @UseGuards(JwtAuthGuard, RolesGuard)
-    @Role(UserRole.INSTRUCTOR, UserRole.STUDENT)
-    async createReply(
-      @Param('threadId') threadId: string,
-      @Body('content') content: string,
-      @Body('createdBy') createdBy: string,
-    ) {
-      return this.forumService.createReply({ thread: threadId, content, createdBy });
-    }
+    return { status: 'Reply deleted successfully!' };
+  }
 }
-  

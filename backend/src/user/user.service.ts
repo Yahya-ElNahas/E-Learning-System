@@ -54,5 +54,6 @@ export class UserService {
   async findByName(name : string):Promise<any>{
     return this.userModel.find({name}).exec()
   }
+
 }
 

@@ -37,6 +37,11 @@ import { ProgressController } from './progress/progress.controller';
 import { ProgressService } from './progress/progress.service';
 import { ModuleController } from './module/module.controller';
 import { ModuleService } from './module/module.service';
+import {ForumController} from './communication/forum/forum.controller'
+import {ForumService} from './communication/forum/forum.service'
+import { Forum, ForumSchema } from './communication/forum/forum.schema';  // Import your schema
+import { Thread, ThreadSchema } from './communication/forum/forum.schema';  // Import related schemas if needed
+import { Reply, ReplySchema } from './communication/forum/forum.schema';
 
 
 
@@ -55,6 +60,9 @@ import { ModuleService } from './module/module.service';
       { name: 'Note', schema: NoteSchema },
       { name: Chat.name, schema: ChatSchema },
       { name: Group.name, schema: GroupSchema },
+      { name: Forum.name, schema: ForumSchema },  
+      { name: Thread.name, schema: ThreadSchema },
+      { name: Reply.name, schema: ReplySchema }, 
     ]),
     JwtModule.register({
       secret: process.env.JWT_SECRET || 'default-secret',
@@ -71,7 +79,8 @@ import { ModuleService } from './module/module.service';
     PusherController,
     ChatController,
     ModuleController,
-    ProgressController
+    ProgressController,
+    ForumController
 
   ],
 
@@ -86,7 +95,7 @@ import { ModuleService } from './module/module.service';
     JwtStrategy, 
     BackupService,  
     ProgressService,
-    ModuleService
+    ModuleService,ForumService
   ],
 
 })

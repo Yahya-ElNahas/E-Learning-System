@@ -13,8 +13,8 @@ export class Forum {
   @Prop({ type: String, required: true })
   description: string; 
 
-  @Prop({ type: Types.ObjectId, ref: 'User', required: true })
-  moderator: Types.ObjectId; 
+  @Prop({ type: Object, ref: 'User', required: true })
+  moderator: Object; 
 }
 
 export const ForumSchema = SchemaFactory.createForClass(Forum);
