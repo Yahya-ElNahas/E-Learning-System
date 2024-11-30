@@ -189,7 +189,7 @@ export class ChatService {
     const GroupId = existingGroup._id;
     return await this.groupModel.findByIdAndUpdate(
       GroupId,
-      { $push: { members: { _id: user._id, name: user.name } } }, 
+      { $push: { members: { _id: user._id.toString(), name: user.name } } }, 
       { new: true, useFindAndModify: false }
     );
   }
