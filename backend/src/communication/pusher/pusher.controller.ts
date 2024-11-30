@@ -144,4 +144,14 @@ async CreateGroup(
 
     }
 
+    @Post("AddUser")
+    async AddUserToGroup(
+      @Body('createrId') createrId: string,
+      @Body('groupName') groupName: string,
+      @Body('UserId') id: string
+    ){
+        const res = await this.chatService.addUser(createrId,id,groupName);
+        res
+      return res;
+    }
   }

@@ -1,15 +1,12 @@
 /* eslint-disable prettier/prettier */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { Injectable, Type } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, Type } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Chat, ChatDocument, Group, GroupDocument } from './chat.schema';
 import { User, UserDocument } from '../../user/user.schema';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-
-
-
 
 
 @Injectable()
@@ -166,8 +163,37 @@ export class ChatService {
     return names;
   }
 
-  
+  async addUser(createrId : string ,id : string , GroupName:string){
+    const creater = await this.userModel.findById(createrId)
+    const existingGroup = await this.groupModel.findOne({GroupName});
+    if(!existingGroup){
+      throw new Error('this group do not exists.');
+    }
 
+    const user = await this.userModel.findById(id);
+
+    if(!user){
+      throw new HttpException(`this user with id ${id} do not exist`, HttpStatus.NOT_FOUND);
+    }
+    if(existingGroup.createdBy.toString() !== creater.name.toString()){
+      throw new HttpException(`Only the creator can add new user`, HttpStatus.NOT_FOUND);
+    }
+
+    const arr = existingGroup.members
+    const userIds = arr.map(user => user._id.toString());
+
+    if (userIds.includes(id)) {
+      throw new HttpException(`This member is already in the group`, HttpStatus.METHOD_NOT_ALLOWED);
+    }    
+
+    const GroupId = existingGroup._id;
+    return await this.groupModel.findByIdAndUpdate(
+      GroupId,
+      { $push: { members: { _id: user._id, name: user.name } } }, 
+      { new: true, useFindAndModify: false }
+    );
+  }
+  
   async deleteGroup(id: string) {
     return this.groupModel.findByIdAndDelete(id).exec();
   }
