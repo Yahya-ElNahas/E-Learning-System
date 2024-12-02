@@ -90,16 +90,18 @@ async CreateGroup(
   @Body('groupName') groupName?: string, 
   @Body('usernames') members?: string[]
 ) {
-  
+
+  if(this.chatService.Exist(groupName)){
+    throw new HttpException(`this group ${groupName} do exist` , HttpStatus.NOT_ACCEPTABLE)
+  }
   const idS = await this.chatService.allGroupMembersIds(members);
   let membersObjectArr = [];
   for (let i = 0; i < members.length; i++) {
     const user = await this.userService.findByName(members[i]);  
     if (user.length === 0) {
       throw new Error(`User with name ${members[i]} does not exist!`)
-
     }
-    membersObjectArr.push({ _id: idS[i], name: members[i] });
+    membersObjectArr.push({ _id: idS[i] , name: members[i] });
   }
 
   await this.chatService.createGroup(groupName, membersObjectArr, members[0]);

@@ -144,8 +144,6 @@ export class ChatService {
     return this.groupModel.findById(id).exec();
   }
 
-
-
   async findAllGroupMembersNames(GroupName:string){
     const existingGroup = await this.groupModel.findOne({GroupName});
     if(!existingGroup){
@@ -200,5 +198,15 @@ export class ChatService {
 
   async findGroupByName(name : string){
     return this.groupModel.findOne({GroupName:name})
+  }
+  async Exist(GroupName : string){
+    const existingGroup = await this.groupModel.findOne({GroupName});
+   
+    if(existingGroup){
+      return true
+    }
+
+
+    return false
   }
 }
