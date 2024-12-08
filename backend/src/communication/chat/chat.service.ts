@@ -202,12 +202,9 @@ export class ChatService {
   }
   async Exist(GroupName : string){
     const existingGroup = await this.groupModel.findOne({GroupName});
-   
     if(existingGroup){
       return true
     }
-
-
     return false
   }
 }
