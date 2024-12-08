@@ -28,7 +28,7 @@ export class ChatService {
     }).format(date);
   }
   
-  async createChat({ sender_name, recipient_name, message, isGroupMessage }: any) {
+  async createChat({ sender_name,recipient_name, message, channel ,isGroupMessage }: any) {
     const data = {
       message,
       sender_name,
@@ -45,6 +45,7 @@ export class ChatService {
         sender: sender_name,
         recipient: recipient_name,
         message : [data],
+        channel,
         isGroupMessage,
 
       });

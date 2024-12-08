@@ -14,7 +14,9 @@ export class Chat {
 
   @Prop({ type: [Object], required: true })
    message: object[];
-
+   
+   @Prop({type : String, required : true})
+   channel : string
 
   @Prop({ type: Boolean, default: false })
   isGroupMessage: boolean;
@@ -39,7 +41,6 @@ export class Group {
 
   @Prop({ type: [Object]})
    message: object[];
-
 }
 
 export const GroupSchema = SchemaFactory.createForClass(Group);

@@ -8,6 +8,7 @@ import { ChatDocument } from '../chat/chat.schema';
 import { from } from 'rxjs';
 import { UserService } from '../../user/user.service';
 import { Types } from 'mongoose';
+import { channel } from 'diagnostics_channel';
 
 @Controller('chat')
 export class PusherController {
@@ -52,13 +53,21 @@ export class PusherController {
     });
     const isGroupMessage = false;
 
-    // const user1 = await this.userService.findById(studentName)
-    // const user2 = await this.userService.findById(instructorName)
+    const user1 = await this.userService.findByName(studentName)
+    const user2 = await this.userService.findByName(instructorName)
+
+    if(!user1[0]){
+      throw new HttpException(`this user with ${studentName} does not exist.`, HttpStatus.NOT_FOUND);
+     }
+     if(!user2[0]){
+      throw new HttpException(`this user with ${instructorName} does not exist.`, HttpStatus.NOT_FOUND);
+     }
 
     const chat = (await this.chatService.createChat({
       sender_name: studentName,
       recipient_name: instructorName,
       message,
+      channel : channelName,
       isGroupMessage,
     })) as ChatDocument;
 
@@ -68,6 +77,31 @@ export class PusherController {
       status: 'Private message sent successfully!',
       channel: channelName,
     };
+  }
+
+  @Post('join')
+  async JoinChat(
+    @Body('senderName') name,
+    @Body('Channel') channel : string,
+    @Body('message') message: string,
+  ){
+    const Chat =  await this.chatService.findAllChats();
+    const ChannelName = Chat.map(item => item.channel)
+    console.log(ChannelName)
+    if(!ChannelName.includes(channel)){
+      throw new HttpException(`this user with ${channel} does not exist.`, HttpStatus.NOT_FOUND);
+    }
+
+    await this.pusherService.trigger(channel , 'message' , {
+      senderName : name,
+      message
+    })
+    
+    return {
+      status: message,
+      channel: channel,
+    };
+
   }
 
   @Post('PublicChat')
