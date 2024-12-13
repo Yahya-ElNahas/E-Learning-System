@@ -23,7 +23,7 @@ export default class CourseController {
   constructor(private readonly courseService: CourseService) {}
 
   @Get()
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   async findAll(): Promise<Course[]> {
     return this.courseService.findAll();
   }
