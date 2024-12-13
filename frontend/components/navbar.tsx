@@ -1,9 +1,12 @@
-import { Navbar, NavbarContent, NavbarItem, Link, Button } from "@nextui-org/react";
-import '@/styles/globals.css'; 
+import { Navbar, NavbarContent, NavbarItem, Link, Button, NavbarBrand } from "@nextui-org/react";
+import '@/styles/globals.css';
 
-export default function NavbarComponent({ courses = true, }) {
+export default function NavbarComponent({ courses = true }) {
     return (
         <Navbar>
+            <NavbarBrand>
+                <p className="font-sans text-2xl font-bold text-teal-600">E-Learning System</p>
+            </NavbarBrand>
             <NavbarContent className="hidden sm:flex gap-4" justify="center">
                 {courses && (
                     <NavbarItem>
