@@ -3,8 +3,9 @@
 import { useEffect, useState } from "react";
 import CardComponent from "@/components/card";
 import NavbarComponent from "@/components/navbar";
+import { NextPage } from "next";
 
-export default function App() {
+const App: NextPage = () => {
   const [courses, setCourses] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
@@ -54,3 +55,5 @@ export function load() {
       </div>
   );
 }
+
+export default App;

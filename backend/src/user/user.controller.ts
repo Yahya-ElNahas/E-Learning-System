@@ -11,7 +11,7 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Post()
-  async create(@Body() body: { email: string; password: string; role: string; isVerified: boolean }): Promise<UserDocument> {
+  async create(@Body() body: { email: string; username: string; password: string; role: string; isVerified: boolean }): Promise<UserDocument> {
     return this.userService.create(body);
   }
 
@@ -19,7 +19,7 @@ export class UserController {
   @UseGuards(JwtAuthGuard)
   async update(
     @Param('id') id: string,
-    @Body() body: { email?: string; password?: string; role?: string; isVerified?: boolean }
+    @Body() body: { email?: string; username?: string; password?: string; role?: string; isVerified?: boolean }
   ): Promise<UserDocument> {
     return this.userService.update(id, body);
   }
