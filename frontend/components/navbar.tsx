@@ -1,6 +1,7 @@
 import { Navbar, NavbarContent, NavbarItem, Link, Button, NavbarBrand } from "@nextui-org/react";
 import '@/styles/globals.css';
 
+
 export default function NavbarComponent({ courses = true }) {
     return (
         <Navbar>
@@ -23,6 +24,9 @@ export default function NavbarComponent({ courses = true }) {
                 <NavbarItem>
                     <Button as={Link} color="primary" href="/register" variant="flat">
                         Sign Up
+                    </Button>
+                    <Button as={Link} color="primary" href="/MessageBox" variant="flat">
+                        chat
                     </Button>
                 </NavbarItem>
             </NavbarContent>
