@@ -9,6 +9,8 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@coreui/icons": "^3.0.1",
+    "@ionic/core": "^8.4.1",
     "@nextui-org/navbar": "^2.2.5",
     "@nextui-org/react": "^2.6.8",
     "@nextui-org/system": "^2.4.4",
@@ -17,6 +19,7 @@
     "flowbite": "^2.5.2",
     "framer-motion": "^11.14.3",
     "frontend": "file:",
+    "ionicons": "^7.4.0",
     "js-cookie": "^3.0.5",
     "next": "15.1.0",
     "react": "^19.0.0",

@@ -14,7 +14,6 @@ const App: NextPage = () => {
       .then((response) => response.json())
       .then((data) => {
         setCourses(data);
-        console.log(data);
         setLoading(false);
       })
       .catch((error) => {
