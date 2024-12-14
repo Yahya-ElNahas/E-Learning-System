@@ -23,12 +23,12 @@ export default function App() {
   }, []);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return load();
   }
 
   return (
     <div className="bg-gray-200">
-      <NavbarComponent courses={false} />
+      <NavbarComponent index={true} />
       <div className="flex justify-center items-center">
         <h1 className="text-5xl font-extrabold font-sans text-blue-900 tracking-wide">
           Courses
@@ -41,5 +41,16 @@ export default function App() {
         ))}
       </div>
     </div>
+  );
+}
+
+export function load() {
+  return (
+    <div className="flex justify-center items-center min-h-screen bg-gray-100">
+        <div className="text-2xl font-semibold text-teal-600">
+          Loading
+          <span className="dot-animation"></span>
+        </div>
+      </div>
   );
 }
