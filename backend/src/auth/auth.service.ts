@@ -7,7 +7,6 @@ import {
   InternalServerErrorException,
   Res,
   Req,
-  Post,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
@@ -80,29 +79,38 @@ export class AuthService {
       sameSite: 'strict',
     });
   }
-
   async register(userDto: any): Promise<any> {
-    const { password, role } = userDto;
-
+    const { name, email, password, role } = userDto;
+  
+    // Validate the role
     if (![Role.STUDENT, Role.INSTRUCTOR, Role.ADMIN].includes(role)) {
+      console.log("Invalid role:", role);
       throw new BadRequestException('Invalid role specified.');
     }
-
+  
     const hashedPassword = await bcrypt.hash(password, 10);
     userDto.password = hashedPassword;
-    userDto.isVerified = role !== Role.STUDENT;
-
+    userDto.isVerified = role !== Role.STUDENT; // Assume that students need verification
+  
+    userDto.name = name; // Save name to user document
+    userDto.role = role; // Save the selected role
+  
     let newUser;
     try {
+      console.log("Attempting to create user:", userDto);
       newUser = await this.userService.create(userDto);
+      console.log("User created successfully:", newUser);
     } catch (e) {
-      throw new BadRequestException('email exists');
+      console.error("Error creating user:", e);
+      throw new BadRequestException('Email already exists.');
     }
-    if (!newUser)
-      throw new InternalServerErrorException('Error Registering Account');
-
+    if (!newUser) {
+      console.log("User creation failed.");
+      throw new InternalServerErrorException('Error registering account.');
+    }
+  
     const res = { status: 'success' };
-
+  
     if (!userDto.isVerified) {
       const otp = this.generateOtp();
       const hashedOtp = await bcrypt.hash(otp, 10);
@@ -111,10 +119,9 @@ export class AuthService {
       const verificationToken = await this.generateJwt(newUser._id.toString());
       res['token'] = verificationToken;
     }
-
+  
     return res;
   }
-
   async login(
     credentials: any,
     @Req() req: Request,
@@ -122,7 +129,8 @@ export class AuthService {
   ): Promise<any> {
     const { email, password } = credentials;
 
-    const user = (await this.userService.findByEmail(email)) as UserDocument;
+    const user = email.includes('@')? (await this.userService.findByEmail(email)) as UserDocument : 
+      (await this.userService.findByUsername(email)) as UserDocument;
     if (!user) throw new UnauthorizedException('Invalid credentials.');
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
@@ -172,7 +180,7 @@ export class AuthService {
       throw new BadRequestException(error.message || 'Verification failed.');
     }
   }
-  @Post('logout')
+
   async logout(
     @Res({ passthrough: true }) res: Response,
   ): Promise<{ message: string }> {
@@ -182,5 +190,21 @@ export class AuthService {
       sameSite: 'strict',
     });
     return { message: 'Logged out successfully.' };
+  }
+
+  async decodeRole(token: string): Promise<{role: string}> {
+     if (!token) {
+      throw new UnauthorizedException('Verification token not found.');
+    }
+
+    try {
+      const decoded = this.jwtService.verify(token, {
+        secret: process.env.JWT_SECRET, 
+      });
+
+      return {role: decoded.role};
+    } catch (error) {
+      throw new UnauthorizedException('Invalid or expired token.');
+    }
   }
 }

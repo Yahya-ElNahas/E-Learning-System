@@ -51,4 +51,13 @@ export class AuthController {
   async logout(@Res({ passthrough: true }) res: Response) {
     return this.authService.logout(res);
   }
+
+  @Get('decodeRole')
+  @UseGuards(JwtAuthGuard)
+  async decodeRole(
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    return this.authService.decodeRole(req.cookies['verification_token']);
+  }
 }

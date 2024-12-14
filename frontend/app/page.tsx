@@ -3,8 +3,9 @@
 import { useEffect, useState } from "react";
 import CardComponent from "@/components/card";
 import NavbarComponent from "@/components/navbar";
+import { NextPage } from "next";
 
-export default function App() {
+const App: NextPage = () => {
   const [courses, setCourses] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
@@ -23,12 +24,12 @@ export default function App() {
   }, []);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return load();
   }
 
   return (
     <div className="bg-gray-200">
-      <NavbarComponent courses={false} />
+      <NavbarComponent index={true} />
       <div className="flex justify-center items-center">
         <h1 className="text-5xl font-extrabold font-sans text-blue-900 tracking-wide">
           Courses
@@ -43,3 +44,16 @@ export default function App() {
     </div>
   );
 }
+
+export function load() {
+  return (
+    <div className="flex justify-center items-center min-h-screen bg-gray-100">
+        <div className="text-2xl font-semibold text-teal-600">
+          Loading
+          <span className="dot-animation"></span>
+        </div>
+      </div>
+  );
+}
+
+export default App;
