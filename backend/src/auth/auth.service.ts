@@ -7,7 +7,6 @@ import {
   InternalServerErrorException,
   Res,
   Req,
-  Post,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
@@ -130,7 +129,8 @@ export class AuthService {
   ): Promise<any> {
     const { email, password } = credentials;
 
-    const user = (await this.userService.findByEmail(email)) as UserDocument;
+    const user = email.includes('@')? (await this.userService.findByEmail(email)) as UserDocument : 
+      (await this.userService.findByUsername(email)) as UserDocument;
     if (!user) throw new UnauthorizedException('Invalid credentials.');
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
@@ -180,7 +180,7 @@ export class AuthService {
       throw new BadRequestException(error.message || 'Verification failed.');
     }
   }
-  @Post('logout')
+
   async logout(
     @Res({ passthrough: true }) res: Response,
   ): Promise<{ message: string }> {
@@ -190,5 +190,21 @@ export class AuthService {
       sameSite: 'strict',
     });
     return { message: 'Logged out successfully.' };
+  }
+
+  async decodeRole(token: string): Promise<{role: string}> {
+     if (!token) {
+      throw new UnauthorizedException('Verification token not found.');
+    }
+
+    try {
+      const decoded = this.jwtService.verify(token, {
+        secret: process.env.JWT_SECRET, 
+      });
+
+      return {role: decoded.role};
+    } catch (error) {
+      throw new UnauthorizedException('Invalid or expired token.');
+    }
   }
 }
