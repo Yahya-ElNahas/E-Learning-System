@@ -101,4 +101,5 @@ function fixDifficultyLevel(difficulty: string): Difficulty {
       return Difficulty.ADVANCED;
   }
   throw new BadRequestException(`Invalid difficulty_level: ${difficulty}`);
+
 }

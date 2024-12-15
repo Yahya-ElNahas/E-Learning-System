@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import CardComponent from "@/components/card";
+import CardComponent from "@/components/courseCard";
 import NavbarComponent from "@/components/navbar";
 import { NextPage } from "next";
 

@@ -16,6 +16,7 @@
     "@nextui-org/system": "^2.4.4",
     "@nextui-org/theme": "^2.4.3",
     "autoprefixer": "^10.4.20",
+    "axios": "^1.7.9",
     "flowbite": "^2.5.2",
     "framer-motion": "^11.14.3",
     "frontend": "file:",

@@ -28,7 +28,9 @@ export class AuthController {
   }
 
   @Post('register')
-  async register(@Body() userDto: any): Promise<any> {
+  async register(
+    @Body() userDto: any,
+  ): Promise<any> {
     return this.authService.register(userDto);
   }
 
@@ -43,8 +45,12 @@ export class AuthController {
 
   @Post('verify-email')
   // @UseGuards(JwtAuthGuard)
-  async verifyEmail(@Body() { token, otp }: { token: string; otp: string }) {
-    return this.authService.verifyEmail(token, otp);
+  async verifyEmail(
+    @Body() { otp }: { otp: string },
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<any> {
+    return this.authService.verifyEmail(req.cookies['verification_token'], otp);
   }
 
   @Post('logout')

@@ -1,9 +1,11 @@
 /* eslint-disable prettier/prettier */
-import { Controller, Get, Post, Patch, Delete, Param, Body, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Delete, Param, Body, UseGuards, Req, Res } from '@nestjs/common';
 import { ProgressService } from './progress.service';
 import { JwtAuthGuard, RolesGuard } from '../auth/guards';
 import { Role } from '../auth/reflectors';
 import { Role as UserRole } from '../user/user.schema';
+import { Request, Response } from 'express';
+import { Course } from 'src/course/course.schema';
 
 @Controller('progress')
 export class ProgressController {
@@ -12,6 +14,7 @@ export class ProgressController {
   @Get(':id')
   @UseGuards(JwtAuthGuard)
   async findOne(@Param('id') id: string) {
+    console.log(id)
     return this.progressService.findOne(id);
   }
 
@@ -35,10 +38,22 @@ export class ProgressController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Role(UserRole.STUDENT)
   async create(@Body() body: {
-    user_id: string,
-    course_id: string
-  }) {
-    return this.progressService.create(body);
+      course_id: string
+    },
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    return this.progressService.create(body.course_id, req.cookies['verification_token']);
+  }
+
+  @Get('student/courses')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Role(UserRole.STUDENT)
+  async findByStudent(
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<Course[]> {
+    return this.progressService.findByStudent(req.cookies['verification_token']);
   }
 
   @Get()
