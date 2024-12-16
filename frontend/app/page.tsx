@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import CardComponent from "@/components/card";
+import CardComponent from "@/components/courseCard";
 import NavbarComponent from "@/components/navbar";
 import { NextPage } from "next";
 
@@ -14,7 +14,6 @@ const App: NextPage = () => {
       .then((response) => response.json())
       .then((data) => {
         setCourses(data);
-        console.log(data);
         setLoading(false);
       })
       .catch((error) => {

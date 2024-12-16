@@ -70,19 +70,23 @@ export class AuthService {
     );
   }
 
-  private async addCookie(res: Response, id: string, role?: Role) {
+  private async addCookie(res: Response, cookieKey: string, id: string, role?: Role) {
     const verificationTokenCookies = await this.generateJwt(id, role);
-    res.cookie('verification_token', verificationTokenCookies, {
+    res.cookie(cookieKey, verificationTokenCookies, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       maxAge: 21600000,
       sameSite: 'strict',
     });
   }
+
+  GetIdFromToken(token: string) {
+    return this.jwtService.verify(token, {secret: process.env.JWT_SECRET}).id;
+  }
+
   async register(userDto: any): Promise<any> {
     const { name, email, password, role } = userDto;
   
-    // Validate the role
     if (![Role.STUDENT, Role.INSTRUCTOR, Role.ADMIN].includes(role)) {
       console.log("Invalid role:", role);
       throw new BadRequestException('Invalid role specified.');
@@ -90,7 +94,7 @@ export class AuthService {
   
     const hashedPassword = await bcrypt.hash(password, 10);
     userDto.password = hashedPassword;
-    userDto.isVerified = role !== Role.STUDENT; // Assume that students need verification
+    userDto.isVerified = role !== Role.STUDENT; 
   
     userDto.name = name; // Save name to user document
     userDto.role = role; // Save the selected role
@@ -101,31 +105,22 @@ export class AuthService {
       newUser = await this.userService.create(userDto);
       console.log("User created successfully:", newUser);
     } catch (e) {
-      console.error("Error creating user:", e);
-      throw new BadRequestException('Email already exists.');
+      const error: string = e.errorResponse.errmsg;
+      console.error(error);
+      const errorMsg: string = error.includes('email_1') ? 'Email already exists.': 'Username already exists.'
+      throw new BadRequestException(errorMsg);
     }
     if (!newUser) {
       console.log("User creation failed.");
       throw new InternalServerErrorException('Error registering account.');
     }
   
-    const res = { status: 'success' };
-  
-    if (!userDto.isVerified) {
-      const otp = this.generateOtp();
-      const hashedOtp = await bcrypt.hash(otp, 10);
-      this.userService.update(newUser._id.toString(), { otp: hashedOtp });
-      this.sendOtpMail(newUser.email, otp);
-      const verificationToken = await this.generateJwt(newUser._id.toString());
-      res['token'] = verificationToken;
-    }
-  
-    return res;
+    return {status: 'Success'};
   }
   async login(
     credentials: any,
-    @Req() req: Request,
-    @Res({ passthrough: true }) res: Response,
+    req: Request,
+    res: Response,
   ): Promise<any> {
     const { email, password } = credentials;
 
@@ -137,17 +132,15 @@ export class AuthService {
     if (!isPasswordValid)
       throw new UnauthorizedException('Invalid credentials.');
 
-    this.addCookie(res, user._id.toString(), user.role);
+    this.addCookie(res, "verification_token", user._id.toString(), user.role);
 
-    if (user.role === Role.STUDENT && !user.isVerified) {
+    if (user.role !== Role.ADMIN && !user.isVerified) {
       const otp = this.generateOtp();
       const hashedOtp = await bcrypt.hash(otp, 10);
       this.userService.update(user._id.toString(), { otp: hashedOtp });
       this.sendOtpMail(user.email, otp);
-      const token = await this.generateJwt(user._id.toString());
       throw new UnauthorizedException({
-        message: 'Email verification required.',
-        token,
+        message: 'email_verification_required'
       });
     }
 

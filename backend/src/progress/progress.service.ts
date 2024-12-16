@@ -6,6 +6,7 @@ import { isIdValid } from 'src/helper';
 import { AuthService } from 'src/auth/auth.service';
 import { CourseService } from 'src/course/course.service';
 import { UserService } from 'src/user/user.service';
+import { Course, CourseDocument } from 'src/course/course.schema';
 
 @Injectable()
 export class ProgressService {
@@ -13,7 +14,7 @@ export class ProgressService {
     @InjectModel(Progress.name)
     private readonly progressModel: Model<ProgressDocument>,
     private readonly authService: AuthService,
-    private readonly courseSerive: CourseService,
+    private readonly courseService: CourseService,
     private readonly userService: UserService,
   ) {}
 
@@ -29,17 +30,14 @@ export class ProgressService {
     return progress;
   }
 
-  async create(body: {
-    user_id: string,
-    course_id: string
-  }): Promise<Progress> {
-    isIdValid(body.user_id);
-    isIdValid(body.course_id);
-    const newBody = {...body, completion_percentage: 0}
+  async create(course_id, token): Promise<Progress> {
+    const user_id = this.authService.GetIdFromToken(token);
+    isIdValid(course_id);
+    const newBody = {user_id, course_id, completion_percentage: 0}
     const newProgress = new this.progressModel(newBody);
-    const email = (await this.userService.findById(body.user_id)).email;
-    const courseTitle = (await this.courseSerive.findOne(body.course_id)).title;
-    this.authService.sendMail(email, "Course Enrollment", "You Have Successfully Enrolled in the " + courseTitle + " Course")
+    const email = (await this.userService.findById(user_id)).email;
+    const courseTitle = (await this.courseService.findOne(course_id)).title;
+    this.authService.sendMail(email, "Course Enrollment", "You Have Successfully Enrolled in the " + courseTitle + " Course");
     return newProgress.save();
   }
 
@@ -69,4 +67,21 @@ export class ProgressService {
       throw new NotFoundException(`Progress with ID ${id} not found`);
     }
   }
+  
+  async findByStudent(token: string): Promise<Course[]> {
+    const studentId = this.authService.GetIdFromToken(token);
+  
+    const progresses: ProgressDocument[] = await this.progressModel.find({ user_id: studentId });
+  
+    const courses: Course[] = [];
+    for (const progress of progresses) {
+      const course = await this.courseService.findOne(progress.course_id.toString());
+      if (course) {
+        courses.push(course);
+      }
+    }
+  
+    return courses;
+  }
+  
 }
