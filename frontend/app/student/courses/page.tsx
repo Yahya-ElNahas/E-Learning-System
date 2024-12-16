@@ -4,6 +4,7 @@ import { NextPage } from "next";
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import '@/styles/globals.css';
+import CourseCardComponent from "@/components/courseCard";
 
 export async function fetchStudentCourses() {
     const response = await fetch("http://localhost:3000/progress/student/courses", {
@@ -18,7 +19,7 @@ export async function fetchStudentCourses() {
 }
 
 const StudentCourses: NextPage = () => {
-  const [courses, setCourses] = useState<{ id: number; name: string; description: string }[]>([]);
+  const [courses, setCourses] = useState<{ _id: string; title: string; description: string }[]>([]);
   const [loading, setLoading] = useState(true);
 
   // Fetch courses (mock API example)
@@ -58,14 +59,7 @@ const StudentCourses: NextPage = () => {
         ) : courses.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {courses.map((course) => (
-              <div
-                key={course.id}
-                className="bg-white dark:bg-[#222831] p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 cursor-pointer"
-                onClick={() => alert(`Clicked on ${course.name}`)}
-              >
-                <h2 className="text-xl font-bold text-gray-700 dark:text-gray-200 mb-2">{course.name}</h2>
-                <p className="text-gray-600 dark:text-gray-300">{course.description}</p>
-              </div>
+              <CourseCardComponent course={course} key={course._id} student={true} />
             ))}
           </div>
         ) : (

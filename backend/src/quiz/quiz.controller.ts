@@ -21,6 +21,12 @@ export class QuizController {
   async findOne(@Param('id') id: string): Promise<Quiz> {
     return this.quizService.findOne(id);
   }
+
+  @Get('module/:id')
+  @UseGuards(JwtAuthGuard)
+  async findOneByModule(@Param('id') id: string): Promise<Quiz> {
+    return this.quizService.findOneByModule(id);
+  }
   
   @Post()
   @UseGuards(JwtAuthGuard, RolesGuard)

@@ -24,9 +24,29 @@ export class ModuleController {
   constructor(private readonly moduleService: ModuleService) {}
 
   /**
-   * Create a new module.
-   * Restricted to instructors.
+   * Retrieve all modules.
    */
+  @Get()
+  @UseGuards(JwtAuthGuard)
+  async findAll(): Promise<Module[]> {
+    return this.moduleService.findAll();
+  }
+
+  @Get('course/:id')
+  @UseGuards(JwtAuthGuard)
+  async findByCourse(@Param('id') id: string): Promise<Module[]> {
+    return this.moduleService.findByCourse(id);
+  }
+
+  /**
+   * Retrieve a module by its ID.
+   */
+  @Get(':id')
+  @UseGuards(JwtAuthGuard)
+  async findOne(@Param('id') id: string): Promise<Module> {
+    return this.moduleService.findOne(id);
+  }
+
   @Post()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Role(UserRole.INSTRUCTOR)
@@ -39,24 +59,6 @@ export class ModuleController {
     }
   ): Promise<Module> {
     return this.moduleService.create(createModuleDto);
-  }
-
-  /**
-   * Retrieve all modules.
-   */
-  @Get()
-  @UseGuards(JwtAuthGuard)
-  async findAll(): Promise<Module[]> {
-    return this.moduleService.findAll();
-  }
-
-  /**
-   * Retrieve a module by its ID.
-   */
-  @Get(':id')
-  @UseGuards(JwtAuthGuard)
-  async findOne(@Param('id') id: string): Promise<Module> {
-    return this.moduleService.findOne(id);
   }
 
   /**

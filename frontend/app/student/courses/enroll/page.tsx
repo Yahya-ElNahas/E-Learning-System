@@ -60,7 +60,7 @@ const StudentEnrollment: NextPage = () => {
           ) : availableCourses.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {availableCourses.map((course) => (
-                <CourseCardComponent course={course} key={course._id} button={true} />
+                <CourseCardComponent course={course} key={course._id} enrollment={true} />
               ))}
             </div>
           ) : (

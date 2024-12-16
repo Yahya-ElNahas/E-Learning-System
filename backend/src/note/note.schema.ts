@@ -12,7 +12,7 @@ export class Note {
   @Prop({ type: Types.ObjectId, ref: 'Course', required: false })
   course_id?: Types.ObjectId;
 
-  @Prop({ required: true })
+  @Prop({ required: false, default: "" })
   content: string;
 }
 

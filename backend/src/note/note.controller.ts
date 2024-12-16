@@ -1,9 +1,10 @@
 /* eslint-disable prettier/prettier */
-import { Controller, Get, Post, Patch, Delete, Body, Param, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Delete, Body, Param, UseGuards, Req, Res } from '@nestjs/common';
 import { NoteService } from './note.service';
 import { JwtAuthGuard, RolesGuard } from '../auth/guards';
 import { Role } from '../auth/reflectors';
 import { Role as UserRole } from '../user/user.schema';
+import { Request, Response } from 'express';
 
 @Controller('notes')
 export class NoteController {
@@ -13,11 +14,12 @@ export class NoteController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Role(UserRole.STUDENT)
   async create(@Body() body: { 
-    user_id: string, 
-    course_id?: string, 
-    content: string 
-  }) {
-    return this.noteService.create(body);
+      course_id?: string, 
+    },
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    return this.noteService.create(req.cookies['verification_token'], body);
   }
 
   @Get()
@@ -25,6 +27,16 @@ export class NoteController {
   @Role(UserRole.STUDENT)
   async findAll() {
     return this.noteService.findAll();
+  }
+
+  @Get('student/all-notes')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Role(UserRole.STUDENT)
+  async findStudentNotes(
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    return this.noteService.findStudentNotes(req.cookies['verification_token']);
   }
 
   @Get(':id')
@@ -45,7 +57,7 @@ export class NoteController {
     }
   ) {
     return this.noteService.update(id, body);
-  }
+  } 
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)

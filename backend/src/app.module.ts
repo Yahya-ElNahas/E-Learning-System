@@ -42,6 +42,8 @@ import {ForumService} from './communication/forum/forum.service'
 import { Forum, ForumSchema } from './communication/forum/forum.schema';  // Import your schema
 import { Thread, ThreadSchema } from './communication/forum/forum.schema';  // Import related schemas if needed
 import { Reply, ReplySchema } from './communication/forum/forum.schema';
+import { NoteController } from './note/note.controller';
+import { NoteService } from './note/note.service';
 
 
 
@@ -80,8 +82,8 @@ import { Reply, ReplySchema } from './communication/forum/forum.schema';
     ChatController,
     ModuleController,
     ProgressController,
-    ForumController
-
+    ForumController,
+    NoteController
   ],
 
   providers: [
@@ -95,7 +97,8 @@ import { Reply, ReplySchema } from './communication/forum/forum.schema';
     JwtStrategy, 
     BackupService,  
     ProgressService,
-    ModuleService,ForumService
+    ModuleService,ForumService,
+    NoteService
   ],
 
 })
