@@ -36,9 +36,6 @@ export class Course {
   @Prop({ type: [String], default: [] })
   keywords: string[];
   
-
-
-  
 }
 
 export const CourseSchema = SchemaFactory.createForClass(Course);

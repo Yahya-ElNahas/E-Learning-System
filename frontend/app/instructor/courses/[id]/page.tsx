@@ -39,7 +39,7 @@ const CourseDetails: React.FC<{ params: { id: string } }> = ({ params }) => {
         <h1 className="text-3xl font-bold mb-6">{course.title}</h1>
         <div className="space-y-4">
           {modules.map((module) => (
-            <ModuleCardComponent module={module} key={module._id} />
+            <ModuleCardComponent module={module} key={module._id} courseId={params.id} />
           ))}
         </div>
       </div>
