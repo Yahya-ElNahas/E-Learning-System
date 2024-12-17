@@ -69,6 +69,7 @@ const Login: NextPage = () => {
     try {
         await login(email, password, router);
     } catch (error: any) {
+      if(error.message === "email_verification_required") router.push('/verify-email');
       setErrorMessage(error.message || 'An error occurred during login.');
     } finally {
       setLoading(false);

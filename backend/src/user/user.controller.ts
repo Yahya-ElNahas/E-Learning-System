@@ -25,13 +25,13 @@ export class UserController {
   }
 
   
-  @Get('/students')
+  @Get('/students/all')
   @UseGuards(JwtAuthGuard)
   async getStudents(): Promise<UserDocument[]> {
     return this.userService.findByRole(UserRole.STUDENT);
   }
   
-  @Get('/instructors')
+  @Get('/instructors/all')
   @UseGuards(JwtAuthGuard)
   async getInstructors(): Promise<UserDocument[]> {
     return this.userService.findByRole(UserRole.INSTRUCTOR);
@@ -44,7 +44,7 @@ export class UserController {
     await this.userService.delete(id);
   }
 
-  @Get('/admins')
+  @Get('/admins/all')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Role(UserRole.ADMIN)
   async getAdmins(): Promise<UserDocument[]> {

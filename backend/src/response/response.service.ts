@@ -4,11 +4,13 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Response, ResponseDocument } from './response.schema';
 import { isIdValid } from '../helper'; // Helper to validate ObjectId
+import { AuthService } from 'src/auth/auth.service';
 
 @Injectable()
 export class ResponseService {
   constructor(
     @InjectModel(Response.name) private readonly responseModel: Model<ResponseDocument>,
+    private readonly authService: AuthService,
   ) {}
 
   /**
@@ -91,5 +93,12 @@ export class ResponseService {
       return { Acknowledgment: false };
     }
     return { Acknowledgment: true };
+  }
+
+  async respondToStudentQuiz(token: string, body: Partial<Response>): Promise<Response> {
+    const user_id = this.authService.GetIdFromToken(token);
+    body['user_id'] = user_id;
+    const newResponse = new this.responseModel(body);
+    return newResponse.save();
   }
 }

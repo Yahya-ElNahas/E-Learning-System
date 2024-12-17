@@ -19,7 +19,8 @@ interface QuizData {
 
 const Quiz: NextPage = () => {
   const params = useParams();
-  const quizId = params.id;
+  const courseId = params.id?.slice(0, params.id.indexOf('.')+1);
+  const quizId = params.id?.slice(params.id.indexOf('.')+1);
 
   const [quizData, setQuizData] = useState<QuizData | null>(null);
   const [currentQuestion, setCurrentQuestion] = useState<Question>({question: "", options: [], correctAnswer: "", difficulty: ""});
@@ -27,6 +28,7 @@ const Quiz: NextPage = () => {
   const [score, setScore] = useState(0);
   const [difficulty, setDifficulty] = useState<string>("beginner");
   const [questionsAsked, setQuestionsAsked] = useState<Question[]>([]);
+  const [answers, setAnswers] = useState<string[]>([]);
   const [isQuizComplete, setIsQuizComplete] = useState(false);
 
   const router = useRouter();
@@ -69,7 +71,6 @@ const Quiz: NextPage = () => {
     } else {
         const randomIndex = Math.floor(Math.random() * freshQuestions.length);
         const selectedQuestion = freshQuestions[randomIndex];
-        console.log(selectedQuestion)
         setQuestionsAsked((prev) => [...prev, selectedQuestion]);
         setCurrentQuestion(selectedQuestion)
     }
@@ -80,23 +81,60 @@ const Quiz: NextPage = () => {
 
     const isCorrect = selectedAnswer === currentQuestion.correctAnswer;
 
+    const newAnswers = answers;
+    answers.push(selectedAnswer);
+    setAnswers(newAnswers);
+
     let nextDifficulty = "beginner";
     if (isCorrect) {
         setScore((prevScore) => prevScore + 1);
         nextDifficulty = difficulty === "beginner" ? "intermediate" : "advanced";
         setDifficulty(nextDifficulty);
-    } else if(currentQuestion.difficulty == 'advanced') {
+    } else if(difficulty === 'advanced') {
         setDifficulty("intermediate");
-    } else setDifficulty('beginner')
-    console.log(nextDifficulty)
+    } else setDifficulty('beginner');
+
 
     if (questionsAsked.length >= quizData.numberOfQuestions) {
+      finishQuiz()
       setIsQuizComplete(true);
     } else {
       selectNextQuestion(quizData.questionsPool, nextDifficulty);
       setSelectedAnswer(null);
     }
   };
+
+  const finishQuiz = async () => {
+    if(isQuizComplete) return;
+    
+    const finalAnswers = questionsAsked.map((question, index) => ({
+      question: question.question,
+      correctAsnwer: question.correctAnswer,
+      answer: answers[index],
+    }));
+
+
+    try {
+      const response = await fetch(`http://localhost:3000/responses/student/quiz`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({
+          quiz_id: quizId,
+          answers: finalAnswers,
+          score: score
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch Response");
+      }
+    } catch (error) {
+      console.error("Error fetching Response:", error);
+    }
+  }
 
   if (!quizData) {
     return (
@@ -123,11 +161,6 @@ const Quiz: NextPage = () => {
   return (
     <div className="min-h-screen flex flex-col items-center bg-gray-100 dark:bg-gray-900 p-6">
       <div className="w-full flex items-center justify-start mb-6">
-        <button className="absolute top-4 left-4 bg-[#222831] text-white px-4 py-2 rounded-md hover:bg-[#1b2027] transition-all duration-300 shadow-md"
-        onClick={() => router.push('/student/courses')}
-        >
-          Back to Courses
-        </button>
       </div>
       <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-6">
         Quiz

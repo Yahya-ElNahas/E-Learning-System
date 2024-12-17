@@ -12,9 +12,10 @@ export class Response {
   @Prop({ type: Types.ObjectId, ref: 'Quiz', required: true })
   quiz_id: Types.ObjectId;
 
-  @Prop({ type: [{ questionNumber: String, answer: String }], required: true })
+  @Prop({ type: [{ question: String, correctAnswer: String, answer: String }], required: true })
   answers: Array<{
     questionNumber: string;
+    correctAnswer: string;
     answer: string;
   }>;
 
