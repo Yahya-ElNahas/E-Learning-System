@@ -6,7 +6,7 @@ import "@/styles/globals.css";
 import CourseCardComponent from "@/components/courseCard";
 
 export async function fetchInstructorCourses() {
-  const response = await fetch("http://localhost:3000/instructor/courses", {
+  const response = await fetch("http://localhost:3000/courses/search/instructor", {
     method: "GET",
     headers: { "Content-Type": "application/json" },
     credentials: "include",

@@ -10,6 +10,8 @@ import {
   Query,
   BadRequestException,
   UseGuards,
+  Req, 
+  Res
 } from '@nestjs/common';
 import { CourseService } from './course.service';
 import { Course } from './course.schema';
@@ -17,6 +19,7 @@ import { Difficulty } from './course.schema';
 import { Role } from '../auth/reflectors';
 import { Role as UserRole } from '../user/user.schema';
 import { JwtAuthGuard, RolesGuard } from '../auth/guards';
+import { Request, Response } from 'express';
 
 @Controller('courses')
 export default class CourseController {
@@ -46,19 +49,18 @@ export default class CourseController {
   @Get('search/instructor')
   @UseGuards(JwtAuthGuard)
   async searchByInstructor(
-    @Query('createdBy') createdBy: string,
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response,
   ): Promise<Course[]> {
-    if (!createdBy) {
-      throw new BadRequestException('CreatedBy query parameter is required');
-    }
-    return this.courseService.searchByInstructor(createdBy);
+    return this.courseService.searchByInstructor(req.cookies['verification_token']);
   }
 
   @Post()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Role(UserRole.INSTRUCTOR)
   async create(
-
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response,
     @Body()
     body: {
       title: string;
@@ -66,10 +68,9 @@ export default class CourseController {
       description: string;
       category: string;
       difficulty_level: Difficulty;
-      created_by: string;
     },
   ): Promise<Course> {
-    return this.courseService.create(body);
+    return this.courseService.create(req.cookies['verification_token'], body);
   }
 
   @Patch(':id')

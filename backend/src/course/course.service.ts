@@ -8,6 +8,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Course, CourseDocument, Difficulty } from './course.schema';
 import { isIdValid } from '../helper';
+import { AuthService } from 'src/auth/auth.service';
 
 
 @Injectable()
@@ -15,17 +16,18 @@ export class CourseService {
   constructor(
     @InjectModel(Course.name)
     private readonly courseModel: Model<CourseDocument>,
+    private readonly authService: AuthService,
   ) {}
 
   // Create a new course
-  async create(body: {
+  async create(token: string, body: {
     title: string;
     description: string;
     category: string;
     difficulty_level: string;
-    created_by: string;
   }): Promise<Course> {
-    isIdValid(body.created_by);
+    const created_by = this.authService.GetIdFromToken(token);
+    body['created_by'] = created_by;
     body.difficulty_level = fixDifficultyLevel(body.difficulty_level);
     const course = new this.courseModel(body);
     return course.save();
@@ -85,9 +87,9 @@ export class CourseService {
   }
 
   // Search courses by instructor (created_by)
-  async searchByInstructor(createdBy: string): Promise<Course[]> {
-    isIdValid(createdBy);
-    return this.courseModel.find({ created_by: createdBy }).exec();
+  async searchByInstructor(token: string): Promise<Course[]> {
+    const user_id = this.authService.GetIdFromToken(token);
+    return this.courseModel.find({ created_by: user_id }).exec();
   }
 }
 
