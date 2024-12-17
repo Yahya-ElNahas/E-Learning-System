@@ -67,7 +67,7 @@ const CourseDetails: React.FC<{ params: Promise<{ id: string }> }> = ({ params }
       <div className="flex-1 p-6">
         <div className="space-y-6">
           {modules.map((module) => (
-            <ModuleCardComponent module={module} key={module._id} />
+            <ModuleCardComponent module={module} key={module._id} courseId={unwrappedParams.id} />
           ))}
         </div>
       </div>
