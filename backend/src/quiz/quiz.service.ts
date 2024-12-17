@@ -28,6 +28,10 @@ export class QuizService {
     return this.quizModel.find().exec();
   }
 
+  async findOneByModule(id: string) {
+    return this.quizModel.findOne({module_id: id});
+  }
+
   async findOne(id: string): Promise<Quiz> {
     isIdValid(id);
     const quiz = await this.quizModel.findById(id).exec();

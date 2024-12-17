@@ -1,5 +1,6 @@
 import { useState } from "react";
 import "@/styles/globals.css";
+import { useRouter } from "next/navigation";
 
 interface Course {
   title: string;
@@ -9,11 +10,21 @@ interface Course {
 
 interface CardComponentProps {
   course: Course;
-  button?: boolean;
+  enrollment?: boolean;
+  student?: boolean;
+  instructor?: boolean;
 }
 
-export default function CourseCardComponent({ course, button = false }: CardComponentProps) {
+export default function CourseCardComponent({ course, enrollment = false, student = false, instructor = false }: CardComponentProps) {
   const [enrolled, setEnrolled] = useState(false);
+
+  const router = useRouter();
+
+  const handleCardClick = () => {
+    if (student) {
+      router.push(`/student/courses/${course._id}`); 
+    }
+  };
 
   const enroll = async () => {
     try {
@@ -22,7 +33,7 @@ export default function CourseCardComponent({ course, button = false }: CardComp
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ course_id: course._id }), 
+        body: JSON.stringify({ course_id: course._id }),
         credentials: "include",
       });
 
@@ -30,9 +41,9 @@ export default function CourseCardComponent({ course, button = false }: CardComp
         throw new Error("Enrollment failed");
       }
 
-      setEnrolled(true); 
+      setEnrolled(true);
       setTimeout(() => {
-        window.location.reload(); 
+        window.location.reload();
       }, 3000);
     } catch (error) {
       console.error("Error enrolling:", error);
@@ -48,20 +59,31 @@ export default function CourseCardComponent({ course, button = false }: CardComp
     );
   }
 
-  return (
-    <div
-      className="bg-white dark:bg-[#222831] p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300"
-    >
-      <h2 className="text-xl font-bold text-gray-700 dark:text-gray-200 mb-2">{course.title}</h2>
-      <p className="text-gray-600 dark:text-gray-300">{course.description}</p>
+  if (student) {
+    return (
+      <div
+        className="bg-white dark:bg-[#222831] p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 cursor-pointer"
+        onClick={handleCardClick} 
+      >
+        <h2 className="text-xl font-bold text-gray-700 dark:text-gray-200 mb-2">{course.title}</h2>
+      </div>
+    );
+  }
 
-      {button && (
-        <button
-          className="mt-4 w-full bg-[#008170] text-white py-2 rounded-md hover:bg-[#005B41] transition-all duration-300"
-          onClick={enroll}
-        >
-          Enroll
-        </button>
+  return (
+    <div className="bg-white dark:bg-[#222831] p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300">
+      <h2 className="text-xl font-bold text-gray-700 dark:text-gray-200 mb-2">{course.title}</h2>
+
+      {enrollment && (
+        <>
+          <p className="text-gray-600 dark:text-gray-300">{course.description}</p>
+          <button
+            className="mt-4 w-full bg-[#008170] text-white py-2 rounded-md hover:bg-[#005B41] transition-all duration-300"
+            onClick={enroll}
+          >
+            Enroll
+          </button>
+        </>
       )}
     </div>
   );

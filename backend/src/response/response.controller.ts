@@ -9,10 +9,15 @@ import {
   Put,
   Delete,
   UseGuards,
+  Req,
+  Res
 } from '@nestjs/common';
 import { ResponseService } from './response.service';
 import { Response } from './response.schema';
-import { JwtAuthGuard } from '../auth/guards';
+import { JwtAuthGuard, RolesGuard } from '../auth/guards';
+import { Role } from 'src/auth/reflectors';
+import { Role as UserRole } from 'src/user/user.schema';
+import { Request, Response as Resp } from 'express';
 
 @Controller('responses')
 export default class ResponseModel {
@@ -92,5 +97,16 @@ export default class ResponseModel {
   async delete(@Param('id') id: string): Promise<{ acknowledgment: boolean }> {
     await this.responseService.delete(id);
     return { acknowledgment: true };
+  }
+
+  @Post('student/quiz')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Role(UserRole.STUDENT)
+  async respondToStudentQuiz(
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Resp,
+    @Body() body: Partial<Response>
+  ) {
+    this.responseService.respondToStudentQuiz(req.cookies['verification_token'], body);
   }
 }

@@ -4,20 +4,22 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Note, NoteDocument } from './note.schema';
 import { isIdValid } from 'src/helper';
+import { AuthService } from 'src/auth/auth.service';
 
 @Injectable()
 export class NoteService {
   constructor(
     @InjectModel(Note.name) private readonly noteModel: Model<NoteDocument>,
+    private readonly authService: AuthService,
   ) {}
 
-  async create(body: { 
-    user_id: string, 
+  async create(token: string, body: { 
     course_id?: string, 
-    content: string 
   }) {
-    isIdValid(body.user_id);
     if(body.course_id) isIdValid(body.course_id);
+    const user_id = this.authService.GetIdFromToken(token);
+    body['user_id'] = user_id;
+    console.log(body)
     const createdNote = new this.noteModel(body);
     return createdNote.save();
   }
@@ -58,5 +60,10 @@ export class NoteService {
       throw new NotFoundException(`Note with ID ${id} not found`);
     }
     return deletedNote;
+  }
+
+  async findStudentNotes(token: string): Promise<NoteDocument[]> {
+    const user_id = this.authService.GetIdFromToken(token);
+    return this.noteModel.find({user_id}).exec();
   }
 }

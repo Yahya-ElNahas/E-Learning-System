@@ -20,8 +20,9 @@ export async function fetchAllCourses() {
 }
 
 const StudentEnrollment: NextPage = () => {
-  const [availableCourses, setAvailableCourses] = useState<{ _id: string; title: string; description: string }[]>([]);
+  const [courses, setCourses] = useState<{ _id: string; title: string; description: string }[]>([]);
   const [loading, setLoading] = useState(true);
+    const [searchTerm, setSearchTerm] = useState(""); 
 
   const fetchCourses = async () => {
     try {
@@ -31,7 +32,7 @@ const StudentEnrollment: NextPage = () => {
       const available = all.filter(
         (course: { _id: string }) => !enrolled.some((enrolledCourse: { _id: string }) => enrolledCourse._id === course._id)
       );
-      setAvailableCourses(available);
+      setCourses(available);
     } catch (error) {
       console.error("Error fetching courses:", error);
     } finally {
@@ -42,6 +43,11 @@ const StudentEnrollment: NextPage = () => {
   useEffect(() => {
     fetchCourses();
   }, []);
+
+  const availableCourses = courses.filter((course) =>
+    course.title.toLowerCase().includes(searchTerm.toLowerCase()) 
+    || course.description.toLowerCase().includes(searchTerm.toLowerCase()) 
+  );
 
   return (
     <div className="flex min-h-screen bg-gray-100 dark:bg-gray-900">
@@ -55,12 +61,22 @@ const StudentEnrollment: NextPage = () => {
             </button>
           </div>
 
+          <div className="mb-6">
+            <input
+              type="text"
+              placeholder="Search for courses..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full p-3 rounded-md bg-gray-100 dark:bg-[#1c1f24] text-gray-900 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-[#008170]"
+            />
+          </div>
+
           {loading ? (
             <p className="text-gray-700 dark:text-gray-300">Loading courses...</p>
           ) : availableCourses.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {availableCourses.map((course) => (
-                <CourseCardComponent course={course} key={course._id} button={true} />
+                <CourseCardComponent course={course} key={course._id} enrollment={true} />
               ))}
             </div>
           ) : (

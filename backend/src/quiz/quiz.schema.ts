@@ -10,11 +10,15 @@ export class Quiz {
   module_id: Types.ObjectId;
 
   @Prop({ type: [{ question: String, options: [String], correctAnswer: String }], required: true })
-  questions: Array<{
+  questionsPool: Array<{
     question: string;
     options: string[];
     correctAnswer: string;
+    difficulty: string;
   }>;
+
+  @Prop({ type: Number, required: true })
+  numberOfQuestions: number;
 }
 
 export const QuizSchema = SchemaFactory.createForClass(Quiz);

@@ -3,7 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Progress, ProgressDocument } from './progress.schema';
 import { isIdValid } from 'src/helper';
-import { AuthService } from 'src/auth/auth.service';
+import { AuthService } from '../auth/auth.service';
 import { CourseService } from 'src/course/course.service';
 import { UserService } from 'src/user/user.service';
 import { Course, CourseDocument } from 'src/course/course.schema';

@@ -7,6 +7,7 @@ import { isIdValid } from 'src/helper';
 import * as path from 'path';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import * as fs from 'fs';
+import { CourseDocument } from 'src/course/course.schema';
 
 @Injectable()
 export class ModuleService {
@@ -85,6 +86,10 @@ export class ModuleService {
     if (!result) {
       throw new NotFoundException(`Module with ID "${id}" not found`);
     }
+  }
+
+  async findByCourse(id: string): Promise<Module[]> {
+    return await this.moduleModel.find({course_id: id}).exec();
   }
 
   /**
