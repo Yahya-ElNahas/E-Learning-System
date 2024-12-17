@@ -15,6 +15,9 @@ export class Module {
   @Prop({ required: true })
   content: string;
 
+  @Prop({ required: true })
+  isOutdated: boolean;
+
   @Prop({
     type: [
       {

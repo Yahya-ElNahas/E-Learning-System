@@ -28,6 +28,13 @@ export default function SideBarComponent({courses = false, communication = false
                             </p>
                         </Link>
                     </li>
+                    <li className="mb-4">
+                        <Link href="/student/instructors">
+                            <p className="block py-2 px-4 rounded-[10px] cursor-pointer text-[#EEEEEE] hover:bg-[#1E3E62] dark:hover:bg-[#222831] transition-all duration-300">
+                                Instructors
+                            </p>
+                        </Link>
+                    </li>
                 </ul>
 
                 {!(courses || communication || progress) && <Link href="/account">

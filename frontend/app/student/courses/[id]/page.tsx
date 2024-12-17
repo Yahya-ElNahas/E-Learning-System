@@ -9,6 +9,7 @@ interface Module {
   _id: string;
   title: string;
   content: string;
+  isOutdated: boolean;
 }
 
 const CourseDetails: React.FC<{ params: Promise<{ id: string }> }> = ({ params }) => {
@@ -26,8 +27,9 @@ const CourseDetails: React.FC<{ params: Promise<{ id: string }> }> = ({ params }
           },
           credentials: "include",
         });
-        const data = await response.json();
-        setModules(data);
+        const data: Module[] = await response.json();
+        const mod = data.filter((module) => !module.isOutdated)
+        setModules(mod);
       } catch (error) {
         console.error("Error fetching course details:", error);
       }
@@ -67,7 +69,7 @@ const CourseDetails: React.FC<{ params: Promise<{ id: string }> }> = ({ params }
       <div className="flex-1 p-6">
         <div className="space-y-6">
           {modules.map((module) => (
-            <ModuleCardComponent module={module} key={module._id} />
+            <ModuleCardComponent module={module} key={module._id} courseId={unwrappedParams.id} />
           ))}
         </div>
       </div>

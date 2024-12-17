@@ -20,8 +20,9 @@ export async function fetchAllCourses() {
 }
 
 const StudentEnrollment: NextPage = () => {
-  const [availableCourses, setAvailableCourses] = useState<{ _id: string; title: string; description: string }[]>([]);
+  const [courses, setCourses] = useState<{ _id: string; title: string; description: string }[]>([]);
   const [loading, setLoading] = useState(true);
+    const [searchTerm, setSearchTerm] = useState(""); 
 
   const fetchCourses = async () => {
     try {
@@ -31,7 +32,7 @@ const StudentEnrollment: NextPage = () => {
       const available = all.filter(
         (course: { _id: string }) => !enrolled.some((enrolledCourse: { _id: string }) => enrolledCourse._id === course._id)
       );
-      setAvailableCourses(available);
+      setCourses(available);
     } catch (error) {
       console.error("Error fetching courses:", error);
     } finally {
@@ -43,6 +44,11 @@ const StudentEnrollment: NextPage = () => {
     fetchCourses();
   }, []);
 
+  const availableCourses = courses.filter((course) =>
+    course.title.toLowerCase().includes(searchTerm.toLowerCase()) 
+    || course.description.toLowerCase().includes(searchTerm.toLowerCase()) 
+  );
+
   return (
     <div className="flex min-h-screen bg-gray-100 dark:bg-gray-900">
       <SideBarComponent courses={true} student={true} />
@@ -53,6 +59,16 @@ const StudentEnrollment: NextPage = () => {
             <button className="bg-[#2f3d52] text-white px-4 py-2 rounded-md hover:bg-[#1b2027] transition-all duration-300 shadow-md">
               <Link href="/student/courses">Go to My Courses</Link>
             </button>
+          </div>
+
+          <div className="mb-6">
+            <input
+              type="text"
+              placeholder="Search for courses..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full p-3 rounded-md bg-gray-100 dark:bg-[#1c1f24] text-gray-900 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-[#008170]"
+            />
           </div>
 
           {loading ? (

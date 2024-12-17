@@ -69,8 +69,9 @@ const Login: NextPage = () => {
     setErrorMessage('');
 
     try {
-        login(email, password, router);
+        await login(email, password, router);
     } catch (error: any) {
+      if(error.message === "email_verification_required") router.push('/verify-email');
       setErrorMessage(error.message || 'An error occurred during login.');
     } finally {
       setLoading(false);
@@ -83,9 +84,6 @@ const Login: NextPage = () => {
         <h1 className="text-2xl font-bold text-center mb-6 text-gray-700 dark:text-gray-200">
           Login Page
         </h1>
-        {errorMessage && (
-          <p className="text-red-500 text-center mb-4">{errorMessage}</p>
-        )}
         <form onSubmit={handleSubmit}>
           <label
             htmlFor="email"
@@ -124,6 +122,9 @@ const Login: NextPage = () => {
             Login
           </button>
         </form>
+        {errorMessage && (
+          <p className="text-red-500 text-center mb-4">{errorMessage}</p>
+        )}
         <div className="mt-4 text-center">
           <p className="text-gray-600 dark:text-gray-300">
             Don't have an account?{" "}
