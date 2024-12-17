@@ -1,3 +1,4 @@
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 interface Module {
@@ -8,10 +9,16 @@ interface Module {
 
 interface Props {
     module: Module;
+    courseId: string
 }
 
-export default function ModuleCardComponent({module}: Props) {
-    const [quiz, setQuiz] = useState();
+export default function ModuleCardComponent({module, courseId}: Props) {
+
+    if(!courseId) throw new Error('Course ID should be provided');
+
+    const [quizId, setQuizId] = useState<string>('');
+
+    const router = useRouter();
 
     useEffect(() => {
         const fetchQuiz = async () => {
@@ -25,14 +32,18 @@ export default function ModuleCardComponent({module}: Props) {
                 });
                 try {
                     const data = await response.json();
-                    if(data) setQuiz(data);
+                    if(data) setQuizId(data._id);
                 } catch(e) {}
             } catch(e) {
                 console.error(e);
             }
         }
         fetchQuiz();
-    }, [])
+    }, []);
+
+    const takeQuiz = async () => {
+        router.push(`/student/courses/quiz/${quizId}`)
+    }
 
 
     return (
@@ -40,9 +51,11 @@ export default function ModuleCardComponent({module}: Props) {
           key={module._id}
           className="bg-white dark:bg-[#222831] p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 relative"
         >
-          {quiz && (
+          {(quizId) && (
             <div className="absolute top-4 right-4">
-              <button className="bg-[#C63C51] text-white py-2 px-4 rounded-md hover:bg-[#6e222e] transition-all duration-300">
+              <button className="bg-[#C63C51] text-white py-2 px-4 rounded-md hover:bg-[#6e222e] transition-all duration-300"
+              onClick={takeQuiz}
+              >
                 Take Quiz
               </button>
             </div>
