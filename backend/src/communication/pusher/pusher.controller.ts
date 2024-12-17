@@ -1,14 +1,17 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Body, Controller, HttpException, HttpStatus, Inject, Post, UnauthorizedException } from '@nestjs/common';
+import { Body, Controller, Get, HttpException, HttpStatus, Inject, Param, Post, Req, UnauthorizedException, UseGuards } from '@nestjs/common';
 import { PusherService } from './pusher.service';
 import { ChatService } from '../chat/chat.service';
 import { UserDocument } from '../../user/user.schema';
 import { ChatDocument } from '../chat/chat.schema';
-import { from } from 'rxjs';
+import * as jwt from 'jsonwebtoken';
+
 import { UserService } from '../../user/user.service';
-import { Types } from 'mongoose';
-import { channel } from 'diagnostics_channel';
+import { Request, Response } from 'express';
+import { waitForDebugger } from 'inspector';
+
+
 
 @Controller('chat')
 export class PusherController {
@@ -31,53 +34,102 @@ export class PusherController {
     }).format(date);
   }
 
+  private extractTokenData(token: string) {
+    try {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      return decoded as { id: string; name: string };
+    } catch (err) {
+      throw new HttpException('Invalid token', HttpStatus.UNAUTHORIZED);
+    }
+  }
+
+  @Get('test')
+  async g(@Req() req: Request) {
+    const token = req.cookies['verification_token'];
+
+    if (!token) {
+      return { status: 'Error', message: 'Token not provided' };
+    }
+
+    try {
+      // Verify and decode the token
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+      // Extract ID and name from the token
+      const { id, name } = decoded as { id: string; name: string };
+
+      // console.log('Decoded Token:', decoded);
+
+      return { token };
+    } catch (err) {
+      console.error('Invalid token:', err.message);
+      return { status: 'Error', message: 'Invalid token' };
+    }
+  }
   @Post('PrivateChat')
   async PrivateChat(
-    @Body('studentName') studentName: string,
+    @Req() req: Request,
     @Body('instructorName') instructorName: string,
     @Body('message') message: string,
   ) {
-    if (
-      !studentName ||
-      typeof studentName !== 'string' ||
-      !instructorName ||
-      typeof instructorName !== 'string'
-    ) {
-      return { status: 'Error', message: 'Invalid channel name !!' };
+    const token = req.cookies['verification_token'];
+    const { id: senderId } = this.extractTokenData(token);
+  
+    const student = await this.userService.findById(senderId);
+  
+    if (!student) {
+      throw new HttpException(`User with ID ${senderId} does not exist.`, HttpStatus.NOT_FOUND);
     }
-
-    const channelName = `${studentName.trim().toLowerCase()}_${instructorName.trim().toLowerCase()}`;
+  
+    const studentName = student.name;
+  
+    if (!instructorName) {
+      return { status: 'Error', message: 'Instructor name is required' };
+    }
+  
+    // Generate channel name by sorting names alphabetically
+    const channelName = [studentName.trim().toLowerCase(), instructorName.trim().toLowerCase()]
+      .sort()
+      .join('_');
+  
+    console.log(channelName);
+  
     await this.pusherService.trigger(channelName, 'message', {
       sender: studentName,
       message,
     });
-    const isGroupMessage = false;
+  
+    const instructor = await this.userService.findByName(instructorName);
+  
+    if (!instructor[0]) {
+      throw new HttpException(`User with name ${instructorName} does not exist.`, HttpStatus.NOT_FOUND);
+    }
+    const doExists = await this.chatService.findByChannel(channelName)
+    if(!doExists){
+      const chat = (await this.chatService.createNewChat({
+        sender_name: studentName,
+        recipient_name: instructorName,
+        message,
+        channel: channelName,
+        isGroupMessage: false,
+      })) as ChatDocument;
+      chat;
+      return {
+        status : "channel created !",
+        channel: channelName
+      }
+    }
 
-    const user1 = await this.userService.findByName(studentName)
-    const user2 = await this.userService.findByName(instructorName)
+    const data = {message : message , sender_name: studentName, date : this.formatDate(new Date())}
 
-    if(!user1[0]){
-      throw new HttpException(`this user with ${studentName} does not exist.`, HttpStatus.NOT_FOUND);
-     }
-     if(!user2[0]){
-      throw new HttpException(`this user with ${instructorName} does not exist.`, HttpStatus.NOT_FOUND);
-     }
-
-    const chat = (await this.chatService.createChat({
-      sender_name: studentName,
-      recipient_name: instructorName,
-      message,
-      channel : channelName,
-      isGroupMessage,
-    })) as ChatDocument;
-
-    chat;
+    await this.chatService.updateExistingChat(channelName,data)
 
     return {
       status: 'Private message sent successfully!',
       channel: channelName,
     };
   }
+  
 
   @Post('join')
   async JoinChat(
@@ -190,4 +242,18 @@ async CreateGroup(
         res
       return res;
     }
+    @Get('getAllUserChats')
+    async getAllUserChats(
+      @Req() req: Request
+    ){
+      const token = req.cookies['verification_token'];
+      const { id: senderId } = this.extractTokenData(token);
+      const student = await this.userService.findById(senderId);
+      if (!student) {
+        throw new HttpException(`User with ID ${senderId} does not exist.`, HttpStatus.NOT_FOUND);
+      }
+      const studentName = student.name.toString();
+      const res = await this.chatService.findSenderMessgae(studentName)
+      return res
+     }
   }

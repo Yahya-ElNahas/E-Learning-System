@@ -25,9 +25,6 @@ export default function NavbarComponent({ courses = true }) {
                     <Button as={Link} color="primary" href="/register" variant="flat">
                         Sign Up
                     </Button>
-                    <Button as={Link} color="primary" href="/MessageBox" variant="flat">
-                        chat
-                    </Button>
                 </NavbarItem>
             </NavbarContent>
         </Navbar>
