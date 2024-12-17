@@ -1,18 +1,72 @@
 /* eslint-disable prettier/prettier */
-import { Controller, Get, Post, Body, Param, Patch, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Patch, Delete, UseGuards, Req, NotFoundException, Res, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { UserService } from './user.service';
-import { UserDocument } from './user.schema';
+import { User, UserDocument } from './user.schema';
 import { Role } from '../auth/reflectors';
+import { Request, Response } from 'express';
 import { RolesGuard, JwtAuthGuard } from '../auth/guards'; 
 import { Role as UserRole } from './user.schema';
+import { AuthService } from 'src/auth/auth.service';
+import { Model } from 'mongoose';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
 
 @Controller('users')
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(private readonly userService: UserService,
+    private readonly authService: AuthService
+
+  
+      
+  ) {}
 
   @Post()
   async create(@Body() body: { email: string; username: string; password: string; role: string; isVerified: boolean }): Promise<UserDocument> {
     return this.userService.create(body);
+  }
+  @Get('profile/details')
+  @UseGuards(JwtAuthGuard)
+  async getProfileDetails(
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<UserDocument | null> {
+    const token = req.cookies['verification_token']; 
+    const userId = this.authService.GetIdFromToken(token); 
+    return this.userService.findById(userId); 
+  }
+  @Patch('profile/details')
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(
+    FileInterceptor('profilePicture', {
+      storage: diskStorage({
+        destination: './uploads/profile-pictures',
+        filename: (req, file, callback) => {
+          callback(null, `${Date.now()}-${file.originalname}`);
+        },
+      }),
+    })
+  )
+  async updateProfile(
+    @Body() updateData: Partial<User>,
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response,
+    @UploadedFile() profilePicture: Express.Multer.File
+  ) {
+    // Extract user ID from the token
+    const token = req.cookies['verification_token'];
+    const userId = this.authService.GetIdFromToken(token);
+
+    // If a file is uploaded, add its URL to the update data
+    if (profilePicture) {
+      updateData.profile_picture_url = `/uploads/profile-pictures/${profilePicture.filename}`;
+    }
+
+    // Update user data
+    const updatedUser = await this.userService.updateUser(userId, updateData);
+
+    // Remove sensitive information before returning
+    const { password, otp, ...userWithoutSensitiveInfo } = updatedUser.toObject();
+    return userWithoutSensitiveInfo;
   }
 
   @Patch(':id')
@@ -56,13 +110,6 @@ export class UserController {
   @Role(UserRole.ADMIN)
   async findAll(): Promise<UserDocument[]> {
     return this.userService.findAll();
-  }
-
-  @Get(':id')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Role(UserRole.ADMIN)
-  async findOne(@Param('id') id: string): Promise<UserDocument> {
-    return this.userService.findById(id);
   }
 
   @Get('email/:email')
