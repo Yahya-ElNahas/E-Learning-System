@@ -13,7 +13,6 @@ const CourseDetails: React.FC<{ params: Promise<{ id: string }> }> = ({ params }
   const unwrappedParams = use(params);
   const [modules, setModules] = useState<Module[]>([]);
   const [course, setCourse] = useState<{ title: string }>({ title: "" });
-  const router = useRouter();  // Initialize useRouter
 
   useEffect(() => {
     const fetchCourseData = async () => {
