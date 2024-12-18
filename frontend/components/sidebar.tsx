@@ -55,7 +55,7 @@ export default function SideBarComponent({courses = false, communication = false
                         </Link>
                     </li>
                     <li className="mb-4">
-                        <Link href="/instructors/students">
+                        <Link href="/instructor/students">
                             <p className="block py-2 px-4 rounded-[10px] cursor-pointer text-[#EEEEEE] hover:bg-[#1E3E62] dark:hover:bg-[#222831] transition-all duration-300">
                                 Students
                             </p>

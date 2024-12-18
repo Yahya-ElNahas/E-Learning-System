@@ -22,6 +22,7 @@ const UpdateProfile = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
   const [successMessage, setSuccessMessage] = useState('');
+  const [role, setRole] = useState('');
   const router = useRouter();
 
   useEffect(() => {
@@ -42,6 +43,7 @@ const UpdateProfile = () => {
         setUserData(data);
         setUsername(data.username);
         setEmail(data.email);
+        setRole(data.role)
       } catch (err) {
         console.error('Error fetching user data:', err);
         router.push('/login');
@@ -79,7 +81,7 @@ const UpdateProfile = () => {
       const updatedUser = await response.json();
       setUserData(updatedUser);
       setSuccessMessage('Profile updated successfully');
-      router.push('/student');
+      router.push(`/${role}`);
   
       // Notify the user to verify the email if it's changed
       if (updatedUser.email !== userData?.email) {

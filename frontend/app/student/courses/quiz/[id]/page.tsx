@@ -94,7 +94,6 @@ const Quiz: NextPage = () => {
         setDifficulty("intermediate");
     } else setDifficulty('beginner');
 
-
     if (questionsAsked.length >= quizData.numberOfQuestions) {
       finishQuiz()
       setIsQuizComplete(true);
@@ -105,15 +104,18 @@ const Quiz: NextPage = () => {
   };
 
   const finishQuiz = async () => {
-    if(isQuizComplete) return;
-    
+    if (isQuizComplete) return;
+  
+    const finalScore = selectedAnswer === currentQuestion.correctAnswer
+      ? score + 1 
+      : score;
+  
     const finalAnswers = questionsAsked.map((question, index) => ({
       question: question.question,
-      correctAsnwer: question.correctAnswer,
+      correctAnswer: question.correctAnswer,
       answer: answers[index],
     }));
-
-
+  
     try {
       const response = await fetch(`http://localhost:3000/responses/student/quiz`, {
         method: "POST",
@@ -124,17 +126,17 @@ const Quiz: NextPage = () => {
         body: JSON.stringify({
           quiz_id: quizId,
           answers: finalAnswers,
-          score: score
-        })
+          score: finalScore, // Use the calculated score
+        }),
       });
-
+  
       if (!response.ok) {
-        throw new Error("Failed to fetch Response");
+        throw new Error("Failed to post response");
       }
     } catch (error) {
-      console.error("Error fetching Response:", error);
+      console.error("Error posting response:", error);
     }
-  }
+  };  
 
   if (!quizData) {
     return (
