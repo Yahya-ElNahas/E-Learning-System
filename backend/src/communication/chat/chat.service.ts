@@ -28,38 +28,33 @@ export class ChatService {
     }).format(date);
   }
   
-  async createChat({ sender_name,recipient_name, message, channel ,isGroupMessage }: any) {
+  async createNewChat({ sender_name, recipient_name, message, channel, isGroupMessage }: any) {
     const data = {
       message,
       sender_name,
       date: this.formatDate(new Date()),
     };
-    const existingChat = await this.chatModel.findOne({
+  
+    const chat = new this.chatModel({
       sender: sender_name,
       recipient: recipient_name,
+      message: [data],
+      channel,
       isGroupMessage,
     });
-
-    if(!existingChat){
-      const chat = new this.chatModel({
-        sender: sender_name,
-        recipient: recipient_name,
-        message : [data],
-        channel,
-        isGroupMessage,
-
-      });
-      return chat.save();
-    }
-
-    const id = existingChat._id.toString()
-   return  await this.chatModel.findByIdAndUpdate(id,
-        { $push:{ message: data } },  
-        { new: true, useFindAndModify: false } 
-        
-      )
   
+    return chat.save();
   }
+
+  async updateExistingChat(channel: string, messageData: any) {
+    return await this.chatModel.findOneAndUpdate(
+      { channel }, // Find the chat by the channel field
+      { $push: { message: messageData } }, // Push new message to the message array
+      { new: true, useFindAndModify: false } // Return the updated document
+    );
+  }
+  
+  
   
   async findAllChats() {
     return this.chatModel.find().exec();
@@ -206,5 +201,15 @@ export class ChatService {
       return true
     }
     return false
+  }
+
+  async findByChannel(name : string){
+    return await this.chatModel.findOne({channel : name})
+  }
+
+  async findSenderMessgae(name : string){
+    const sender =await this.chatModel.find({sender : name})
+    const recipient = await this.chatModel.find({recipient : name})
+    return [...sender, ...recipient];
   }
 }

@@ -10,7 +10,7 @@ const App: NextPage = () => {
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    fetch("http://localhost:3000/courses")
+    fetch("http://localhost:8008/courses")
       .then((response) => response.json())
       .then((data) => {
         setCourses(data);

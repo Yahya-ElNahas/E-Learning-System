@@ -10,7 +10,6 @@ import { Course, CourseDocument, Difficulty } from './course.schema';
 import { isIdValid } from '../helper';
 import { AuthService } from 'src/auth/auth.service';
 
-
 @Injectable()
 export class CourseService {
   constructor(
@@ -72,11 +71,18 @@ export class CourseService {
     return updatedCourse;
   }
 
-  // Delete a course
+  // "Remove" a course (set isAvailable to false)
   async remove(id: string): Promise<void> {
     isIdValid(id);
-    const result = await this.courseModel.findByIdAndDelete(id).exec();
-    if (!result) {
+
+    // Update isAvailable field to false
+    const updatedCourse = await this.courseModel.findByIdAndUpdate(
+      id,
+      { isAvailable: false },
+      { new: true } // Return the updated document
+    ).exec();
+
+    if (!updatedCourse) {
       throw new NotFoundException(`Course with ID ${id} not found`);
     }
   }
@@ -103,5 +109,4 @@ function fixDifficultyLevel(difficulty: string): Difficulty {
       return Difficulty.ADVANCED;
   }
   throw new BadRequestException(`Invalid difficulty_level: ${difficulty}`);
-
 }
