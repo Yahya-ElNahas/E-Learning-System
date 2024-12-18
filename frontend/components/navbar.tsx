@@ -2,7 +2,7 @@ import { Navbar, NavbarContent, NavbarItem, Link, Button, NavbarBrand } from "@n
 import '@/styles/globals.css';
 
 
-export default function NavbarComponent({ courses = true }) {
+export default function NavbarComponent({ courses = false }) {
     return (
         <Navbar>
             <NavbarBrand>

@@ -10,7 +10,7 @@ const App: NextPage = () => {
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    fetch("http://localhost:8008/courses")
+    fetch("http://localhost:3000/courses")
       .then((response) => response.json())
       .then((data) => {
         setCourses(data);
@@ -28,7 +28,7 @@ const App: NextPage = () => {
 
   return (
     <div className="bg-gray-200">
-      <NavbarComponent index={true} />
+      <NavbarComponent />
       <div className="flex justify-center items-center">
         <h1 className="text-5xl font-extrabold font-sans text-blue-900 tracking-wide">
           Courses

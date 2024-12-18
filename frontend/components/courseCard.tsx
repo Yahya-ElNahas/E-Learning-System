@@ -23,7 +23,7 @@ export default function CourseCardComponent({ course, enrollment = false, studen
   const handleCardClick = () => {
     if (student) {
       router.push(`/student/courses/${course._id}`); 
-    }
+    } else router.push(`/instructor/courses/${course._id}`)
   };
 
   const enroll = async () => {
@@ -59,7 +59,7 @@ export default function CourseCardComponent({ course, enrollment = false, studen
     );
   }
 
-  if (student) {
+  if (student || instructor) {
     return (
       <div
         className="bg-white dark:bg-[#222831] p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 cursor-pointer"

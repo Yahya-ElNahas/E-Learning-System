@@ -42,7 +42,7 @@ const InstructorCourses: React.FC = () => {
           <h1 className="text-3xl font-bold">My Courses</h1>
           <Link href="/instructor/courses/create">
             <button className="bg-[#2f3d52] text-white px-4 py-2 rounded-md">
-              Create Course
+              Create and Edit Courses
             </button>
           </Link>
         </div>
@@ -52,7 +52,7 @@ const InstructorCourses: React.FC = () => {
         ) : courses.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {courses.map((course) => (
-              <CourseCardComponent course={course} key={course._id} />
+              <CourseCardComponent course={course} key={course._id} instructor={true} />
             ))}
           </div>
         ) : (
