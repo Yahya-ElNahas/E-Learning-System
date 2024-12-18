@@ -50,7 +50,7 @@ const Students: NextPage = () => {
       <div className="flex-1 p-8 bg-gray-800 text-gray-200">
         {/* Header Section */}
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-bold text-gray-700 dark:text-gray-200">Instructors</h1>
+          <h1 className="text-3xl font-bold text-gray-700 dark:text-gray-200">Students</h1>
         </div>
 
         {/* Search Bar */}
@@ -93,7 +93,7 @@ const Students: NextPage = () => {
             ))}
           </div>
         ) : (
-          <p className="text-gray-700 dark:text-gray-300">No instructors found.</p>
+          <p className="text-gray-700 dark:text-gray-300">No student found.</p>
         )}
       </div>
     </div>
