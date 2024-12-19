@@ -9,10 +9,11 @@ interface Module {
 
 interface Props {
     module: Module;
-    courseId: string
+    courseId: string;
+    instructor?: boolean;
 }
 
-export default function ModuleCardComponent({module, courseId}: Props) {
+export default function ModuleCardComponent({module, courseId, instructor = false}: Props) {
 
     if(!courseId) throw new Error('Course ID should be provided');
 
@@ -51,12 +52,30 @@ export default function ModuleCardComponent({module, courseId}: Props) {
           key={module._id}
           className="bg-white dark:bg-[#222831] p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 relative"
         >
-          {(quizId) && (
+          {(quizId) && !(instructor) && (
             <div className="absolute top-4 right-4">
               <button className="bg-[#C63C51] text-white py-2 px-4 rounded-md hover:bg-[#6e222e] transition-all duration-300"
               onClick={takeQuiz}
               >
                 Take Quiz
+              </button>
+            </div>
+          )}
+          {(quizId) && (instructor) && (
+            <div className="absolute top-4 right-4">
+              <button className="bg-[#C63C51] text-white py-2 px-4 rounded-md hover:bg-[#6e222e] transition-all duration-300"
+              onClick={takeQuiz}
+              >
+                Edit Quiz
+              </button>
+            </div>
+          )}
+          {!(quizId) && (instructor) && (
+            <div className="absolute top-4 right-4">
+              <button className="bg-[#C63C51] text-white py-2 px-4 rounded-md hover:bg-[#6e222e] transition-all duration-300"
+              onClick={takeQuiz}
+              >
+                Create Quiz
               </button>
             </div>
           )}

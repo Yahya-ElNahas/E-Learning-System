@@ -27,7 +27,7 @@ const StudentEnrollment: NextPage = () => {
   const fetchCourses = async () => {
     try {
       const enrolled = await fetchStudentCourses();
-      const all = await fetchAllCourses();
+      const all = (await fetchAllCourses()).filter((course: { isAvailable: any; }) => course.isAvailable);
 
       const available = all.filter(
         (course: { _id: string }) => !enrolled.some((enrolledCourse: { _id: string }) => enrolledCourse._id === course._id)

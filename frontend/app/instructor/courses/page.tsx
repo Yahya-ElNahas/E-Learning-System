@@ -1,4 +1,5 @@
 "use client";
+
 import React, { useState, useEffect } from "react";
 import SideBarComponent from "@/components/sidebar";
 import Link from "next/link";
@@ -17,7 +18,7 @@ export async function fetchInstructorCourses() {
 
 const InstructorCourses: React.FC = () => {
   const [courses, setCourses] = useState<
-    { _id: string; title: string; description: string; isAvailable?: boolean }[]
+    { _id: string; title: string; description: string; isAvailable?: boolean; enrolledNo: number; completedNo: number; modulesNo: number; avgScore?: string }[]
   >([]);
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState<string | null>(null);
@@ -36,7 +37,29 @@ const InstructorCourses: React.FC = () => {
     };
 
     fetchCourses();
-  }, []);
+  }, []); // Fetch courses on component mount
+
+  useEffect(() => {
+    if (courses.length > 0) {
+      fetchAvgScores();
+    }
+  }, [courses]); // Trigger fetchAvgScores when courses are updated
+
+  const fetchAvgScores = async () => {
+    for (const course of courses) {
+      try {
+        const response = await fetch(`http://localhost:3000/responses/${course._id}/avgScore`, {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+        });
+        const data = await response.json();
+        course.avgScore = data.average;
+      } catch (err) {
+        console.error(`Error fetching average score for course ${course._id}:`, err);
+      }
+    }
+  };
 
   return (
     <div className="flex min-h-screen bg-gray-100 dark:bg-gray-900 relative">
@@ -44,7 +67,6 @@ const InstructorCourses: React.FC = () => {
       <div className="flex-1 p-8 bg-gray-800 text-gray-200">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-3xl font-bold">My Courses</h1>
-          {/* Move "Create and Edit Courses" button to top-right */}
           <Link href="/instructor/courses/create">
             <button className="bg-[#2f3d52] text-white px-4 py-2 rounded-md shadow-lg">
               Create and Edit Courses
@@ -63,11 +85,9 @@ const InstructorCourses: React.FC = () => {
                 key={course._id}
                 className={`relative rounded-lg shadow-md p-4 ${
                   course.isAvailable ? "bg-gray-700" : "bg-gray-700 text-gray-200"
-                } flex flex-col justify-between h-full`} // Added flexbox and height
+                } flex flex-col justify-between h-full`}
               >
-                {/* Course Name and Unavailable label aligned to the right */}
                 <div className="flex justify-between items-center">
-                  {/* Only show "Unavailable" label if course is not available */}
                   {!course.isAvailable && (
                     <div className="flex items-center gap-2 text-yellow-300">
                       <svg
@@ -89,7 +109,6 @@ const InstructorCourses: React.FC = () => {
                   )}
                 </div>
 
-                {/* Course content remains inside the card */}
                 <CourseCardComponent course={course} instructor={true} />
               </div>
             ))}

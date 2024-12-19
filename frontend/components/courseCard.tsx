@@ -6,6 +6,11 @@ interface Course {
   title: string;
   description: string;
   _id: string;
+  completion_percentage?: number;
+  enrolledNo?: number;
+  completedNo?: number;
+  modulesNo?: number;
+  avgScore?: string;
 }
 
 interface CardComponentProps {
@@ -66,6 +71,15 @@ export default function CourseCardComponent({ course, enrollment = false, studen
         onClick={handleCardClick} 
       >
         <h2 className="text-xl font-bold text-gray-700 dark:text-gray-200 mb-2">{course.title}</h2>
+        <p>Completion Percentage: {course.completion_percentage}%</p>
+        <p>Modules: {course.modulesNo}</p>
+        {instructor && (
+          <>
+            <p>Enrolled Students: {course.enrolledNo}</p>
+            <p>Completed Students: {course.completedNo}</p>
+            <p>Average Score: {course.avgScore}</p>
+          </>
+        )}
       </div>
     );
   }

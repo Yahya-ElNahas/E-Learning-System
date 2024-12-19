@@ -85,6 +85,9 @@ export default class CourseController {
       category?: string;
       difficulty_level?: Difficulty;
       created_by?: string;
+      enrolledNo?: number;
+      completedNo?: number;
+      modulesNo?: number;
     },
   ): Promise<Course> {
     return this.courseService.update(id, body);

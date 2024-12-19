@@ -35,6 +35,8 @@ export class ProgressService {
     isIdValid(course_id);
     const newBody = {user_id, course_id, completion_percentage: 0}
     const newProgress = new this.progressModel(newBody);
+    const courseEnrolled: number = (await this.courseService.findOne(course_id)).enrolledNo;
+    this.courseService.update(course_id, {enrolledNo: courseEnrolled + 1});
     const email = (await this.userService.findById(user_id)).email;
     const courseTitle = (await this.courseService.findOne(course_id)).title;
     this.authService.sendMail(email, "Course Enrollment", "You Have Successfully Enrolled in the " + courseTitle + " Course");
@@ -62,26 +64,45 @@ export class ProgressService {
 
   async remove(id: string): Promise<void> {
     isIdValid(id);
+    const progress = await this.progressModel.findById(id);
     const result = await this.progressModel.findByIdAndDelete(id).exec();
+    const courseEnrolled = (await this.courseService.findOne(progress.course_id.toString())) as CourseDocument;
+    this.courseService.update(courseEnrolled._id.toString(), {enrolledNo: courseEnrolled.enrolledNo - 1, completedNo: courseEnrolled.completedNo + 1});
     if (!result) {
       throw new NotFoundException(`Progress with ID ${id} not found`);
     }
   }
+
+  async findByStudent(id: string): Promise<Progress> {
+    return await this.progressModel.findOne({user_id: id}).exec();
+  }
   
-  async findByStudent(token: string): Promise<Course[]> {
-    const studentId = this.authService.GetIdFromToken(token);
+  async findCourseByStudent(token: string, isToken: boolean): Promise<any[]> {
+    const studentId = isToken ? this.authService.GetIdFromToken(token) : token;
   
     const progresses: ProgressDocument[] = await this.progressModel.find({ user_id: studentId });
   
-    const courses: Course[] = [];
+    const courses: any[] = [];
     for (const progress of progresses) {
       const course = await this.courseService.findOne(progress.course_id.toString());
       if (course) {
-        courses.push(course);
+        courses.push({
+          _id: progress.course_id,
+          title: course.title,
+          description: course.description,
+          category: course.category,
+          difficulty_level: course.difficulty_level,
+          created_by: course.created_by,
+          isAvailable: course.isAvailable,
+          keywords: course.keywords,
+          completion_percentage: progress.completion_percentage
+        });
       }
     }
   
     return courses;
   }
+  
+  
   
 }

@@ -1,7 +1,8 @@
 import Link from "next/link";
 import '@/styles/globals.css'
 
-export default function SideBarComponent({courses = false, communication = false, progress = false, student = false, instructor = false, title = "Student Dashboard" }) {
+export default function SideBarComponent({courses = false, communication = false, progress = false, student = false, instructor = false }) {
+    const title = student ? "Student Dashboard" : "Instructor Dashboard";
     return (
         <>
             <div className="w-64 bg-blue-800 text-[#31363F] p-6 dark:bg-gray-900 flex flex-col">

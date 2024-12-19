@@ -44,6 +44,21 @@ export default class ResponseModel {
     return this.responseService.findOne(id);
   }
 
+  @Get(':courseId/avgScore')
+  @UseGuards(JwtAuthGuard)
+  async averageScoresByCourse(@Param('courseId') id: string): Promise<{average: string}> {
+    return this.responseService.averageScoresByCourse(id);
+  }
+
+  @Get('student/avgScore/all')
+  @UseGuards(JwtAuthGuard)
+  async averageScoreByStudent(
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Resp,
+  ): Promise<{average: string}> {
+    return this.responseService.averageScoreByStudent(req.cookies['verification_token']);
+  }
+  
   /**
    * Create a new response.
    * @param data Partial response object.

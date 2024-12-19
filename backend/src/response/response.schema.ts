@@ -14,9 +14,9 @@ export class Response {
 
   @Prop({ type: [{ question: String, correctAnswer: String, answer: String }], required: true })
   answers: Array<{
-    questionNumber: string;
+    question: string;
     correctAnswer: string;
-    answer: string;
+    answer: string; 
   }>;
 
   @Prop({ required: true })

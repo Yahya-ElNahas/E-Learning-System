@@ -72,7 +72,7 @@ const CourseDetails: React.FC<{ params: Promise<{ id: string }> }> = ({ params }
         <div className="space-y-4">
           {modules && modules.length > 0 ? (
             modules.map((module) => (
-              <ModuleCardComponent module={module} key={module._id} courseId={unwrappedParams.id} />
+              <ModuleCardComponent module={module} key={module._id} courseId={unwrappedParams.id} instructor={true} />
             ))
           ) : (
             <p>No modules found</p>

@@ -6,6 +6,7 @@ import { Role } from '../auth/reflectors';
 import { Role as UserRole } from '../user/user.schema';
 import { Request, Response } from 'express';
 import { Course } from 'src/course/course.schema';
+import { Progress } from './progress.schema';
 
 @Controller('progress')
 export class ProgressController {
@@ -14,7 +15,6 @@ export class ProgressController {
   @Get(':id')
   @UseGuards(JwtAuthGuard)
   async findOne(@Param('id') id: string) {
-    console.log(id)
     return this.progressService.findOne(id);
   }
 
@@ -49,11 +49,29 @@ export class ProgressController {
   @Get('student/courses')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Role(UserRole.STUDENT)
-  async findByStudent(
+  async findCoursesByStudent(
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
-  ): Promise<Course[]> {
-    return this.progressService.findByStudent(req.cookies['verification_token']);
+  ): Promise<any[]> {
+    return this.progressService.findCourseByStudent(req.cookies['verification_token'], true);
+  }
+
+  @Get('student/:studentId')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Role(UserRole.STUDENT)
+  async findByStudent(
+    @Param('studentId') id: string
+  ): Promise<Progress> {
+    return this.progressService.findByStudent(id);
+  }
+
+  @Get(':studentId/courses')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Role(UserRole.INSTRUCTOR)
+  async findCoursesByStudentId(
+    @Param('studentId') id: string
+  ): Promise<any[]> {
+    return this.progressService.findCourseByStudent(id, false);
   }
 
   @Get()

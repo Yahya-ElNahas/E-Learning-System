@@ -29,13 +29,20 @@ export class Course {
   @Prop({ type: Types.ObjectId, required: true })
   created_by: Types.ObjectId;
 
-
   @Prop({ type: Boolean, default: true })
   isAvailable: boolean;  
   
   @Prop({ type: [String], default: [] })
   keywords: string[];
   
+  @Prop({ type: Number, default: 0 })
+  enrolledNo: number; 
+
+  @Prop({ type: Number, default: 0 })
+  completedNo: number; 
+
+  @Prop({ type: Number, default: 0 })
+  modulesNo: number; 
 }
 
 export const CourseSchema = SchemaFactory.createForClass(Course);

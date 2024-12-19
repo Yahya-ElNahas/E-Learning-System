@@ -61,7 +61,7 @@ const CourseDetails: React.FC<{ params: Promise<{ id: string }> }> = ({ params }
 
   return (
     <div className="flex min-h-screen bg-gray-100 dark:bg-gray-900">
-      <SideBarComponent courses={true} student={true} title={course.title} />
+      <SideBarComponent courses={true} student={true} />
         <div className="flex-1 p-8 bg-gray-800 text-gray-200">
         <div className="flex-1">
 

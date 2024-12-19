@@ -22,7 +22,7 @@ const Quiz: NextPage = () => {
   const courseId = params.id?.slice(0, params.id.indexOf('.')+1);
   const quizId = params.id?.slice(params.id.indexOf('.')+1);
 
-  const [quizData, setQuizData] = useState<QuizData | null>(null);
+  const [quizData, setQuizData] = useState<QuizData>();
   const [currentQuestion, setCurrentQuestion] = useState<Question>({question: "", options: [], correctAnswer: "", difficulty: ""});
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [score, setScore] = useState(0);
@@ -106,9 +106,11 @@ const Quiz: NextPage = () => {
   const finishQuiz = async () => {
     if (isQuizComplete) return;
   
-    const finalScore = selectedAnswer === currentQuestion.correctAnswer
+    let finalScore = selectedAnswer === currentQuestion.correctAnswer
       ? score + 1 
       : score;
+
+      finalScore = quizData ? (finalScore / quizData.numberOfQuestions)*100 : 0;
   
     const finalAnswers = questionsAsked.map((question, index) => ({
       question: question.question,
@@ -126,7 +128,7 @@ const Quiz: NextPage = () => {
         body: JSON.stringify({
           quiz_id: quizId,
           answers: finalAnswers,
-          score: finalScore, // Use the calculated score
+          score: finalScore, 
         }),
       });
   

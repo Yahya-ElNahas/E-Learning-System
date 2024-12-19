@@ -3,14 +3,20 @@ import { BadRequestException, Injectable, NotFoundException } from '@nestjs/comm
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Response, ResponseDocument } from './response.schema';
-import { isIdValid } from '../helper'; // Helper to validate ObjectId
+import { isIdValid } from '../helper'; 
 import { AuthService } from 'src/auth/auth.service';
+import { QuizService } from 'src/quiz/quiz.service';
+import { ModuleService } from 'src/module/module.service';
+import { Quiz, QuizDocument } from 'src/quiz/quiz.schema';
+import { Module, ModuleDocument } from 'src/module/module.schema';
 
 @Injectable()
 export class ResponseService {
   constructor(
     @InjectModel(Response.name) private readonly responseModel: Model<ResponseDocument>,
     private readonly authService: AuthService,
+    private readonly quizService: QuizService,
+    private readonly moduleService: ModuleService,
   ) {}
 
   /**
@@ -100,5 +106,33 @@ export class ResponseService {
     body['user_id'] = user_id;
     const newResponse = new this.responseModel(body);
     return newResponse.save();
+  }
+
+  async averageScoresByCourse(course_id: string): Promise<{average: string}> {
+    const modules = (await this.moduleService.findByCourse(course_id)) as ModuleDocument[];
+    const quizzes: QuizDocument[] = [];
+    for(const module of modules) {
+      const quiz = (await this.quizService.findOneByModule(module._id.toString())) as QuizDocument;
+      quizzes.push(quiz);
+    }
+    
+    let score = 0, count = 0;
+    
+    for(const quiz of quizzes) {
+      const responses = await this.responseModel.find({quiz_id: quiz._id.toString()});
+      for(const response of responses) {
+        score += response.score;
+      }
+      count += responses.length;
+    }
+    return {average: (score / count).toFixed(2)};
+  }
+
+  async averageScoreByStudent(token: string): Promise<{average: string}> {
+    const user_id = this.authService.GetIdFromToken(token);
+    const responses = await this.responseModel.find({user_id});
+    let score = 0;
+    for(const res of responses) score += res.score;
+    return {average: (score / responses.length).toFixed(2)};
   }
 }

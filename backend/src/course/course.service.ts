@@ -56,6 +56,9 @@ export class CourseService {
       category?: string;
       difficulty_level?: string;
       created_by?: string;
+      enrolledNo?: number;
+      completedNo?: number;
+      modulesNo?: number;
     },
   ): Promise<Course> {
     isIdValid(id);

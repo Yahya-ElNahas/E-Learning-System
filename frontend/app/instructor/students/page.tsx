@@ -3,6 +3,7 @@ import { NextPage } from "next";
 import { useEffect, useState } from "react";
 import SideBarComponent from "@/components/sidebar";
 import "@/styles/globals.css";
+import { useRouter } from "next/navigation";
 
 export async function fetchInstructors() {
   const response = await fetch("http://localhost:3000/users/students/all", {
@@ -23,6 +24,8 @@ const Students: NextPage = () => {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState(""); 
 
+  const router = useRouter();
+
   const fetchAllStudents = async () => {
     try {
       const data = await fetchInstructors();
@@ -38,7 +41,6 @@ const Students: NextPage = () => {
     fetchAllStudents();
   }, []);
 
-  // Filter instructors based on search term
   const filteredInstructors = students.filter((student) =>
     student.name.toLowerCase().includes(searchTerm.toLowerCase())
     || student.email.toLowerCase().includes(searchTerm.toLowerCase())
@@ -53,7 +55,6 @@ const Students: NextPage = () => {
           <h1 className="text-3xl font-bold text-gray-700 dark:text-gray-200">Students</h1>
         </div>
 
-        {/* Search Bar */}
         <div className="mb-6">
           <input
             type="text"
@@ -64,13 +65,12 @@ const Students: NextPage = () => {
           />
         </div>
 
-        {/* Instructors List */}
         {loading ? (
-          <p className="text-gray-700 dark:text-gray-300">Loading instructors...</p>
+          <p className="text-gray-700 dark:text-gray-300">Loading Students...</p>
         ) : filteredInstructors.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 cursor-pointer">
             {filteredInstructors.map((instructor) => (
-              <div
+              <div onClick={() => router.push('/instructor/students/' + instructor._id)}
                 key={instructor._id}
                 className="bg-white dark:bg-[#222831] p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300"
               >
