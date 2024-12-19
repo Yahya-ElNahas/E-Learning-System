@@ -9,6 +9,7 @@ interface Module {
   _id: string;
   title: string;
   content: string;
+  createdAt: string; // Add createdAt field to Module interface
 }
 
 const CourseDetails: React.FC<{ params: Promise<{ id: string }> }> = ({ params }) => {
@@ -40,9 +41,11 @@ const CourseDetails: React.FC<{ params: Promise<{ id: string }> }> = ({ params }
           credentials: "include",
         });
         const data = await response.json();
-        setModules(data);
+        // Sort modules by creation date (newest first)
+        const sortedModules = data.sort((a: Module, b: Module) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+        setModules(sortedModules);
       } catch (error) {
-        console.error("Error fetching course data:", error);
+        console.error("Error fetching module data:", error);
       }
     };
 

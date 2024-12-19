@@ -84,9 +84,16 @@ export default function ModuleCardComponent({module, courseId, instructor = fals
             {module.title}
           </h2>
           <p className="text-gray-600 dark:text-gray-300 mb-4">{module.content}</p>
-          <button className="w-full bg-[#008170] text-white py-2 rounded-md hover:bg-[#005B41] transition-all duration-300">
+          {!instructor && <button className="w-full bg-[#008170] text-white py-2 rounded-md hover:bg-[#005B41] transition-all duration-300">
             Download Resources
-          </button>
+          </button>}
+          {instructor && (
+            <button className="w-full bg-[#008170] text-white py-2 rounded-md hover:bg-[#005B41] transition-all duration-300"
+            onClick={() => router.push(`/instructor/courses/${courseId}/module/${module._id}`)}
+            >
+              Edit
+            </button>
+          )}
         </div>
       );
       

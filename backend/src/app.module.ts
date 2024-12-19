@@ -45,6 +45,9 @@ import { Reply, ReplySchema } from './communication/forum/forum.schema';
 import { NoteController } from './note/note.controller';
 import { NoteService } from './note/note.service';
 
+import { MulterModule } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+
 
 
 
@@ -71,6 +74,15 @@ import { NoteService } from './note/note.service';
       signOptions: { expiresIn: process.env.JWT_EXPIRATION || '1h' },
     }),
     ScheduleModule.forRoot(),  // Add ScheduleModule to handle cron jobs
+    MulterModule.register({
+      storage: diskStorage({
+        destination: './uploads/modules', // Directory for storing files
+        filename: (req, file, callback) => {
+          const uniqueName = `${Date.now()}-${file.originalname}`;
+          callback(null, uniqueName);
+        },
+      }),
+    }),
   ],
   controllers: [
     QuizController,
@@ -97,7 +109,8 @@ import { NoteService } from './note/note.service';
     JwtStrategy, 
     BackupService,  
     ProgressService,
-    ModuleService,ForumService,
+    ModuleService,
+    ForumService,
     NoteService
   ],
 

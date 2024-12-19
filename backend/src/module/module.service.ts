@@ -5,27 +5,27 @@ import { Model } from 'mongoose';
 import { Module, ModuleDocument } from './module.schema';
 import { isIdValid } from 'src/helper';
 import * as path from 'path';
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import * as fs from 'fs';
-import { CourseDocument } from 'src/course/course.schema';
+import { CourseService } from 'src/course/course.service';
 
 @Injectable()
 export class ModuleService {
-  constructor(@InjectModel(Module.name) private readonly moduleModel: Model<ModuleDocument>) {}
+  constructor(
+    @InjectModel(Module.name) private readonly moduleModel: Model<ModuleDocument>,
+    private readonly courseService: CourseService
+  ) {}
 
-  /**
-   * Create a new module.
-   * @param body - Module creation data.
-   * @returns Created module.
-   */
+
   async create(body: {
     course_id: string;
     title: string;
     content: string;
+    difficulty_level: string
     resources?: { path: string; type: string }[];
   }): Promise<Module> {
-    isIdValid(body.course_id); // Validate course ID.
+    isIdValid(body.course_id); 
     const newModule = new this.moduleModel(body);
+    const moduleNo = ( await this.courseService.findOne(body.course_id)).modulesNo;
+    this.courseService.update(body.course_id, {modulesNo: moduleNo+1});
     return await newModule.save();
   }
 
@@ -64,6 +64,7 @@ export class ModuleService {
       title?: string;
       content?: string;
       resources?: { path: string; type: string }[];
+      difficulty_level?: string
     },
   ): Promise<Module> {
     isIdValid(id); // Validate module ID.

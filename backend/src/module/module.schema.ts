@@ -15,8 +15,11 @@ export class Module {
   @Prop({ required: true })
   content: string;
 
-  @Prop({ required: true })
-  isOutdated: boolean;
+  @Prop({ default: true })
+  isAvailable: boolean;
+
+  @Prop({ enum: ['beginner', 'intermediate', 'advanced'],  required: true })
+  difficulty_level: string;
 
   @Prop({
     type: [
