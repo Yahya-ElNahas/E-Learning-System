@@ -50,14 +50,14 @@ const Students: NextPage = () => {
       <div className="flex-1 p-8 bg-gray-800 text-gray-200">
         {/* Header Section */}
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-bold text-gray-700 dark:text-gray-200">Instructors</h1>
+          <h1 className="text-3xl font-bold text-gray-700 dark:text-gray-200">Students</h1>
         </div>
 
         {/* Search Bar */}
         <div className="mb-6">
           <input
             type="text"
-            placeholder="Search for instructors..."
+            placeholder="Search for student..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full p-3 rounded-md bg-gray-100 dark:bg-[#1c1f24] text-gray-900 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-[#008170]"
@@ -93,7 +93,7 @@ const Students: NextPage = () => {
             ))}
           </div>
         ) : (
-          <p className="text-gray-700 dark:text-gray-300">No instructors found.</p>
+          <p className="text-gray-700 dark:text-gray-300">No student found.</p>
         )}
       </div>
     </div>
