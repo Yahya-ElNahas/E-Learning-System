@@ -67,4 +67,10 @@ export class QuizService {
       throw new NotFoundException(`Quiz with ID "${id}" not found`);
     }
   }
+
+  async incrementResponses(id: string) {
+    const quizResponses = (await this.quizModel.findById(id)).numberOfResponses;
+    console.log(quizResponses)
+    return this.quizModel.findByIdAndUpdate(id, {numberOfResponses: quizResponses + 1});
+  }
 }

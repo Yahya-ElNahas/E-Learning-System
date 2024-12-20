@@ -53,19 +53,18 @@ export class ModuleController {
   @Role(UserRole.INSTRUCTOR)
   @UseInterceptors(
     FileFieldsInterceptor([
-      { name: 'resources', maxCount: 10 }, // Accept up to 10 files under the key 'resources'
+      { name: 'resources', maxCount: 10 }, 
     ])
   )
   async create(
     @Body() createModuleDto: { course_id: string; title: string; content: string, difficulty_level: string },
     @UploadedFiles()
-    files: { resources?: Express.Multer.File[] }
+    files?: { resources?: Express.Multer.File[] }
   ) {
     const uploadedFiles = files?.resources?.map((file) => ({
       path: file.path,
       type: file.mimetype,
     }));
-
     return this.moduleService.create({ ...createModuleDto, resources: uploadedFiles });
   }
 

@@ -17,8 +17,11 @@ export class Quiz {
     difficulty: string;
   }>;
 
-  @Prop({ type: Number, required: true })
+  @Prop({ type: Number, default: 0 })
   numberOfQuestions: number;
+
+  @Prop({ type: Number, default: 0 })
+  numberOfResponses: number;
 }
 
 export const QuizSchema = SchemaFactory.createForClass(Quiz);

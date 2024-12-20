@@ -29,10 +29,13 @@ const StudentCourses: NextPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [showCompleted, setShowCompleted] = useState(false);
   const [avgScore, setAvgScore] = useState<string>('');
+  const [completedNo, setCompletedNo] = useState<number>(0);
 
   const fetchCourses = async () => {
     try {
       const data = await fetchStudentCourses();
+      const completedCourses = data.filter((course: { completion_percentage: number; }) => course.completion_percentage === 100).length;
+      setCompletedNo(completedCourses);
       setCourses(data);
     } catch (error) {
       console.error("Error fetching courses:", error);
@@ -78,7 +81,10 @@ const StudentCourses: NextPage = () => {
               <div className="flex items-center gap-4">
                 <h1 className="text-3xl font-bold text-gray-700 dark:text-gray-200">Courses</h1>
                 <span className="text-sm text-gray-500 dark:text-gray-400 bg-gray-200 dark:bg-gray-700 px-3 py-1 rounded">
-                  Average Score: {avgScore ? avgScore : 'Error'}
+                  Average Score: {avgScore ? avgScore : 'Error'}%
+                </span>
+                <span className="text-sm text-gray-500 dark:text-gray-400 bg-gray-200 dark:bg-gray-700 px-3 py-1 rounded">
+                  Course Completion Rate: {courses ? (completedNo/courses.length).toFixed(2) : 0}
                 </span>
               </div>
               <button className="bg-[#2f3d52] text-white px-4 py-2 rounded-md hover:bg-[#1b2027] transition-all duration-300 shadow-md">

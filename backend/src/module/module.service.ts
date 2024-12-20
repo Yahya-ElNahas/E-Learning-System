@@ -86,7 +86,10 @@ export class ModuleService {
    */
   async delete(id: string): Promise<void> {
     isIdValid(id); // Validate module ID.
+    const body = await this.moduleModel.findById(id);
     const result = await this.moduleModel.findByIdAndDelete(id).exec();
+    const moduleNo = ( await this.courseService.findOne(body.course_id)).modulesNo;
+    this.courseService.update(body.course_id, {modulesNo: moduleNo-1});
     if (!result) {
       throw new NotFoundException(`Module with ID "${id}" not found`);
     }
