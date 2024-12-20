@@ -7,9 +7,9 @@ import SideBarComponent from "@/components/sidebar";
 const EditModule: React.FC = () => {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
-  const [difficulty, setDifficulty] = useState("Beginner"); // Default value
+  const [difficulty, setDifficulty] = useState("beginner"); 
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
-  const [existingFiles, setExistingFiles] = useState<{ path: string; type: string }[]>([]); // Store existing resources
+  const [existingFiles, setExistingFiles] = useState<{ path: string; type: string }[]>([]); 
   const router = useRouter();
   const params = useParams();
 
@@ -28,7 +28,7 @@ const EditModule: React.FC = () => {
           const data = await response.json();
           setTitle(data.title);
           setContent(data.content);
-          setDifficulty(data.difficulty);
+          setDifficulty(data.difficulty_level);
           setExistingFiles(data.resources || []);
         } else {
           console.error("Error fetching module:", await response.text());
@@ -58,7 +58,6 @@ const EditModule: React.FC = () => {
     uploadedFiles.forEach((file) => {
       formData.append("resources", file);
     });
-
     try {
       const response = await fetch(`http://localhost:3000/modules/${moduleId}`, {
         method: "PATCH", 
@@ -116,9 +115,9 @@ const EditModule: React.FC = () => {
               required
               className="w-full px-3 py-2 bg-gray-700 text-white rounded focus:outline-none"
             >
-              <option value="Beginner">Beginner</option>
-              <option value="Intermediate">Intermediate</option>
-              <option value="Advanced">Advanced</option>
+              <option value="beginner">Beginner</option>
+              <option value="intermediate">Intermediate</option>
+              <option value="advanced">Advanced</option>
             </select>
           </div>
 
