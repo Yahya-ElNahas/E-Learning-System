@@ -1,0 +1,32 @@
+@keyframes gradientAnimation {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
+  }
+  
+  .bg-gradient-to-b {
+    background-size: 200% 200%;
+    animation: gradientAnimation 15s ease infinite;
+  }
+  
+  .text-transparent.bg-clip-text.bg-gradient-to-r {
+    background-size: 200% auto;
+    animation: textGradientAnimation 5s ease-in-out infinite alternate;
+  }
+  
+  @keyframes textGradientAnimation {
+    0% {
+      background-position: 0% 50%;
+    }
+    100% {
+      background-position: 100% 50%;
+    }
+  }
+  
+  

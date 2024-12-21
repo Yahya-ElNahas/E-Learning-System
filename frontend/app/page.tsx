@@ -1,58 +1,78 @@
-"use client";
+'use client'
 
-import { useEffect, useState } from "react";
-import CardComponent from "@/components/courseCard";
-import NavbarComponent from "@/components/navbar";
-import { NextPage } from "next";
+import { useEffect, useState } from "react"
+import { motion } from "framer-motion"
+import { Spinner } from "@nextui-org/react"
+import CardComponent from "@/components/courseCard"
+import NavbarComponent from "@/components/navbar"
+import { NextPage } from "next"
+import '@/components/courses.css'
 
 const App: NextPage = () => {
-  const [courses, setCourses] = useState<any[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [courses, setCourses] = useState<any[]>([])
+  const [loading, setLoading] = useState<boolean>(true)
 
   useEffect(() => {
     fetch("http://localhost:3000/courses")
       .then((response) => response.json())
       .then((data) => {
-        setCourses(data);
-        setLoading(false);
+        setCourses(data)
+        setLoading(false)
       })
       .catch((error) => {
-        console.error("Error fetching courses:", error);
-        setLoading(false);
-      });
-  }, []);
+        console.error("Error fetching courses:", error)
+        setLoading(false)
+      })
+  }, [])
 
   if (loading) {
-    return load();
+    return <LoadingComponent />
   }
 
   return (
-    <div className="bg-gray-200">
-      <NavbarComponent />
-      <div className="flex justify-center items-center">
-        <h1 className="text-5xl font-extrabold font-sans text-blue-900 tracking-wide">
+    <div className="min-h-screen bg-gradient-to-b from-gray-100 to-gray-200">
+      <NavbarComponent courses={true} />
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="flex justify-center items-center my-8"
+      >
+        <h1 className="text-5xl font-extrabold font-sans text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-teal-400 tracking-wide">
           Courses
         </h1>
-      </div>
+      </motion.div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 p-4">
-        {courses.map((course) => (
-          <CardComponent key={course._id} course={course} />
+      <div className="flex flex-wrap justify-center gap-4 px-4">
+        {courses.map((course, index) => (
+          <motion.div
+            key={course._id}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: index * 0.1 }}
+          >
+            <CardComponent course={course} />
+          </motion.div>
         ))}
       </div>
     </div>
-  );
+  )
 }
 
-export function load() {
+const LoadingComponent = () => {
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-100">
-        <div className="text-2xl font-semibold text-teal-600">
-          Loading
-          <span className="dot-animation"></span>
-        </div>
-      </div>
-  );
+    <div className="flex flex-col justify-center items-center min-h-screen bg-gradient-to-b from-gray-100 to-gray-200">
+      <Spinner size="lg" color="primary" />
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.2 }}
+        className="mt-4 text-2xl font-semibold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-teal-400"
+      >
+        Loading Courses
+      </motion.div>
+    </div>
+  )
 }
 
-export default App;
+export default App
