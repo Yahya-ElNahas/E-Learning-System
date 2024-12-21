@@ -7,7 +7,6 @@ import { Role as UserRole } from '../user/user.schema';
 import { Request, Response } from 'express';
 import { Course } from 'src/course/course.schema';
 import { Progress } from './progress.schema';
-
 @Controller('progress')
 export class ProgressController {
   constructor(private readonly progressService: ProgressService) {}
@@ -37,40 +36,28 @@ export class ProgressController {
   @Post()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Role(UserRole.STUDENT)
-  async create(@Body() body: {
-      course_id: string
-    },
-    @Req() req: Request,
-    @Res({ passthrough: true }) res: Response,
-  ) {
+  async create(@Body() body: { course_id: string }, @Req() req: Request) {
     return this.progressService.create(body.course_id, req.cookies['verification_token']);
   }
 
   @Get('student/courses')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Role(UserRole.STUDENT)
-  async findCoursesByStudent(
-    @Req() req: Request,
-    @Res({ passthrough: true }) res: Response,
-  ): Promise<any[]> {
+  async findCoursesByStudent(@Req() req: Request): Promise<any[]> {
     return this.progressService.findCourseByStudent(req.cookies['verification_token'], true);
   }
 
   @Get('student/:studentId')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Role(UserRole.STUDENT)
-  async findByStudent(
-    @Param('studentId') id: string
-  ): Promise<Progress> {
+  async findByStudent(@Param('studentId') id: string): Promise<Progress> {
     return this.progressService.findByStudent(id);
   }
 
   @Get(':studentId/courses')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Role(UserRole.INSTRUCTOR)
-  async findCoursesByStudentId(
-    @Param('studentId') id: string
-  ): Promise<any[]> {
+  async findCoursesByStudentId(@Param('studentId') id: string): Promise<any[]> {
     return this.progressService.findCourseByStudent(id, false);
   }
 
@@ -79,5 +66,13 @@ export class ProgressController {
   @Role(UserRole.INSTRUCTOR, UserRole.ADMIN)
   async findAll() {
     return this.progressService.findAll();
+  }
+
+  // New analytics endpoint for instructors
+  @Get(':courseId/analytics')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Role(UserRole.INSTRUCTOR)
+  async getAnalytics(@Param('courseId') courseId: string) {
+    return this.progressService.getInstructorAnalytics(courseId);
   }
 }

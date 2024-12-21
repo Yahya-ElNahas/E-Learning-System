@@ -43,6 +43,7 @@ export class Course {
 
   @Prop({ type: Number, default: 0 })
   modulesNo: number; 
+
 }
 
 export const CourseSchema = SchemaFactory.createForClass(Course);

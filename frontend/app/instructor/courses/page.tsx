@@ -5,6 +5,7 @@ import SideBarComponent from "@/components/sidebar";
 import Link from "next/link";
 import "@/styles/globals.css";
 import CourseCardComponent from "@/components/courseCard";
+import { useRouter } from "next/navigation"; // Import the useRouter hook for navigation
 
 export async function fetchInstructorCourses() {
   const response = await fetch("http://localhost:3000/courses/search/instructor", {
@@ -22,6 +23,7 @@ const InstructorCourses: React.FC = () => {
   >([]);
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState<string | null>(null);
+  const router = useRouter(); // Initialize the router
 
   useEffect(() => {
     const fetchCourses = async () => {
@@ -37,7 +39,7 @@ const InstructorCourses: React.FC = () => {
     };
 
     fetchCourses();
-  }, []); // Fetch courses on component mount
+  }, []);
 
   useEffect(() => {
     if (courses.length > 0) {
@@ -59,6 +61,11 @@ const InstructorCourses: React.FC = () => {
         console.error(`Error fetching average score for course ${course._id}:`, err);
       }
     }
+  };
+
+  const handleOnClick = (courseId: string) => {
+    // Redirect to the analytics or details page for the selected course
+    router.push(`/instructor/courses/${courseId}/analytics`);
   };
 
   return (
@@ -83,9 +90,8 @@ const InstructorCourses: React.FC = () => {
             {courses.map((course) => (
               <div
                 key={course._id}
-                className={`relative rounded-lg shadow-md p-4 ${
-                  course.isAvailable ? "bg-gray-700" : "bg-gray-700 text-gray-200"
-                } flex flex-col justify-between h-full`}
+                className={`relative rounded-lg shadow-md p-4 ${course.isAvailable ? "bg-gray-700" : "bg-gray-700 text-gray-200"} flex flex-col justify-between h-full`}
+                onClick={() => handleOnClick(course._id)} // Add click handler for course details
               >
                 <div className="flex justify-between items-center">
                   {!course.isAvailable && (
