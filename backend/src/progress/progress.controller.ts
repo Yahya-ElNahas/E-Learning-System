@@ -68,7 +68,6 @@ export class ProgressController {
     return this.progressService.findAll();
   }
 
-  // New analytics endpoint for instructors
   @Get(':courseId/analytics')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Role(UserRole.INSTRUCTOR)

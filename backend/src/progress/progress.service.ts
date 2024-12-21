@@ -64,7 +64,6 @@ export class ProgressService {
 
     const updatedProgress = await this.progressModel.findByIdAndUpdate(id, body, { new: true }).exec();
 
-    // Update completedNo if completion_percentage changes to 100
     if (body.completion_percentage === 100 && progress.completion_percentage !== 100) {
       const course = await this.courseService.findOne(progress.course_id.toString()) as CourseDocument;
       this.courseService.update(course._id.toString(), { completedNo: course.completedNo + 1 });
@@ -81,8 +80,6 @@ export class ProgressService {
     }
 
     const result = await this.progressModel.findByIdAndDelete(id).exec();
-
-    // Decrement enrolledNo for the course
     const course = await this.courseService.findOne(progress.course_id.toString())as CourseDocument;
     this.courseService.update(course._id.toString(), { enrolledNo: course.enrolledNo - 1 });
 
@@ -121,7 +118,6 @@ export class ProgressService {
     return courses;
   }
 
-  // New method for instructor analytics
   async getInstructorAnalytics(courseId: string) {
     const course = await this.courseService.findOne(courseId);
     if (!course) {

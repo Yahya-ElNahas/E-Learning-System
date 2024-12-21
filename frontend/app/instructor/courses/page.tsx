@@ -23,7 +23,7 @@ const InstructorCourses: React.FC = () => {
   >([]);
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState<string | null>(null);
-  const router = useRouter(); // Initialize the router
+  const router = useRouter(); 
 
   useEffect(() => {
     const fetchCourses = async () => {
@@ -45,7 +45,7 @@ const InstructorCourses: React.FC = () => {
     if (courses.length > 0) {
       fetchAvgScores();
     }
-  }, [courses]); // Trigger fetchAvgScores when courses are updated
+  }, [courses]); 
 
   const fetchAvgScores = async () => {
     for (const course of courses) {
@@ -64,7 +64,7 @@ const InstructorCourses: React.FC = () => {
   };
 
   const handleOnClick = (courseId: string) => {
-    // Redirect to the analytics or details page for the selected course
+    
     router.push(`/instructor/courses/${courseId}/analytics`);
   };
 
