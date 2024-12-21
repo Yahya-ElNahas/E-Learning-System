@@ -19,7 +19,7 @@ interface QuizData {
 
 const Quiz: NextPage = () => {
   const params = useParams();
-  const courseId = params.id?.slice(0, params.id.indexOf('.')+1);
+  const courseId = params.id?.slice(0, params.id.indexOf('.'));
   const quizId = params.id?.slice(params.id.indexOf('.')+1);
 
   const [quizData, setQuizData] = useState<QuizData>();
@@ -107,15 +107,18 @@ const Quiz: NextPage = () => {
     if (isQuizComplete) return;
   
     let finalScore = selectedAnswer === currentQuestion.correctAnswer
-      ? score + 1 
+      ? score + 1
       : score;
+  
+    finalScore = quizData ? (finalScore / quizData.numberOfQuestions) * 100 : 0;
 
-      finalScore = quizData ? (finalScore / quizData.numberOfQuestions)*100 : 0;
+    if(quizData && questionsAsked.length > quizData.numberOfQuestions) questionsAsked.pop();
   
     const finalAnswers = questionsAsked.map((question, index) => ({
       question: question.question,
       correctAnswer: question.correctAnswer,
       answer: answers[index],
+      isCorrect: answers[index] === question.correctAnswer,
     }));
   
     try {
@@ -128,7 +131,7 @@ const Quiz: NextPage = () => {
         body: JSON.stringify({
           quiz_id: quizId,
           answers: finalAnswers,
-          score: finalScore, 
+          score: finalScore,
         }),
       });
   
@@ -138,7 +141,10 @@ const Quiz: NextPage = () => {
     } catch (error) {
       console.error("Error posting response:", error);
     }
-  };  
+  
+    setIsQuizComplete(true);
+  };
+  
 
   if (!quizData) {
     return (
@@ -150,17 +156,56 @@ const Quiz: NextPage = () => {
 
   if (isQuizComplete) {
     return (
-      <div className="flex items-center justify-center h-screen flex-col">
-        <h1 className="text-3xl font-bold text-green-600">Quiz Completed!</h1>
-        <p className="text-xl">Your Score: {score} / {quizData.numberOfQuestions}</p>
-        <button className="absolute top-4 left-4 bg-[#222831] text-white px-4 py-2 rounded-md hover:bg-[#1b2027] transition-all duration-300 shadow-md"
-        onClick={() => router.push('/student/courses')}
+      <div className="flex items-center justify-center h-screen flex-col dark:bg-gray-900 p-6">
+        <h1 className="text-3xl font-bold text-green-600">
+          {score >= quizData.numberOfQuestions * 0.5
+            ? "Quiz Completed!"
+            : "Quiz Failed"}
+        </h1>
+        <p className="text-xl mb-4 text-white">
+          Your Score: {score} / {quizData.numberOfQuestions} ({((score / quizData.numberOfQuestions) * 100).toFixed(2)}%)
+        </p>
+        {score < quizData.numberOfQuestions * 0.5 && (
+          <p className="text-red-600 font-semibold">
+            You scored less than 50%. Please review the module and try again!
+          </p>
+        )}
+        <div className="w-full max-w-3xl bg-white dark:bg-[#222831] p-6 rounded-lg shadow-md mt-4">
+          <h2 className="text-lg font-bold mb-4">Quiz Results</h2>
+          <ul className="space-y-4">
+            {questionsAsked.map((question, index) => (
+              <li key={index} className="p-4 border rounded-md">
+                <p className="font-semibold text-gray-800 dark:text-gray-200">
+                  Question {index + 1}: {question.question}
+                </p>
+                <p
+                  className={`mt-2 ${
+                    answers[index] === question.correctAnswer
+                      ? "text-green-600"
+                      : "text-red-600"
+                  }`}
+                >
+                  Your Answer: {answers[index]} (
+                  {answers[index] === question.correctAnswer ? "Correct" : "Wrong"}
+                  )
+                </p>
+                <p className="text-gray-600 dark:text-gray-400">
+                  Correct Answer: {question.correctAnswer}
+                </p>
+              </li>
+            ))}
+          </ul>
+        </div>
+        <button
+          className="mt-6 bg-[#222831] text-white px-4 py-2 rounded-md hover:bg-[#1b2027] transition-all duration-300 shadow-md"
+          onClick={() => router.push(`/student/courses/${courseId}`)}
         >
-          Back to Courses
+          Back to Course
         </button>
       </div>
     );
   }
+  
 
   return (
     <div className="min-h-screen flex flex-col items-center bg-gray-100 dark:bg-gray-900 p-6">

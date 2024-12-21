@@ -24,7 +24,7 @@ export class QuizController {
 
   @Get('module/:id')
   @UseGuards(JwtAuthGuard)
-  async findOneByModule(@Param('id') id: string): Promise<Quiz> {
+  async findOneByModule(@Param('id') id: string): Promise<{}> {
     return this.quizService.findOneByModule(id);
   }
   
@@ -33,10 +33,11 @@ export class QuizController {
   @Role(UserRole.INSTRUCTOR)
   async create(@Body() body: {
     module_id: string,
-    questions: Array<{
+    questionsPool?: Array<{
       question: string,
       options: string[],
-      correctAnswer: string
+      correctAnswer: string,
+      difficulty: string
     }>
   }): Promise<Quiz> {
     return this.quizService.create(body);
@@ -48,12 +49,13 @@ export class QuizController {
   async update(
     @Param('id') id: string,
     @Body() body: {
-      module_id?: string,
-      questions?: Array<{
+      questionsPool: Array<{
         question: string,
         options: string[],
-        correctAnswer: string
-      }>
+        correctAnswer: string,
+        difficulty: string
+      }>,
+      numberOfQuestions: number
     }
   ): Promise<Quiz> {
     return this.quizService.update(id, body);

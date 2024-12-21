@@ -7,7 +7,7 @@ import SideBarComponent from "@/components/sidebar";
 const CreateModule: React.FC = () => {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
-  const [difficulty, setDifficulty] = useState("Beginner"); // Default value
+  const [difficulty, setDifficulty] = useState("beginner"); // Default value
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
   const router = useRouter();
   const params = useParams();
@@ -26,7 +26,7 @@ const CreateModule: React.FC = () => {
     formData.append("course_id", courseId); // Add course ID
     formData.append("title", title); // Add title
     formData.append("content", content); // Add content
-    formData.append("difficulty", difficulty); // Add difficulty level
+    formData.append("difficulty_level", difficulty); // Add difficulty level
 
     // Append each file to FormData
     uploadedFiles.forEach((file) => {
@@ -36,7 +36,7 @@ const CreateModule: React.FC = () => {
     try {
       const response = await fetch(`http://localhost:3000/modules`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        // headers: { "Content-Type": "multipart/form-data" },
         body: formData,
         credentials: "include",
       });
@@ -90,9 +90,9 @@ const CreateModule: React.FC = () => {
               required
               className="w-full px-3 py-2 bg-gray-700 text-white rounded focus:outline-none"
             >
-              <option value="Beginner">Beginner</option>
-              <option value="Intermediate">Intermediate</option>
-              <option value="Advanced">Advanced</option>
+              <option value="beginner">Beginner</option>
+              <option value="intermediate">Intermediate</option>
+              <option value="advanced">Advanced</option>
             </select>
           </div>
 

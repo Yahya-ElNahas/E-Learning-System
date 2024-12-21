@@ -26,6 +26,7 @@ export class ResponseService {
    */
   async create(body: Partial<Response>): Promise<Response> {
     const newResponse = new this.responseModel(body);
+    await this.quizService.incrementResponses(body.quiz_id.toString());
     return newResponse.save();
   }
 
@@ -105,6 +106,7 @@ export class ResponseService {
     const user_id = this.authService.GetIdFromToken(token);
     body['user_id'] = user_id;
     const newResponse = new this.responseModel(body);
+    await this.quizService.incrementResponses(body.quiz_id.toString());
     return newResponse.save();
   }
 

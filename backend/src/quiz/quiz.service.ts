@@ -11,15 +11,14 @@ export class QuizService {
 
   async create(body: {
     module_id: string,
-    questions: Array<{
+    questionsPool?: Array<{
       question: string,
       options: string[],
-      correctAnswer: string
+      correctAnswer: string,
+      difficulty: string
     }>
   }): Promise<Quiz> {
     isIdValid(body.module_id);
-    if(body.questions.length === 0)
-      throw new BadRequestException('There are no questions');
     const newQuiz = new this.quizModel(body);
     return newQuiz.save();
   }
@@ -29,7 +28,9 @@ export class QuizService {
   }
 
   async findOneByModule(id: string) {
-    return this.quizModel.findOne({module_id: id});
+    const res = await this.quizModel.findOne({module_id: id});
+    if(!res) return {}
+    return res;
   }
 
   async findOne(id: string): Promise<Quiz> {
@@ -42,17 +43,16 @@ export class QuizService {
   }
 
   async update(id: string, body: {
-    module_id?: string,
-    questions?: Array<{
+    questionsPool: Array<{
       question: string,
       options: string[],
-      correctAnswer: string
-    }>
+      correctAnswer: string,
+      difficulty: string
+    }>,
+    numberOfQuestions: number
   }): Promise<Quiz> {
     isIdValid(id);
-    if(body.module_id) isIdValid(body.module_id);
-    if(body.questions && body.questions.length === 0)
-      throw new BadRequestException('There are no questions');
+    console.log(body)
     const updatedQuiz = await this.quizModel.findByIdAndUpdate(id, body, { new: true }).exec();
     if (!updatedQuiz) {
       throw new NotFoundException(`Quiz with ID "${id}" not found`);
@@ -66,5 +66,11 @@ export class QuizService {
     if (!result) {
       throw new NotFoundException(`Quiz with ID "${id}" not found`);
     }
+  }
+
+  async incrementResponses(id: string) {
+    const quizResponses = (await this.quizModel.findById(id)).numberOfResponses;
+    console.log(quizResponses)
+    return this.quizModel.findByIdAndUpdate(id, {numberOfResponses: quizResponses + 1});
   }
 }

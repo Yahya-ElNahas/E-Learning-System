@@ -67,8 +67,11 @@ export class ModuleService {
       difficulty_level?: string
     },
   ): Promise<Module> {
-    isIdValid(id); // Validate module ID.
-    if (body.course_id) isIdValid(body.course_id); // Validate course ID if present.
+    isIdValid(id); 
+    if (body.course_id) isIdValid(body.course_id); 
+    const resources = (await this.moduleModel.findById(id)).resources;
+    for(const res of body.resources) resources.push(res);
+    body.resources = resources;
     const updatedModule = await this.moduleModel.findByIdAndUpdate(id, body, { new: true }).exec();
     if (!updatedModule) {
       throw new NotFoundException(`Module with ID "${id}" not found`);
@@ -83,7 +86,10 @@ export class ModuleService {
    */
   async delete(id: string): Promise<void> {
     isIdValid(id); // Validate module ID.
+    const body = await this.moduleModel.findById(id);
     const result = await this.moduleModel.findByIdAndDelete(id).exec();
+    const moduleNo = ( await this.courseService.findOne(body.course_id)).modulesNo;
+    this.courseService.update(body.course_id, {modulesNo: moduleNo-1});
     if (!result) {
       throw new NotFoundException(`Module with ID "${id}" not found`);
     }
