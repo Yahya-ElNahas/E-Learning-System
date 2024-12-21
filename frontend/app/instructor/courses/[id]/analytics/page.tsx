@@ -13,6 +13,11 @@ interface Analytics {
     aboveAverage: number;
     excellent: number;
   };
+  averageCompletionPercentage: number;
+  moduleRatings: {
+    moduleId: string;
+    avgRating: number;
+  }[];
 }
 
 const CourseAnalytics: React.FC = () => {
@@ -63,11 +68,15 @@ const CourseAnalytics: React.FC = () => {
         <h1 className="text-3xl font-bold mb-6">Course Analytics</h1>
         {analytics ? (
           <div className="space-y-6">
+            {/* Enrollment Metrics */}
             <div className="p-4 bg-gray-700 rounded">
               <h2 className="text-xl font-semibold">Enrollment Metrics</h2>
               <p>Enrolled Students: {analytics.enrolledStudents}</p>
               <p>Completed Students: {analytics.completedStudents}</p>
+              <p>Average Completion Percentage: {analytics.averageCompletionPercentage?.toFixed(2)}%</p>
             </div>
+
+            {/* Performance Metrics */}
             <div className="p-4 bg-gray-700 rounded">
               <h2 className="text-xl font-semibold">Performance Metrics</h2>
               <ul>
@@ -76,6 +85,22 @@ const CourseAnalytics: React.FC = () => {
                 <li>Above Average: {analytics.performanceMetrics.aboveAverage}</li>
                 <li>Excellent: {analytics.performanceMetrics.excellent}</li>
               </ul>
+            </div>
+
+            {/* Module Ratings */}
+            <div className="p-4 bg-gray-700 rounded">
+              <h2 className="text-xl font-semibold">Module Ratings</h2>
+              {analytics.moduleRatings.length > 0 ? (
+                <ul>
+                  {analytics.moduleRatings.map((module) => (
+                    <li key={module.moduleId} className="mb-2">
+                      Module ID: {module.moduleId} - Average Rating: {module.avgRating.toFixed(2)}
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p>No module ratings available</p>
+              )}
             </div>
           </div>
         ) : (

@@ -31,6 +31,10 @@ export class Module {
     required: false
   })
   resources?: { path: string; type: string }[];
+
+  @Prop({ type: [Number], required: false })
+  ratings?: number[];
+
 }
 
 export const ModuleSchema = SchemaFactory.createForClass(Module);

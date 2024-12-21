@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable,  NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Progress, ProgressDocument } from './progress.schema';
@@ -9,6 +9,7 @@ import { CourseService } from 'src/course/course.service';
 import { UserService } from 'src/user/user.service';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { Course, CourseDocument } from 'src/course/course.schema';
+import { ModuleDocument,Module } from 'src/module/module.schema';
 @Injectable()
 export class ProgressService {
   constructor(
@@ -17,7 +18,9 @@ export class ProgressService {
     private readonly authService: AuthService,
     private readonly courseService: CourseService,
     private readonly userService: UserService,
+     @InjectModel(Module.name) private readonly moduleModel: Model<ModuleDocument>,
   ) {}
+
 
   async findAll(): Promise<Progress[]> {
     return this.progressModel.find().exec();
@@ -117,13 +120,11 @@ export class ProgressService {
 
     return courses;
   }
-
   async getInstructorAnalytics(courseId: string) {
     const course = await this.courseService.findOne(courseId);
     if (!course) {
       throw new NotFoundException(`Course with ID ${courseId} not found`);
     }
-
     const progresses = await this.progressModel.find({ course_id: courseId }).exec();
 
     const metrics = {
@@ -133,17 +134,43 @@ export class ProgressService {
       excellent: 0,
     };
 
+    let totalCompletionPercentage = 0;
+
     progresses.forEach(({ completion_percentage }) => {
+      totalCompletionPercentage += completion_percentage;
+
       if (completion_percentage < 50) metrics.belowAverage++;
       else if (completion_percentage < 75) metrics.average++;
       else if (completion_percentage < 100) metrics.aboveAverage++;
       else metrics.excellent++;
+    });
+    const averageCompletionPercentage = progresses.length > 0
+      ? totalCompletionPercentage / progresses.length
+      : 0;
+
+    const modules = await this.moduleModel.find({ course_id: courseId }).exec();
+
+    const moduleRatings = modules.map(module => {
+      if (module.ratings && module.ratings.length > 0) {
+        const avgRating = module.ratings.reduce((acc, rating) => acc + rating, 0) / module.ratings.length;
+        return {
+          moduleId: module._id,
+          avgRating,
+        };
+      } else {
+        return {
+          moduleId: module._id,
+          avgRating: 0, 
+        };
+      }
     });
 
     return {
       enrolledStudents: course.enrolledNo,
       completedStudents: course.completedNo,
       performanceMetrics: metrics,
+      averageCompletionPercentage, 
+      moduleRatings,
     };
   }
 }
