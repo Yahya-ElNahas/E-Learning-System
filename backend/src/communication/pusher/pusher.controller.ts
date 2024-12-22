@@ -249,8 +249,13 @@ async CreateGroup(
         message,
         date : this.formatDate(new Date()),
       }
-
+      await this.pusherService.trigger(groupName, 'message', {
+        sender: (await senderData).name,
+        message,
+      });
       await this.chatService.sendGroupMessage(groupName , fullMessage)
+
+      return  fullMessage
 
     }
 
