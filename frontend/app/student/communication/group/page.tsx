@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import Pusher from "pusher-js";
 
 interface Group {
   GroupName: string;
@@ -25,6 +26,7 @@ const GroupChat = () => {
   const [showModal, setShowModal] = useState<boolean>(false);
   const [newUser, setNewUser] = useState<string>(""); // For adding users
   const router = useRouter();
+  const [channelName, setChannelName] = useState<string | null>(null);
 
   // Fetch user groups
   useEffect(() => {
@@ -46,13 +48,51 @@ const GroupChat = () => {
     fetchGroups();
   }, []);
 
+  // Pusher integration for real-time messages
+  useEffect(() => {
+    if (!channelName) return;
+
+    const pusher = new Pusher("56d0ad2a5a08355cfb9d", { cluster: "eu" });
+    const channel = pusher.subscribe(channelName);
+
+    // Bind to the message event to receive real-time messages
+    const handleMessage = (data: Message) => {
+      setMessages((prevMessages) => [...prevMessages, data]);
+    };
+
+    channel.bind("message", handleMessage);
+
+    return () => {
+      channel.unbind("message", handleMessage); // Unbind the event listener on cleanup
+      pusher.unsubscribe(channelName);
+    };
+  }, [channelName]);
+
+  // Handle group selection
+  const handleGroupSelect = (group: Group) => {
+    if (selectedGroup?.GroupName !== group.GroupName) {
+      setSelectedGroup(group);
+      setChannelName(group.channel); // Set the channel name for Pusher
+    }
+  };
+
   // Send message to the group
   const sendMessage = async (groupName: string, messageContent: string) => {
     if (!messageContent.trim()) {
       alert("Message cannot be empty!");
       return;
     }
-
+  
+    const currentDate = new Date().toLocaleString(); // Get the current date and time
+  
+    // Add the message to the state immediately (only if it's sent by the user)
+    setMessages((prevMessages) => [
+      ...prevMessages,
+     
+    ]);
+  
+    setMessage(""); // Clear the message input
+  
     try {
       const response = await fetch("http://localhost:3000/chat/send", {
         method: "POST",
@@ -63,12 +103,8 @@ const GroupChat = () => {
           message: messageContent,
         }),
       });
-
-      if (response.ok) {
-        const data = await response.json();
-        setMessages((prev) => [...prev, data]);
-        setMessage("");
-      } else {
+  
+      if (!response.ok) {
         const error = await response.text();
         console.error("Failed to send message:", error);
       }
@@ -76,6 +112,7 @@ const GroupChat = () => {
       console.error("Error sending message:", error);
     }
   };
+  
 
   // Handle adding a new member to the group
   const handleAddMember = () => {
@@ -96,7 +133,7 @@ const GroupChat = () => {
       alert("Group name and members are required!");
       return;
     }
-    
+
     try {
       const response = await fetch("http://localhost:3000/chat/createGroup", {
         method: "POST",
@@ -143,7 +180,7 @@ const GroupChat = () => {
             groups.map((group, index) => (
               <li
                 key={index}
-                onClick={() => setSelectedGroup(group)}
+                onClick={() => handleGroupSelect(group)} // Handle group selection
                 style={{
                   cursor: "pointer",
                   padding: "10px",
@@ -259,30 +296,19 @@ const GroupChat = () => {
             </div>
           </>
         ) : (
-          <div
-            style={{
-              flex: 1,
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              color: "#7f8c8d",
-              fontSize: "18px",
-            }}
-          >
-            Select a group to view messages
-          </div>
+          <p style={{ padding: "20px" }}>Select a group to start chatting</p>
         )}
       </div>
 
-      {/* Modal for creating a group */}
+      {/* Modal for Creating Group */}
       {showModal && (
         <div
           style={{
             position: "fixed",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
+            top: "0",
+            left: "0",
+            right: "0",
+            bottom: "0",
             backgroundColor: "rgba(0, 0, 0, 0.5)",
             display: "flex",
             justifyContent: "center",
@@ -295,33 +321,35 @@ const GroupChat = () => {
               padding: "20px",
               borderRadius: "5px",
               width: "400px",
-              boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
             }}
           >
-            <h3>Create a Group</h3>
-            <input
-              type="text"
-              value={newGroupName}
-              onChange={(e) => setNewGroupName(e.target.value)}
-              placeholder="Enter group name"
-              style={{
-                marginBottom: "10px",
-                padding: "8px",
-                width: "100%",
-                borderRadius: "5px",
-                border: "1px solid #bdc3c7",
-              }}
-            />
+            <h2>Create New Group</h2>
             <div>
+              <label>Group Name:</label>
+              <input
+                type="text"
+                value={newGroupName}
+                onChange={(e) => setNewGroupName(e.target.value)}
+                style={{
+                  width: "100%",
+                  padding: "10px",
+                  marginBottom: "10px",
+                  borderRadius: "5px",
+                  border: "1px solid #bdc3c7",
+                }}
+              />
+            </div>
+            <div>
+              <label>Members:</label>
               <input
                 type="text"
                 value={newUser}
                 onChange={(e) => setNewUser(e.target.value)}
                 placeholder="Add user"
                 style={{
-                  marginBottom: "10px",
-                  padding: "8px",
                   width: "100%",
+                  padding: "10px",
+                  marginBottom: "10px",
                   borderRadius: "5px",
                   border: "1px solid #bdc3c7",
                 }}
@@ -329,7 +357,7 @@ const GroupChat = () => {
               <button
                 onClick={handleAddMember}
                 style={{
-                  padding: "8px 15px",
+                  padding: "10px 20px",
                   backgroundColor: "#2980b9",
                   color: "#ecf0f1",
                   borderRadius: "5px",
@@ -337,37 +365,28 @@ const GroupChat = () => {
                   cursor: "pointer",
                 }}
               >
-                Add User
+                Add Member
               </button>
-            </div>
-            <div>
-              {groupMembers.map((member, index) => (
-                <span
-                  key={index}
-                  style={{
-                    display: "inline-block",
-                    marginRight: "8px",
-                    padding: "5px 10px",
-                    backgroundColor: "#ecf0f1",
-                    borderRadius: "20px",
-                    marginBottom: "5px",
-                  }}
-                >
-                  {member}{" "}
-                  <button
-                    onClick={() => handleRemoveMember(member)}
-                    style={{
-                      background: "transparent",
-                      border: "none",
-                      color: "#ff0000",
-                      cursor: "pointer",
-                      marginLeft: "5px",
-                    }}
-                  >
-                    x
-                  </button>
-                </span>
-              ))}
+              <ul>
+                {groupMembers.map((member, index) => (
+                  <li key={index} style={{ display: "flex", justifyContent: "space-between" }}>
+                    {member}
+                    <button
+                      onClick={() => handleRemoveMember(member)}
+                      style={{
+                        backgroundColor: "#e74c3c",
+                        color: "#ecf0f1",
+                        border: "none",
+                        cursor: "pointer",
+                        borderRadius: "5px",
+                        padding: "5px",
+                      }}
+                    >
+                      Remove
+                    </button>
+                  </li>
+                ))}
+              </ul>
             </div>
             <button
               onClick={handleGroupSubmit}
@@ -378,7 +397,6 @@ const GroupChat = () => {
                 borderRadius: "5px",
                 border: "none",
                 cursor: "pointer",
-                marginTop: "10px",
                 width: "100%",
               }}
             >
@@ -393,8 +411,8 @@ const GroupChat = () => {
                 borderRadius: "5px",
                 border: "none",
                 cursor: "pointer",
-                marginTop: "10px",
                 width: "100%",
+                marginTop: "10px",
               }}
             >
               Cancel

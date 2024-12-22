@@ -249,6 +249,8 @@ async CreateGroup(
         message,
         date : this.formatDate(new Date()),
       }
+
+      console.log(groupName)
       await this.pusherService.trigger(groupName, 'message', {
         sender: (await senderData).name,
         message,
