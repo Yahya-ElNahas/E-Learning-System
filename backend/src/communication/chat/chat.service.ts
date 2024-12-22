@@ -5,6 +5,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Chat, ChatDocument, Group, GroupDocument } from './chat.schema';
 import { User, UserDocument } from '../../user/user.schema';
+import { channel } from 'diagnostics_channel';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 
@@ -156,6 +157,32 @@ export class ChatService {
     }
     return names;
   }
+
+  async findUserGroups(id: string) {
+    try {
+      const groups = await this.groupModel.find();
+      const userGroups = [];
+  
+      for (let i = 0; i < groups.length; i++) {
+        const group = groups[i];
+  
+        const isUserMember = group.members.some((member) => member._id.toString() === id);
+  
+        if (isUserMember) {
+          userGroups.push({
+            GroupName: group.GroupName,
+            channel: group.createdBy,
+          });
+        }
+      }
+  
+      return userGroups;
+    } catch (error) {
+      console.error("Error fetching user groups:", error);
+      throw new Error("Unable to fetch user groups.");
+    }
+  }
+  
 
   async addUser(createrId : string ,id : string , GroupName:string){
     const creater = await this.userModel.findById(createrId)

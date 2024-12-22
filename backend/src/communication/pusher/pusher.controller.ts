@@ -43,6 +43,7 @@ export class PusherController {
     }
   }
 
+  
   @Get('test')
   async g(@Req() req: Request) {
     const token = req.cookies['verification_token'];
@@ -92,7 +93,7 @@ export class PusherController {
       .sort()
       .join('_');
   
-    console.log(channelName);
+    // console.log(channelName);
   
     await this.pusherService.trigger(channelName, 'message', {
       sender: studentName,
@@ -128,6 +129,16 @@ export class PusherController {
       status: 'Private message sent successfully!',
       channel: channelName,
     };
+  }
+
+  @Get('/username')
+  async getProfile(@Req() req: Request) {
+    console.log("v")
+    const token = req.cookies['verification_token'];
+    const userData = this.extractTokenData(token);
+    const user = await this.userService.findById(userData.id);
+    console.log(user)
+    return { username: user.name };
   }
   
 
@@ -171,15 +182,23 @@ export class PusherController {
       channel: channelName,
     };
   }
+
+
   @Post('CreateGroup')
 async CreateGroup(
-  @Body('groupName') groupName?: string, 
-  @Body('usernames') members?: string[]
+  @Req() req: Request,
+  @Body('groupName') groupName: string, 
+  @Body('usernames') members: string[],
 ) {
+  members.push()
+  const token = req.cookies['verification_token'];
+  const { id: senderId } = this.extractTokenData(token)
+  const {name:userName} = await this.userService.findById(senderId)
 
-  if(this.chatService.Exist(groupName)){
-    throw new HttpException(`this group ${groupName} do exist` , HttpStatus.NOT_ACCEPTABLE)
-  }
+  members.push(userName)
+  // if(this.chatService.Exist(groupName)){
+  //   throw new HttpException(`this group ${groupName} do exist` , HttpStatus.NOT_ACCEPTABLE)
+  // }
   const idS = await this.chatService.allGroupMembersIds(members);
   let membersObjectArr = [];
   for (let i = 0; i < members.length; i++) {
@@ -190,7 +209,9 @@ async CreateGroup(
     membersObjectArr.push({ _id: idS[i] , name: members[i] });
   }
 
-  await this.chatService.createGroup(groupName, membersObjectArr, members[0]);
+  console.log(membersObjectArr)
+
+  await this.chatService.createGroup(groupName, membersObjectArr,groupName);
 
   return {
     status: `Group ${groupName} successfully created!`
@@ -198,12 +219,13 @@ async CreateGroup(
 }
 
     @Post('send')
-    async SendOnGroup(
+    async SendOnGroup(@Req() req: Request,
       @Body('groupName') groupName?: string,
       @Body('message')  message?: object,
-      @Body('senderId') id?: string
+      
     ){
-
+      const token = req.cookies['verification_token'];
+      const {id:id} = this.extractTokenData(token)
       const arr = (await this.chatService.findGroupByName(groupName));
 
       if(!arr){
@@ -242,6 +264,35 @@ async CreateGroup(
         res
       return res;
     }
+    @Get('getUserGroups')
+    async getUserGroups(@Req() req: Request) {
+      try {
+        const token = req.cookies['verification_token'];
+    
+        if (!token) {
+          throw new HttpException('Token not found', HttpStatus.UNAUTHORIZED);
+        }
+    
+        const { id: userId } = this.extractTokenData(token);
+    
+        if (!userId) {
+          throw new HttpException('Invalid token or user not found', HttpStatus.UNAUTHORIZED);
+        }
+    
+        const userGroups = await this.chatService.findUserGroups(userId);
+    
+        if (!userGroups) {
+          throw new HttpException('No groups found for the user', HttpStatus.NOT_FOUND);
+        }
+    
+        return userGroups;
+      } catch (error) {
+        console.error('Error in getUserGroups:', error);
+        throw new HttpException(error.message || 'Internal server error', error.status || HttpStatus.INTERNAL_SERVER_ERROR);
+      }
+    }
+    
+
     @Get('getAllUserChats')
     async getAllUserChats(
       @Req() req: Request
