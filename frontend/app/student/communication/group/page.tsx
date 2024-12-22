@@ -269,6 +269,7 @@ const GroupChat = () => {
                 <input
                   type="text"
                   value={message}
+                  color="black"
                   onChange={(e) => setMessage(e.target.value)}
                   placeholder="Type a message..."
                   style={{

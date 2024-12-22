@@ -291,6 +291,7 @@ const Chat = () => {
             placeholder="Type a message..."
             style={{
               flex: 1,
+              color: 'black',
               padding: "10px",
               borderRadius: "5px",
               border: "1px solid #bdc3c7",
