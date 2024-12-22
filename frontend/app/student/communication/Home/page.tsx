@@ -13,7 +13,7 @@ const Home = () => {
         alignItems: "center",
         height: "100vh",
         fontFamily: "'Poppins', sans-serif",
-        background: "linear-gradient(to bottom right, #1e3c72, #2a5298)",
+        background: "#111827",
         color: "#fff",
         padding: "20px",
         textAlign: "center",
@@ -37,8 +37,7 @@ const Home = () => {
           style={{
             width: "280px",
             height: "180px",
-            background:
-              "linear-gradient(135deg, #6a11cb 0%, #2575fc 100%)",
+            background: "#4B5563",
             color: "#fff",
             display: "flex",
             flexDirection: "column",
@@ -50,13 +49,13 @@ const Home = () => {
             transition: "transform 0.4s, box-shadow 0.4s",
           }}
           onMouseEnter={(e) => {
-            (e.currentTarget as HTMLElement).style.transform = "scale(1.1)";
-            (e.currentTarget as HTMLElement).style.boxShadow =
+            e.currentTarget.style.transform = "scale(1.1)";
+            e.currentTarget.style.boxShadow =
               "0px 10px 25px rgba(0, 0, 0, 0.5)";
           }}
           onMouseLeave={(e) => {
-            (e.currentTarget as HTMLElement).style.transform = "scale(1)";
-            (e.currentTarget as HTMLElement).style.boxShadow =
+            e.currentTarget.style.transform = "scale(1)";
+            e.currentTarget.style.boxShadow =
               "0px 6px 15px rgba(0, 0, 0, 0.3)";
           }}
         >
@@ -74,8 +73,7 @@ const Home = () => {
           style={{
             width: "280px",
             height: "180px",
-            background:
-              "linear-gradient(135deg, #ff9966 0%, #ff5e62 100%)",
+            background: "#6B7280",
             color: "#fff",
             display: "flex",
             flexDirection: "column",
@@ -87,13 +85,13 @@ const Home = () => {
             transition: "transform 0.4s, box-shadow 0.4s",
           }}
           onMouseEnter={(e) => {
-            (e.currentTarget as HTMLElement).style.transform = "scale(1.1)";
-            (e.currentTarget as HTMLElement).style.boxShadow =
+            e.currentTarget.style.transform = "scale(1.1)";
+            e.currentTarget.style.boxShadow =
               "0px 10px 25px rgba(0, 0, 0, 0.5)";
           }}
           onMouseLeave={(e) => {
-            (e.currentTarget as HTMLElement).style.transform = "scale(1)";
-            (e.currentTarget as HTMLElement).style.boxShadow =
+            e.currentTarget.style.transform = "scale(1)";
+            e.currentTarget.style.boxShadow =
               "0px 6px 15px rgba(0, 0, 0, 0.3)";
           }}
         >
@@ -105,6 +103,35 @@ const Home = () => {
           </p>
         </div>
       </div>
+
+      {/* Navigate to /student/ Button */}
+      <button
+        onClick={() => router.push("/student/")}
+        style={{
+          marginTop: "40px",
+          padding: "10px 20px",
+          fontSize: "1.2rem",
+          backgroundColor: "#9CA3AF",
+          color: "#fff",
+          border: "none",
+          borderRadius: "5px",
+          cursor: "pointer",
+          boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.2)",
+          transition: "transform 0.3s, box-shadow 0.3s",
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.transform = "scale(1.05)";
+          e.currentTarget.style.boxShadow =
+            "0px 6px 15px rgba(0, 0, 0, 0.3)";
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.transform = "scale(1)";
+          e.currentTarget.style.boxShadow =
+            "0px 4px 10px rgba(0, 0, 0, 0.2)";
+        }}
+      >
+        Go to Student Portal
+      </button>
     </div>
   );
 };
