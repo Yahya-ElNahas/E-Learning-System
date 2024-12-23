@@ -31,6 +31,14 @@ export class ForumController {
         throw new HttpException('Invalid token', HttpStatus.UNAUTHORIZED);
       }
     }
+@Post('type')
+async userType(@Req() req: Request){
+  const token = (req as any).cookies['verification_token'];
+  const decoded = this.extractTokenData(token); 
+
+  return { role: decoded.role };
+
+}
 
     @Post('addComment')
 async addComment(

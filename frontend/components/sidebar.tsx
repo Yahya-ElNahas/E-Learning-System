@@ -26,7 +26,7 @@ export default function SideBarComponent({
               </Link>
             </li>
             <li className="mb-4">
-              <Link href="/student/communication/Home">
+              <Link href="/communication/Home">
                 <p className="block py-2 px-4 rounded-[10px] cursor-pointer text-[#EEEEEE] hover:bg-[#1E3E62] dark:hover:bg-[#222831] transition-all duration-300">
                   Communication
                 </p>
@@ -60,7 +60,7 @@ export default function SideBarComponent({
               </Link>
             </li>
             <li className="mb-4">
-              <Link href="/instructor/communication">
+              <Link href="/communication/Home">
                 <p className="block py-2 px-4 rounded-[10px] cursor-pointer text-[#EEEEEE] hover:bg-[#1E3E62] dark:hover:bg-[#222831] transition-all duration-300">
                   Communication
                 </p>
