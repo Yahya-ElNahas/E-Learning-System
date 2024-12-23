@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { motion } from 'framer-motion';
 import '@/styles/globals.css';
 
 interface UserData {
@@ -30,7 +31,7 @@ const UpdateProfile = () => {
       try {
         const response = await fetch('http://localhost:3000/users/profile/details', {
           method: 'GET',
-          credentials: 'include', // Make sure cookies are included
+          credentials: 'include',
           headers: {
             'Content-Type': 'application/json',
           },
@@ -43,7 +44,7 @@ const UpdateProfile = () => {
         setUserData(data);
         setUsername(data.username);
         setEmail(data.email);
-        setRole(data.role)
+        setRole(data.role);
       } catch (err) {
         console.error('Error fetching user data:', err);
         router.push('/login');
@@ -54,36 +55,36 @@ const UpdateProfile = () => {
 
     fetchUserData();
   }, [router]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setSuccessMessage('');
     setLoading(true);
-  
+
     const formData = new FormData();
     if (username !== userData?.username) formData.append('username', username);
     if (email !== userData?.email) formData.append('email', email);
     if (password) formData.append('password', password);
     if (profilePicture) formData.append('profilePicture', profilePicture);
-  
+
     try {
       const response = await fetch('http://localhost:3000/users/profile/details', {
         method: 'PATCH',
-        body: formData, // No need to set content type manually
-        credentials: 'include', // Keep using cookies for auth
+        body: formData,
+        credentials: 'include',
       });
-  
+
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.message || 'Failed to update profile');
       }
-  
+
       const updatedUser = await response.json();
       setUserData(updatedUser);
       setSuccessMessage('Profile updated successfully');
       router.push(`/${role}`);
-  
-      // Notify the user to verify the email if it's changed
+
       if (updatedUser.email !== userData?.email) {
         setSuccessMessage('Profile updated successfully. Please verify your new email address.');
       }
@@ -93,25 +94,56 @@ const UpdateProfile = () => {
       setLoading(false);
     }
   };
-  
+
+  const handleDelete = async () => {
+    if (!userData) return;
+
+    setLoading(true);
+    setError('');
+    setSuccessMessage('');
+
+    try {
+      const response = await fetch('http://localhost:3000/users/profile', {
+        method: 'DELETE',
+        credentials: 'include',
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to delete user');
+      }
+
+      setSuccessMessage('User deleted successfully');
+      router.push('/');
+    } catch (err) {
+      setError((err as Error).message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center min-h-screen bg-gray-100 dark:bg-gray-900">
-        <div className="w-full max-w-md bg-white dark:bg-gray-800 p-8 rounded-md shadow-md">
+      <div className="flex justify-center items-center min-h-screen bg-gradient-to-b from-gray-900 via-blue-900 to-purple-900">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5 }}
+          className="w-full max-w-md bg-black bg-opacity-50 p-8 rounded-lg shadow-lg backdrop-blur-md"
+        >
           <div className="space-y-4">
-            <div className="h-6 w-1/3 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+            <div className="h-6 w-1/3 bg-gray-700 rounded animate-pulse" />
             <div className="space-y-2">
-              <div className="h-4 w-1/4 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
-              <div className="h-10 w-full bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+              <div className="h-4 w-1/4 bg-gray-700 rounded animate-pulse" />
+              <div className="h-10 w-full bg-gray-700 rounded animate-pulse" />
             </div>
             <div className="space-y-2">
-              <div className="h-4 w-1/4 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
-              <div className="h-10 w-full bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+              <div className="h-4 w-1/4 bg-gray-700 rounded animate-pulse" />
+              <div className="h-10 w-full bg-gray-700 rounded animate-pulse" />
             </div>
-            <div className="h-10 w-full bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+            <div className="h-10 w-full bg-gray-700 rounded animate-pulse" />
           </div>
-        </div>
+        </motion.div>
       </div>
     );
   }
@@ -121,48 +153,53 @@ const UpdateProfile = () => {
   }
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-100 dark:bg-gray-900">
-      <div className="w-full max-w-md bg-white dark:bg-gray-800 p-8 rounded-md shadow-md">
-        <h1 className="text-2xl font-bold text-center mb-6 text-gray-700 dark:text-gray-200">
+    <div className="flex justify-center items-center min-h-screen bg-gradient-to-b from-gray-900 via-blue-900 to-purple-900">
+      <motion.div
+        initial={{ opacity: 0, y: -50 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="w-full max-w-md bg-black bg-opacity-50 p-8 rounded-lg shadow-lg backdrop-blur-md"
+      >
+        <h1 className="text-3xl font-bold text-center mb-6 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">
           Update Profile
         </h1>
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <label
               htmlFor="username"
-              className="block text-gray-600 dark:text-gray-300 font-semibold mb-2"
+              className="block text-gray-300 font-semibold mb-2"
             >
-              Username:
+              Username
             </label>
             <input
               type="text"
               id="username"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              className="w-full border border-gray-300 dark:border-gray-600 px-4 py-2 rounded-md bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200"
+              className="w-full px-4 py-2 rounded-md bg-gray-800 text-white border border-gray-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 transition-all duration-300"
             />
           </div>
           <div className="mb-4">
             <label
               htmlFor="email"
-              className="block text-gray-600 dark:text-gray-300 font-semibold mb-2"
+              className="block text-gray-300 font-semibold mb-2"
             >
-              Email:
+              Email
             </label>
             <input
               type="email"
               id="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full border border-gray-300 dark:border-gray-600 px-4 py-2 rounded-md bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200"
+              className="w-full px-4 py-2 rounded-md bg-gray-800 text-white border border-gray-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 transition-all duration-300"
             />
           </div>
           <div className="mb-4">
             <label
               htmlFor="password"
-              className="block text-gray-600 dark:text-gray-300 font-semibold mb-2"
+              className="block text-gray-300 font-semibold mb-2"
             >
-              New Password:
+              New Password
             </label>
             <input
               type="password"
@@ -170,47 +207,72 @@ const UpdateProfile = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Leave blank to keep current password"
-              className="w-full border border-gray-300 dark:border-gray-600 px-4 py-2 rounded-md bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200"
+              className="w-full px-4 py-2 rounded-md bg-gray-800 text-white border border-gray-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 transition-all duration-300"
             />
           </div>
           <div className="mb-6">
             <label
               htmlFor="profilePicture"
-              className="block text-gray-600 dark:text-gray-300 font-semibold mb-2"
+              className="block text-gray-300 font-semibold mb-2"
             >
-              Profile Picture:
+              Profile Picture
             </label>
             <input
               type="file"
               id="profilePicture"
               accept="image/*"
               onChange={(e) => setProfilePicture(e.target.files ? e.target.files[0] : null)}
-              className="w-full border border-gray-300 dark:border-gray-600 px-4 py-2 rounded-md bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200"
+              className="w-full px-4 py-2 rounded-md bg-gray-800 text-white border border-gray-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 transition-all duration-300"
             />
           </div>
           {userData.profilePictureUrl && (
             <div className="mb-4">
-              <p className="text-gray-600 dark:text-gray-300 font-semibold mb-2">Current Profile Picture:</p>
-              <img src={userData.profilePictureUrl} alt="Current profile" className="w-32 h-32 object-cover rounded-full" />
+              <p className="text-gray-300 font-semibold mb-2">Current Profile Picture:</p>
+              <img src={userData.profilePictureUrl} alt="Current profile" className="w-32 h-32 object-cover rounded-full border-2 border-blue-500" />
             </div>
           )}
-          <button
+          <motion.button
             type="submit"
             disabled={loading}
-            className="w-full bg-blue-600 dark:bg-blue-700 text-white py-2 rounded-md hover:bg-blue-700 dark:hover:bg-blue-800 transition-all duration-300 disabled:opacity-50"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-2 rounded-md hover:from-blue-700 hover:to-purple-700 transition-all duration-300 disabled:opacity-50"
           >
             {loading ? 'Updating...' : 'Update Profile'}
-          </button>
+          </motion.button>
         </form>
+
+        <motion.button
+          onClick={handleDelete}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          className="w-full bg-gradient-to-r from-red-600 to-pink-600 text-white py-2 rounded-md hover:from-red-700 hover:to-pink-700 transition-all duration-300 mt-4"
+        >
+          Delete Account
+        </motion.button>
+
         {error && (
-          <p className="mt-4 text-red-500 dark:text-red-400 text-center">{error}</p>
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="mt-4 text-red-500 text-center"
+          >
+            {error}
+          </motion.p>
         )}
         {successMessage && (
-          <p className="mt-4 text-green-500 dark:text-green-400 text-center">{successMessage}</p>
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="mt-4 text-green-500 text-center"
+          >
+            {successMessage}
+          </motion.p>
         )}
-      </div>
+      </motion.div>
     </div>
   );
 };
 
 export default UpdateProfile;
+

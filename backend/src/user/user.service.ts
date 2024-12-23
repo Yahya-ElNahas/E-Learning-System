@@ -69,6 +69,15 @@ export class UserService {
       new: true, 
     }).exec();
   }
+async deleteUser(userId: string): Promise<UserDocument | null> {
+  const user = await this.userModel.findByIdAndDelete(userId).exec();
+  
+  if (!user) {
+    throw new NotFoundException('User not found');
+  }
+
+  return user;  
+}
 
 
 
@@ -78,10 +87,6 @@ export class UserService {
     });
   }
 
-  // Delete a user by ID
-  async delete(id: string): Promise<void> {
-    await this.userModel.findByIdAndDelete(id).exec();
-  }
 
   async findByRole(role: Role): Promise<UserDocument[]> {
     return this.userModel.find({ role }).exec(); 

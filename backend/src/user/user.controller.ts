@@ -78,7 +78,20 @@ export class UserController {
   ): Promise<UserDocument> {
     return this.userService.update(id, body);
   }
+  @Delete('profile')
+@UseGuards(JwtAuthGuard)
+async deleteProfile(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
+  
+  const token = req.cookies['verification_token'];
+  const userId = this.authService.GetIdFromToken(token);
 
+  const deletedUser = await this.userService.deleteUser(userId);
+
+  return { message: 'User deleted successfully' };
+}
+
+  
+  
   
   @Get('/students/all')
   @UseGuards(JwtAuthGuard)
@@ -91,13 +104,7 @@ export class UserController {
   async getInstructors(): Promise<UserDocument[]> {
     return this.userService.findByRole(UserRole.INSTRUCTOR);
   }
-  
-  @Delete(':id')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Role(UserRole.ADMIN)  
-  async delete(@Param('id') id: string): Promise<void> {
-    await this.userService.delete(id);
-  }
+
 
   @Get('/admins/all')
   @UseGuards(JwtAuthGuard, RolesGuard)

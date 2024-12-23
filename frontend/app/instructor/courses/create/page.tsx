@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import SideBarComponent from "@/components/sidebar";
+import { motion } from "framer-motion";
 import "@/styles/globals.css";
 
 interface Course {
@@ -14,16 +15,15 @@ interface Course {
 }
 
 const CreateCourse: React.FC = () => {
-  const [courses, setCourses] = useState<Course[]>([]); // List of courses
+  const [courses, setCourses] = useState<Course[]>([]);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("");
   const [difficulty, setDifficulty] = useState("beginner");
-  const [keywords, setKeywords] = useState<string>(""); // Single string, comma-separated
+  const [keywords, setKeywords] = useState<string>("");
   const [message, setMessage] = useState("");
-  const [selectedCourse, setSelectedCourse] = useState<Course | null>(null); // Track the course being edited
+  const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
 
-  // Fetch all courses on component load
   const fetchCourses = async () => {
     try {
       const response = await fetch("http://localhost:3000/courses/search/instructor", {
@@ -45,7 +45,6 @@ const CreateCourse: React.FC = () => {
     fetchCourses();
   }, []);
 
-  // Handle form submission (Create or Update)
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const keywordsArray = keywords.split(",").map((kw) => kw.trim());
@@ -71,14 +70,13 @@ const CreateCourse: React.FC = () => {
 
       if (response.ok) {
         setMessage(selectedCourse ? "Course updated successfully!" : "Course created successfully!");
-        // Reset form after successful submission
         setTitle("");
         setDescription("");
         setCategory("");
         setDifficulty("beginner");
         setKeywords("");
         setSelectedCourse(null);
-        fetchCourses(); // Refresh course list
+        fetchCourses();
       } else {
         setMessage("Failed to save the course.");
       }
@@ -88,7 +86,6 @@ const CreateCourse: React.FC = () => {
     }
   };
 
-  // Handle course edit button click (e.g., when a course is selected to be edited)
   const handleEdit = (course: Course) => {
     setSelectedCourse(course);
     setTitle(course.title);
@@ -98,7 +95,6 @@ const CreateCourse: React.FC = () => {
     setKeywords(course.keywords.join(", "));
   };
 
-  // Handle course deletion
   const handleDelete = async (id: string) => {
     try {
       const response = await fetch(`http://localhost:3000/courses/${id}`, {
@@ -107,7 +103,7 @@ const CreateCourse: React.FC = () => {
       });
       if (response.ok) {
         setMessage("Course deleted successfully.");
-        fetchCourses(); // Refresh course list
+        fetchCourses();
       } else {
         setMessage("Failed to delete the course.");
       }
@@ -118,56 +114,63 @@ const CreateCourse: React.FC = () => {
   };
 
   return (
-    <div className="flex min-h-screen bg-gray-100 dark:bg-gray-900">
+    <div className="flex min-h-screen bg-gradient-to-b from-black via-blue-900 to-red-900">
       <SideBarComponent instructor={true} />
-      <div className="flex-1 p-8 bg-gray-800 text-gray-200">
-        <h1 className="text-3xl font-bold mb-6">
+      <div className="flex-1 p-8">
+        <motion.h1
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="text-4xl font-bold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-red-400"
+        >
           {selectedCourse ? "Edit Course" : "Create a New Course"}
-        </h1>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Title Field */}
+        </motion.h1>
+        <motion.form
+          onSubmit={handleSubmit}
+          className="space-y-4"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+        >
           <div>
-            <label className="block text-sm font-medium">Title</label>
+            <label className="block text-sm font-medium text-gray-300">Title</label>
             <input
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="w-full p-2 rounded-md bg-gray-700 text-gray-200"
+              className="w-full p-2 rounded-md bg-gray-800 text-white border border-blue-500 focus:border-red-500 focus:ring-2 focus:ring-red-500 transition-all duration-300"
               required
             />
           </div>
 
-          {/* Description Field */}
           <div>
-            <label className="block text-sm font-medium">Description</label>
+            <label className="block text-sm font-medium text-gray-300">Description</label>
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="w-full p-2 rounded-md bg-gray-700 text-gray-200"
+              className="w-full p-2 rounded-md bg-gray-800 text-white border border-blue-500 focus:border-red-500 focus:ring-2 focus:ring-red-500 transition-all duration-300"
               required
             />
           </div>
 
-          {/* Category Field */}
           <div>
-            <label className="block text-sm font-medium">Category</label>
+            <label className="block text-sm font-medium text-gray-300">Category</label>
             <input
               type="text"
               value={category}
               onChange={(e) => setCategory(e.target.value)}
-              className="w-full p-2 rounded-md bg-gray-700 text-gray-200"
+              className="w-full p-2 rounded-md bg-gray-800 text-white border border-blue-500 focus:border-red-500 focus:ring-2 focus:ring-red-500 transition-all duration-300"
               placeholder="e.g., Programming, Mathematics"
               required
             />
           </div>
 
-          {/* Difficulty Field */}
           <div>
-            <label className="block text-sm font-medium">Difficulty Level</label>
+            <label className="block text-sm font-medium text-gray-300">Difficulty Level</label>
             <select
               value={difficulty}
               onChange={(e) => setDifficulty(e.target.value)}
-              className="w-full p-2 rounded-md bg-gray-700 text-gray-200"
+              className="w-full p-2 rounded-md bg-gray-800 text-white border border-blue-500 focus:border-red-500 focus:ring-2 focus:ring-red-500 transition-all duration-300"
               required
             >
               <option value="beginner">Beginner</option>
@@ -176,56 +179,88 @@ const CreateCourse: React.FC = () => {
             </select>
           </div>
 
-          {/* Keywords Field */}
           <div>
-            <label className="block text-sm font-medium">Keywords</label>
+            <label className="block text-sm font-medium text-gray-300">Keywords</label>
             <input
               type="text"
               value={keywords}
               onChange={(e) => setKeywords(e.target.value)}
-              className="w-full p-2 rounded-md bg-gray-700 text-gray-200"
+              className="w-full p-2 rounded-md bg-gray-800 text-white border border-blue-500 focus:border-red-500 focus:ring-2 focus:ring-red-500 transition-all duration-300"
               placeholder="e.g., React, Web Development, Node.js (comma-separated)"
             />
           </div>
 
-          {/* Submit Button */}
-          <button type="submit" className="bg-[#2f3d52] px-4 py-2 rounded-md text-white">
+          <motion.button
+            type="submit"
+            className="bg-gradient-to-r from-blue-600 to-red-600 px-4 py-2 rounded-md text-white hover:from-blue-700 hover:to-red-700 transition-all duration-300"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
             {selectedCourse ? "Update Course" : "Create Course"}
-          </button>
-        </form>
+          </motion.button>
+        </motion.form>
 
-        {message && <p className="mt-4 text-gray-300">{message}</p>}
+        {message && (
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
+            className="mt-4 text-white"
+          >
+            {message}
+          </motion.p>
+        )}
 
-        {/* Course List */}
-        <h2 className="text-2xl font-bold mt-8">All Courses</h2>
-        <ul className="mt-4 space-y-4">
+        <motion.h2
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.4 }}
+          className="text-3xl font-bold mt-8 mb-4 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-red-400"
+        >
+          All Courses
+        </motion.h2>
+        <motion.ul
+          className="mt-4 space-y-4"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.6 }}
+        >
           {courses.map((course) => (
-            <li key={course._id} className="p-4 bg-gray-700 rounded-md">
-              <h3 className="text-xl font-bold">{course.title}</h3>
-              <p>{course.description}</p>
-              <p className="text-sm">
+            <motion.li
+              key={course._id}
+              className="p-4 bg-gray-800 rounded-md border border-blue-500 hover:border-red-500 transition-all duration-300"
+              whileHover={{ scale: 1.02 }}
+            >
+              <h3 className="text-xl font-bold text-white">{course.title}</h3>
+              <p className="text-gray-300">{course.description}</p>
+              <p className="text-sm text-gray-400">
                 Status: {course.isAvailable ? "Available" : "Unavailable"}
               </p>
               <div className="mt-2 space-x-2">
-                <button
+                <motion.button
                   onClick={() => handleEdit(course)}
-                  className="bg-yellow-500 px-3 py-1 rounded-md text-white"
+                  className="bg-blue-600 px-3 py-1 rounded-md text-white hover:bg-blue-700 transition-all duration-300"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
                 >
                   Update
-                </button>
-                <button
+                </motion.button>
+                <motion.button
                   onClick={() => handleDelete(course._id)}
-                  className="bg-red-500 px-3 py-1 rounded-md text-white"
+                  className="bg-red-600 px-3 py-1 rounded-md text-white hover:bg-red-700 transition-all duration-300"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
                 >
                   Delete
-                </button>
+                </motion.button>
               </div>
-            </li>
+            </motion.li>
           ))}
-        </ul>
+        </motion.ul>
       </div>
     </div>
   );
 };
 
 export default CreateCourse;
+
