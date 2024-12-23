@@ -43,6 +43,12 @@ export default class ResponseModel {
   async findOne(@Param('id') id: string): Promise<Response> {
     return this.responseService.findOne(id);
   }
+  @Get('student/quiz/:id')
+  @UseGuards(JwtAuthGuard)
+  async findByQuiz(@Param('id') id: string): Promise<Response[]> {
+    console.log(id)
+    return this.responseService.findByQuiz(id);
+  }
 
   @Get(':courseId/avgScore')
   @UseGuards(JwtAuthGuard)

@@ -25,10 +25,16 @@ export default function CourseCardComponent({ course, enrollment = false, studen
 
   const router = useRouter();
 
-  const handleCardClick = () => {
+  const handleCourseClick = () => {
     if (student) {
       router.push(`/student/courses/${course._id}`);
-    } else router.push(`/instructor/courses/${course._id}`);
+    } else {
+      router.push(`/instructor/courses/${course._id}`);
+    }
+  };
+
+  const handleAnalyticsClick = () => {
+    router.push(`/instructor/courses/${course._id}/analytics`);
   };
 
   const enroll = async () => {
@@ -64,29 +70,45 @@ export default function CourseCardComponent({ course, enrollment = false, studen
     );
   }
 
-  if (student || instructor) {
-    return (
-      <div
-        className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg hover:shadow-2xl transition-transform transform hover:-translate-y-1 duration-300 cursor-pointer"
-        onClick={handleCardClick}
-      >
-        <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-100 mb-4">{course.title}</h2>
-        <p className="text-gray-600 dark:text-gray-400 text-sm mb-2">Completion Percentage: {course.completion_percentage || 0}%</p>
-        <p className="text-gray-600 dark:text-gray-400 text-sm mb-2">Modules: {course.modulesNo || 0}</p>
-        {instructor && (
-          <div className="mt-4">
-            <p className="text-gray-600 dark:text-gray-400 text-sm">Enrolled Students: {course.enrolledNo || 0}</p>
-            <p className="text-gray-600 dark:text-gray-400 text-sm">Completed Students: {course.completedNo || 0}</p>
-            <p className="text-gray-600 dark:text-gray-400 text-sm">Average Score: {course.avgScore || "N/A"}</p>
-          </div>
-        )}
-      </div>
-    );
-  }
-
   return (
-    <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg hover:shadow-2xl transition-transform transform hover:-translate-y-1 duration-300">
+    <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg hover:shadow-2xl transition-all transform duration-300">
       <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-100 mb-4">{course.title}</h2>
+      <p className="text-gray-600 dark:text-gray-400 text-sm mb-2">Completion Percentage: {course.completion_percentage || 0}%</p>
+      <p className="text-gray-600 dark:text-gray-400 text-sm mb-2">Modules: {course.modulesNo || 0}</p>
+
+      {student && (
+        <div className="mt-4 flex gap-4">
+        <button
+          className="bg-blue-500 text-white px-4 py-2 rounded-lg font-semibold hover:bg-blue-600 transition-all duration-300"
+          onClick={handleCourseClick}
+        >
+          View Course
+        </button>
+      </div>
+      )}
+
+      {instructor && (
+        <div className="mt-4">
+          <p className="text-gray-600 dark:text-gray-400 text-sm">Enrolled Students: {course.enrolledNo || 0}</p>
+          <p className="text-gray-600 dark:text-gray-400 text-sm">Completed Students: {course.completedNo || 0}</p>
+          <p className="text-gray-600 dark:text-gray-400 text-sm">Average Score: {course.avgScore || "N/A"}</p>
+
+          <div className="mt-4 flex gap-4">
+            <button
+              className="bg-blue-500 text-white px-4 py-2 rounded-lg font-semibold hover:bg-blue-600 transition-all duration-300"
+              onClick={handleCourseClick}
+            >
+              View Course
+            </button>
+            <button
+              className="bg-green-500 text-white px-4 py-2 rounded-lg font-semibold hover:bg-green-600 transition-all duration-300"
+              onClick={handleAnalyticsClick}
+            >
+              Analytics
+            </button>
+          </div>
+        </div>
+      )}
 
       {enrollment && (
         <>

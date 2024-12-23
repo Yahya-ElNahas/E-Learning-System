@@ -37,6 +37,9 @@ export class ResponseService {
   async findAll(): Promise<Response[]> {
     return this.responseModel.find().exec();
   }
+  async findByQuiz(id: string): Promise<Response[]> {
+    return this.responseModel.find({quiz_id: id}).exec();
+  }
 
   /**
    * Fetch a single response by its ID.

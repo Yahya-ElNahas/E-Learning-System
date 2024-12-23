@@ -6,6 +6,7 @@ import { Module, ModuleDocument } from './module.schema';
 import { isIdValid } from 'src/helper';
 import * as path from 'path';
 import { CourseService } from 'src/course/course.service';
+import * as fs from 'fs';
 
 @Injectable()
 export class ModuleService {
@@ -64,7 +65,8 @@ export class ModuleService {
       title?: string;
       content?: string;
       resources?: { path: string; type: string }[];
-      difficulty_level?: string
+      difficulty_level?: string;
+      rating?: number[]
     },
   ): Promise<Module> {
     isIdValid(id); 
@@ -122,5 +124,23 @@ export class ModuleService {
     module.resources.push(resource); // Add resource to the module.
 
     return await module.save();
+  }
+
+  async rate(id: string, rating: number) {
+    const module = await this.moduleModel.findById(id);
+    let ratings = [];
+    if(module.ratings) ratings = module.ratings;
+    ratings.push(rating);
+    return await this.moduleModel.findByIdAndUpdate(id, {ratings})
+  }
+
+  async getResourcePath(moduleId: string, resourcePath: string): Promise<string> {
+    const module = await this.moduleModel.findById(moduleId);
+    if (!module) throw new NotFoundException(`Module with ID "${moduleId}" not found`);
+
+    const resource = module.resources.find((res) => res.path === resourcePath);
+    if (!resource) throw new NotFoundException(`Resource with path "${resourcePath}" not found`);
+
+    return path.join(__dirname, '..', 'uploads', resource.path); 
   }
 }

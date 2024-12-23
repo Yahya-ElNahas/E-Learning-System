@@ -11,6 +11,7 @@ interface Module {
   content: string;
   isOutdated: boolean;
   difficulty_level: string;
+  resources?: {path: string, type: string}[]
 }
 
 const CourseDetails: React.FC<{ params: Promise<{ id: string }> }> = ({ params }) => {

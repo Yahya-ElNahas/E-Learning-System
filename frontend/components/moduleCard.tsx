@@ -6,6 +6,8 @@ interface Module {
   title: string;
   content: string;
   difficulty_level: string;
+  rating?: number;
+  resources?: {path: string, type: string}[]
 }
 
 interface Props {
@@ -18,6 +20,8 @@ export default function ModuleCardComponent({ module, courseId, instructor = fal
   if (!courseId) throw new Error("Course ID should be provided");
 
   const [quiz, setQuiz] = useState<{ _id: string; numberOfResponses: number } | null>(null);
+  const [rating, setRating] = useState(module.rating || 0);
+  const [hoveredRating, setHoveredRating] = useState<number>(0);
   const router = useRouter();
 
   useEffect(() => {
@@ -93,9 +97,53 @@ export default function ModuleCardComponent({ module, courseId, instructor = fal
         },
         credentials: "include",
       });
-      window.location.reload(); 
+      window.location.reload();
     } catch (error) {
       console.error("Error deleting module:", error);
+    }
+  };
+
+  const downloadResources = async () => {
+    try {
+      const response = await fetch(`http://localhost:3000/modules/download/resources/${module._id}`, {
+        method: 'GET',
+        credentials: 'include', 
+      });
+  
+      if (response.ok) {
+        const blob = await response.blob();
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = `${module._id}_resources.zip`; 
+        link.click();
+      } else {
+        console.error('Failed to download resources');
+      }
+    } catch (error) {
+      console.error('Error downloading resources:', error);
+    }
+  };
+
+  const rateModule = async () => {
+    try {
+      const response = await fetch(`http://localhost:3000/modules/rate/student/${module._id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({
+          rating,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to submit rating");
+      }
+
+      console.log("Rating submitted successfully");
+    } catch (error) {
+      console.error("Error submitting rating:", error);
     }
   };
 
@@ -130,6 +178,18 @@ export default function ModuleCardComponent({ module, courseId, instructor = fal
           </button>
         </div>
       )}
+      {quiz && instructor && (
+        <div className="mt-4">
+          <button
+            className="bg-[#008170] text-white py-2 px-4 rounded-md hover:bg-[#005B41] transition-all duration-300"
+            onClick={() =>
+              router.push(`/instructor/courses/${courseId}/module/${module._id}/${quiz._id}/responses`)
+            }
+          >
+            Responses
+          </button>
+        </div>
+      )}
       {!quiz && instructor && (
         <div className="absolute top-4 right-4">
           <button
@@ -146,9 +206,38 @@ export default function ModuleCardComponent({ module, courseId, instructor = fal
       <p className="text-gray-600 dark:text-gray-300 mb-4">Difficulty Level: {module.difficulty_level}</p>
 
       {!instructor && (
-        <button className="w-full bg-[#008170] text-white py-2 rounded-md hover:bg-[#005B41] transition-all duration-300">
-          Download Resources
-        </button>
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex gap-1">
+            {Array.from({ length: 5 }, (_, i) => (
+              <span
+                key={i}
+                className={`cursor-pointer text-xl ${
+                  (hoveredRating || rating) > i ? "text-yellow-400" : "text-gray-300"
+                }`}
+                onMouseEnter={() => setHoveredRating(i + 1)}
+                onMouseLeave={() => setHoveredRating(0)}
+                onClick={() => setRating(i + 1)}
+              >
+                ★
+              </span>
+            ))}
+          </div>
+          <button
+            className="bg-[#008170] text-white py-2 px-4 rounded-md hover:bg-[#005B41] transition-all duration-300"
+            onClick={rateModule}
+          >
+            Rate
+          </button>
+        </div>
+      )}
+
+      {!instructor && (
+        <button
+        className="w-full bg-[#008170] text-white py-2 rounded-md hover:bg-[#005B41] transition-all duration-300"
+        onClick={downloadResources}
+      >
+        Download Resources
+      </button>
       )}
       {instructor && (
         <div className="w-full flex gap-2">

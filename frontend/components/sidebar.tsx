@@ -68,6 +68,69 @@ export default function SideBarComponent({
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.5, duration: 0.5 }}
         >
+        {/* Sidebar for Students */}
+        {student && (
+          <ul className="flex-grow">
+            <li className="mb-4">
+              <Link href="/student/courses">
+                <p className="block py-2 px-4 rounded-[10px] cursor-pointer text-[#EEEEEE] hover:bg-[#1E3E62] dark:hover:bg-[#222831] transition-all duration-300">
+                  Courses
+                </p>
+              </Link>
+            </li>
+            <li className="mb-4">
+              <Link href="/communication/Home">
+                <p className="block py-2 px-4 rounded-[10px] cursor-pointer text-[#EEEEEE] hover:bg-[#1E3E62] dark:hover:bg-[#222831] transition-all duration-300">
+                  Communication
+                </p>
+              </Link>
+            </li>
+            <li className="mb-4">
+              <Link href="/student/notes">
+                <p className="block py-2 px-4 rounded-[10px] cursor-pointer text-[#EEEEEE] hover:bg-[#1E3E62] dark:hover:bg-[#222831] transition-all duration-300">
+                  Quick Notes
+                </p>
+              </Link>
+            </li>
+            <li className="mb-4">
+              <Link href="/student/instructors">
+                <p className="block py-2 px-4 rounded-[10px] cursor-pointer text-[#EEEEEE] hover:bg-[#1E3E62] dark:hover:bg-[#222831] transition-all duration-300">
+                  Instructors
+                </p>
+              </Link>
+            </li>
+          </ul>
+        )}
+
+        {/* Sidebar for Instructors */}
+        {instructor && (
+          <ul className="flex-grow">
+            <li className="mb-4">
+              <Link href="/instructor/courses">
+                <p className="block py-2 px-4 rounded-[10px] cursor-pointer text-[#EEEEEE] hover:bg-[#1E3E62] dark:hover:bg-[#222831] transition-all duration-300">
+                  Courses
+                </p>
+              </Link>
+            </li>
+            <li className="mb-4">
+              <Link href="/communication/Home">
+                <p className="block py-2 px-4 rounded-[10px] cursor-pointer text-[#EEEEEE] hover:bg-[#1E3E62] dark:hover:bg-[#222831] transition-all duration-300">
+                  Communication
+                </p>
+              </Link>
+            </li>
+            <li className="mb-4">
+              <Link href="/instructor/students">
+                <p className="block py-2 px-4 rounded-[10px] cursor-pointer text-[#EEEEEE] hover:bg-[#1E3E62] dark:hover:bg-[#222831] transition-all duration-300">
+                  Students
+                </p>
+              </Link>
+            </li>
+          </ul>
+        )}
+
+        {/* Account Management */}
+        {!(courses || communication || progress) && (
           <Link href="/account">
             <motion.p
               whileHover={{ scale: 1.05 }}
@@ -78,7 +141,8 @@ export default function SideBarComponent({
             </motion.p>
           </Link>
         </motion.div>
-      )}
+      )
+      }
 
       {(courses || communication || progress) && (student || instructor) && (
         <motion.div
