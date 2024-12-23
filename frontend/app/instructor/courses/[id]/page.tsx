@@ -10,6 +10,7 @@ interface Module {
   title: string;
   content: string;
   createdAt: string;
+  difficulty_level: string;
 }
 
 const CourseDetails: React.FC<{ params: Promise<{ id: string }> }> = ({ params }) => {

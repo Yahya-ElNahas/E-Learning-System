@@ -16,10 +16,16 @@ import { diskStorage } from 'multer';
 export class UserController {
   constructor(private readonly userService: UserService,
     private readonly authService: AuthService
-
-  
-      
+    
+    
+    
   ) {}
+  
+  @Get(':id')
+  @UseGuards(JwtAuthGuard)
+  async findOne(@Param('id') id: string): Promise<User> {
+    return await this.userService.findById(id);
+  }
 
   @Post()
   async create(@Body() body: { email: string; username: string; password: string; role: string; isVerified: boolean }): Promise<UserDocument> {

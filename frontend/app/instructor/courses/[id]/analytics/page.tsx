@@ -16,6 +16,7 @@ interface Analytics {
   averageCompletionPercentage: number
   moduleRatings: {
     moduleId: string
+    moduleTitle: string
     avgRating: number
   }[]
 }
@@ -121,7 +122,7 @@ const CourseAnalytics: React.FC = () => {
                 <div className="space-y-4">
                   {analytics.moduleRatings.map((module) => (
                     <div key={module.moduleId} className="flex items-center">
-                      <span className="w-1/3 text-gray-400">Module {module.moduleId}:</span>
+                      <span className="w-1/3 text-gray-400">Module: {module.moduleTitle}</span>
                       <div className="w-2/3 bg-gray-700 rounded-full h-4">
                         <div
                           className="bg-teal-500 rounded-full h-4"

@@ -63,11 +63,6 @@ const InstructorCourses: React.FC = () => {
     }
   };
 
-  const handleOnClick = (courseId: string) => {
-    
-    router.push(`/instructor/courses/${courseId}/analytics`);
-  };
-
   return (
     <div className="flex min-h-screen bg-gray-100 dark:bg-gray-900 relative">
       <SideBarComponent instructor={true} />
@@ -91,7 +86,6 @@ const InstructorCourses: React.FC = () => {
               <div
                 key={course._id}
                 className={`relative rounded-lg shadow-md p-4 ${course.isAvailable ? "bg-gray-700" : "bg-gray-700 text-gray-200"} flex flex-col justify-between h-full`}
-                onClick={() => handleOnClick(course._id)} // Add click handler for course details
               >
                 <div className="flex justify-between items-center">
                   {!course.isAvailable && (

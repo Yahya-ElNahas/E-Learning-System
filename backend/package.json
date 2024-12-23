@@ -30,6 +30,7 @@
     "@nestjs/platform-express": "^10.4.12",
     "@nestjs/schedule": "^4.1.1",
     "@sendgrid/mail": "^8.1.4",
+    "archiver": "^7.0.1",
     "backend": "file:",
     "bcrypt": "^5.1.1",
     "cookie-parser": "^1.4.7",

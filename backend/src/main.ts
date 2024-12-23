@@ -15,7 +15,7 @@ async function bootstrap() {
   });
   const port = process.env.PORT ?? 8000
   app.use(cookieParser());
- // app.useStaticAssets(join(__dirname, '..', 'uploads'));
+  app.useStaticAssets(join(__dirname, '..', 'uploads'));
   await app.listen(port);
 
   Logger.log(`Server is running on port: http://localhost:${port}`);

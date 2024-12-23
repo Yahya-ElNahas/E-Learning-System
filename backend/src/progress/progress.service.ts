@@ -155,11 +155,13 @@ export class ProgressService {
         const avgRating = module.ratings.reduce((acc, rating) => acc + rating, 0) / module.ratings.length;
         return {
           moduleId: module._id,
+          moduleTitle: module.title,
           avgRating,
         };
       } else {
         return {
           moduleId: module._id,
+          moduleTitle: module.title,
           avgRating: 0, 
         };
       }

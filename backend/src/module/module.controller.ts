@@ -10,15 +10,20 @@ import {
   UseGuards, 
   UseInterceptors, 
   UploadedFile,
-  UploadedFiles
+  UploadedFiles,
+  Res,
+  NotFoundException
 } from '@nestjs/common';
 import { ModuleService } from './module.service';
 import { Module } from './module.schema';
 import { Role as UserRole } from '../user/user.schema';
 import { Role } from '../auth/reflectors';
 import { JwtAuthGuard, RolesGuard } from '../auth/guards';
+import { Response } from 'express';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
-import { diskStorage } from 'multer';
+import * as path from 'path';
+import * as fs from 'fs';
+import * as archiver from 'archiver';
 
 @Controller('modules')
 export class ModuleController {
@@ -46,6 +51,11 @@ export class ModuleController {
   @UseGuards(JwtAuthGuard)
   async findOne(@Param('id') id: string): Promise<Module> {
     return this.moduleService.findOne(id);
+  }
+  @Patch('/rate/student/:id')
+  @UseGuards(JwtAuthGuard)
+  async rate(@Param('id') id: string, @Body() body: {rating: number;}): Promise<Module> {
+    return this.moduleService.rate(id, body.rating);
   }
 
   @Post()
@@ -80,7 +90,7 @@ export class ModuleController {
   ]))
   async update(
     @Param('module_id') moduleId: string,
-    @Body() updateModuleDto: { title?: string; content?: string; difficulty_level?: string },
+    @Body() updateModuleDto: { title?: string; content?: string; difficulty_level?: string; rating?: number[]; },
     @UploadedFiles() files: { resources?: Express.Multer.File[] },
   ) {
     const uploadedFiles = files?.resources?.map((file) => ({
@@ -136,5 +146,39 @@ export class ModuleController {
   @Role(UserRole.INSTRUCTOR)
   async delete(@Param('id') id: string): Promise<void> {
     await this.moduleService.delete(id);
+  }
+
+  @Get('download/resources/:moduleId')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Role(UserRole.STUDENT)
+  async downloadAllResources(
+    @Param('moduleId') moduleId: string,
+    @Res() res: Response,
+  ) {
+    try {
+      const module = await this.moduleService.findOne(moduleId);
+      if (!module) throw new NotFoundException(`Module with ID "${moduleId}" not found`);
+      
+      const archive = archiver('zip', {
+        zlib: { level: 9 } 
+      });
+
+      res.attachment(`${moduleId}_resources.zip`);
+      archive.pipe(res);
+
+      module.resources.forEach((resource) => {
+        const uploadsPath = path.join(__dirname, '..', '..', 'uploads'); 
+        const filePath = path.join(uploadsPath, '..', resource.path);
+        console.log(filePath)
+        if (fs.existsSync(filePath)) {
+          archive.file(filePath, { name: path.basename(resource.path) });
+        }
+      });
+
+      archive.finalize();
+    } catch (error) {
+      console.error('Error downloading resources:', error);
+      res.status(500).send('Error downloading resources');
+    }
   }
 }
