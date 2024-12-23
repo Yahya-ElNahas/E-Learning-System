@@ -210,6 +210,7 @@ const Chat = () => {
               placeholder="Enter username"
               style={{
                 padding: "8px",
+                color : "black",
                 borderRadius: "5px",
                 marginRight: "10px",
                 flex: 1,
@@ -243,37 +244,39 @@ const Chat = () => {
 >
   {instructorName ? (
     <>
-      {/* Messages Display */}
+     {/* Messages Display */}
+<div
+  style={{
+    flex: 1,
+    padding: "20px",
+    overflowY: "auto", // Enables vertical scrolling
+    backgroundColor: "#ecf0f1",
+    maxHeight: "calc(100vh - 160px)", // Adjust height dynamically
+  }}
+>
+  {messages.length === 0 ? (
+    <p style={{ textAlign: "center", color: "#7f8c8d" }}>No messages yet</p>
+  ) : (
+    messages.map((msg, index) => (
       <div
+        key={index}
         style={{
-          flex: 1,
-          padding: "20px",
-          overflowY: "auto",
-          backgroundColor: "#ecf0f1",
+          marginBottom: "15px",
+          padding: "10px",
+          borderRadius: "5px",
+          backgroundColor: msg.sender === instructorName ? "#bdc3c7" : "#ecf0f1",
+          alignSelf: msg.sender === instructorName ? "flex-start" : "flex-end",
+          boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
         }}
       >
-        {messages.length === 0 ? (
-          <p style={{ textAlign: "center", color: "#7f8c8d" }}>No messages yet</p>
-        ) : (
-          messages.map((msg, index) => (
-            <div
-              key={index}
-              style={{
-                marginBottom: "15px",
-                padding: "10px",
-                borderRadius: "5px",
-                backgroundColor: msg.sender === instructorName ? "#bdc3c7" : "#ecf0f1",
-                alignSelf: msg.sender === instructorName ? "flex-start" : "flex-end",
-                boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
-              }}
-            >
-              <strong>{msg.sender}: </strong>
-              <span>{msg.message}</span>
-              <div style={{ fontSize: "12px", color: "#7f8c8d" }}>{msg.date}</div>
-            </div>
-          ))
-        )}
+        <strong>{msg.sender}: </strong>
+        <span>{msg.message}</span>
+        <div style={{ fontSize: "12px", color: "#7f8c8d" }}>{msg.date}</div>
       </div>
+    ))
+  )}
+</div>
+
 
       {/* Message Input */}
       <div
@@ -292,6 +295,7 @@ const Chat = () => {
             style={{
               flex: 1,
               color: 'black',
+              
               padding: "10px",
               borderRadius: "5px",
               border: "1px solid #bdc3c7",
