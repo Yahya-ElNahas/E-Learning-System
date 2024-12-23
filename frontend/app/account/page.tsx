@@ -118,7 +118,7 @@ const UpdateProfile = () => {
     } catch (err) {
       setError((err as Error).message);
     } finally {
-      setLoading(false);
+      setLoading(false);/////
     }
   };
 
