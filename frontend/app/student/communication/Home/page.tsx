@@ -102,6 +102,42 @@ const Home = () => {
             Connect one-on-one seamlessly.
           </p>
         </div>
+
+        {/* Forums Card */}
+        <div
+          onClick={() => router.push("forums")}
+          style={{
+            width: "280px",
+            height: "180px",
+            background: "#4B5563",
+            color: "#fff",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            alignItems: "center",
+            borderRadius: "15px",
+            cursor: "pointer",
+            boxShadow: "0px 6px 15px rgba(0, 0, 0, 0.3)",
+            transition: "transform 0.4s, box-shadow 0.4s",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.transform = "scale(1.1)";
+            e.currentTarget.style.boxShadow =
+              "0px 10px 25px rgba(0, 0, 0, 0.5)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.transform = "scale(1)";
+            e.currentTarget.style.boxShadow =
+              "0px 6px 15px rgba(0, 0, 0, 0.3)";
+          }}
+        >
+          <h2 style={{ fontSize: "1.8rem", marginBottom: "10px", fontWeight: "600" }}>
+            Forums
+          </h2>
+          <p style={{ fontSize: "1rem", opacity: "0.9" }}>
+            Engage in community discussions.
+          </p>
+        </div>
       </div>
 
       {/* Navigate to /student/ Button */}

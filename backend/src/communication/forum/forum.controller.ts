@@ -1,18 +1,12 @@
 import {
-  Body,
-  Controller,
-  Post,
-  Get,
-  Put,
-  Delete,
-  Param,
-  HttpException,
-  HttpStatus,
+  Body, Controller, Delete, Get, HttpException, HttpStatus, Inject, Param, Post, Put, Req, UnauthorizedException, UseGuards 
 } from '@nestjs/common';
+
 import { ForumService } from './forum.service';
 import { User, UserDocument } from 'src/user/user.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import * as jwt from 'jsonwebtoken';
 
 @Controller('forum')
 export class ForumController {
@@ -20,17 +14,38 @@ export class ForumController {
     @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
   ) {}
 
+//      const token = req.cookies['verification_token'];
+
+    private extractTokenData(token: string) {
+      try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        return decoded as {
+          role(role: any): unknown;
+          Role: string; id: string;
+};
+      } catch (err) {
+        throw new HttpException('Invalid token', HttpStatus.UNAUTHORIZED);
+      }
+    }
+
   @Post('create')
   async createForum(
+    @Req() req: Request,
     @Body('title') title: string,
     @Body('description') description: string,
-    @Body('moderator') moderator: string,
   ) {
-    if (!title || !description || !moderator) {
+    const token = (req as any).cookies['verification_token'];
+    const decoded = this.extractTokenData(token)
+    console.log(decoded.role)
+    // if(decoded.Role != 'admin'){
+    //   throw new HttpException('Only admin can create Forum', HttpStatus.BAD_REQUEST);
+    // }
+    
+    if (!title || !description) {
       throw new HttpException('Missing required fields', HttpStatus.BAD_REQUEST);
     }
 
-    const stat = await this.userModel.findById(moderator)
+    const stat = await this.userModel.findById(decoded.id)
 
     if(!stat){
       throw new HttpException(`This moderator does not exist.`, HttpStatus.NOT_FOUND);
@@ -46,8 +61,19 @@ export class ForumController {
   }
 
   @Get()
-  async findAllForums() {
-    const forums = await this.forumService.findAllForums();
+  async all(){
+    return this.forumService.findall()
+  }
+  @Get('/users')
+  async findAllForums(@Req() req: Request) {
+    const token = (req as any).cookies['verification_token'];
+    const decoded = this.extractTokenData(token); 
+    const userId = decoded?.id; 
+    if (!userId) {
+      return { status: 'Failed', message: 'User not authenticated.' };
+    }
+  
+    const forums = await this.forumService.findAllForums(userId);
     return { status: 'Forums fetched successfully!', forums };
   }
 

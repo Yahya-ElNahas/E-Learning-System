@@ -37,11 +37,27 @@ export class ForumService {
     }
     throw new Error('A forum with this title already exists.');
   }
-
-  async findAllForums() {
-    return this.forumModel.find().exec();
+  async findall(){
+    return await this.forumModel.find().exec();
   }
-
+  async findAllForums(id: string) {
+    try {
+      // Fetch all forums
+      const allForums = await this.forumModel.find().exec();
+      console.log('All Forums:', allForums);
+  
+      let arr = [];
+      for (let i = 0; i < allForums.length; i++) {
+        if (allForums[i].moderator['_id'].toString() === id) {
+          arr.push(allForums[i]);
+        }
+      }
+      return arr;
+    } catch (error) {
+      console.error('Error fetching forums:', error);
+      throw new Error('Failed to fetch forums');
+    }
+  }
   async findForumById(id: string) {
     return this.forumModel.findById(id).exec();
   }

@@ -219,6 +219,7 @@ const GroupChat = () => {
       <div
         style={{
           flex: 1,
+          color:"black",
           display: "flex",
           flexDirection: "column",
           backgroundColor: "#ecf0f1",
