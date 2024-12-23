@@ -26,6 +26,9 @@ const GroupChat = () => {
   const [showModal, setShowModal] = useState<boolean>(false);
   const [newUser, setNewUser] = useState<string>(""); // For adding users
   const router = useRouter();
+  const [notificationSubject, setNotificationSubject] = useState<string>("");
+const [notificationText, setNotificationText] = useState<string>("");
+
   const [channelName, setChannelName] = useState<string | null>(null);
 
   // Fetch user groups
@@ -47,6 +50,41 @@ const GroupChat = () => {
 
     fetchGroups();
   }, []);
+
+  // Function to send a notification email
+  const sendNotification = async () => {
+    if (!selectedGroup) {
+      alert("No group selected!");
+      return;
+    }
+
+    const subject =`Open group ${selectedGroup.GroupName} `
+    const text = `Open group ${selectedGroup.GroupName}`;
+
+    try {
+      const response = await fetch("http://localhost:3000/chat/GroupNotification", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          Group: selectedGroup.GroupName,
+          subject,
+          text,
+        }),
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        alert(`Notification sent to: ${result.join(", ")}`);
+      } else {
+        const error = await response.text();
+        console.error("Error sending notification:", error);
+        alert("Failed to send notification. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error sending notification:", error);
+      alert("An error occurred while sending the notification.");
+    }
+  };
 
   // Pusher integration for real-time messages
   useEffect(() => {
@@ -214,93 +252,115 @@ const GroupChat = () => {
           Create Group
         </button>
       </div>
+  
 
-      {/* Main Chat Section */}
+     {/* Main Chat Section */}
+<div
+  style={{
+    flex: 1,
+    color: "black",
+    display: "flex",
+    flexDirection: "column",
+    backgroundColor: "#ecf0f1",
+  }}
+>
+  {selectedGroup ? (
+    <>
+      {/* Notification Button */}
+      <button
+        onClick={sendNotification}
+        style={{
+          // position: "absolute", 
+          top: "10px",          
+          right: "20px",     
+          margin: "10px 20px",
+          padding: "10px 20px",
+          backgroundColor: "#27ae60",
+          color: "#ecf0f1",
+          borderRadius: "5px",
+          border: "none",
+          cursor: "pointer",
+          fontSize: "16px",
+          alignSelf: "flex-start",
+        }}
+      >
+        Send Notification
+      </button>
+
+      {/* Messages Display */}
       <div
         style={{
           flex: 1,
-          color:"black",
-          display: "flex",
-          flexDirection: "column",
+          padding: "20px",
+          overflowY: "auto",
           backgroundColor: "#ecf0f1",
         }}
       >
-        {selectedGroup ? (
-          <>
-            {/* Messages Display */}
-            <div
-              style={{
-                flex: 1,
-                padding: "20px",
-                overflowY: "auto",
-                backgroundColor: "#ecf0f1",
-              }}
-            >
-              {loading ? (
-                <p>Loading messages...</p>
-              ) : (
-                messages.map((msg, index) => (
-                  <div
-                    key={index}
-                    style={{
-                      marginBottom: "15px",
-                      padding: "10px",
-                      borderRadius: "5px",
-                      backgroundColor: "#bdc3c7",
-                      alignSelf: "flex-start",
-                    }}
-                  >
-                    <strong>{msg.sender}: </strong>
-                    <span>{msg.message}</span>
-                    <div style={{ fontSize: "12px", color: "#7f8c8d" }}>{msg.date}</div>
-                  </div>
-                ))
-              )}
-            </div>
-
-            {/* Message Input */}
-            <div
-              style={{
-                padding: "20px",
-                borderTop: "2px solid #bdc3c7",
-                backgroundColor: "#ecf0f1",
-              }}
-            >
-              <div style={{ display: "flex", gap: "10px" }}>
-                <input
-                  type="text"
-                  value={message}
-                  color="black"
-                  onChange={(e) => setMessage(e.target.value)}
-                  placeholder="Type a message..."
-                  style={{
-                    flex: 1,
-                    padding: "10px",
-                    borderRadius: "5px",
-                    border: "1px solid #bdc3c7",
-                    fontSize: "16px",
-                  }}
-                />
-                <button
-                  onClick={() => sendMessage(selectedGroup.GroupName, message)}
-                  style={{
-                    padding: "10px 20px",
-                    backgroundColor: "#2980b9",
-                    color: "#ecf0f1",
-                    borderRadius: "5px",
-                    border: "none",
-                    cursor: "pointer",
-                  }}
-                >
-                  Send
-                </button>
-              </div>
-            </div>
-          </>
+        {loading ? (
+          <p>Loading messages...</p>
         ) : (
-          <p style={{ padding: "20px" }}>Select a group to start chatting</p>
+          messages.map((msg, index) => (
+            <div
+              key={index}
+              style={{
+                marginBottom: "15px",
+                padding: "10px",
+                borderRadius: "5px",
+                backgroundColor: "#bdc3c7",
+                alignSelf: "flex-start",
+              }}
+            >
+              <strong>{msg.sender}: </strong>
+              <span>{msg.message}</span>
+              <div style={{ fontSize: "12px", color: "#7f8c8d" }}>{msg.date}</div>
+            </div>
+          ))
         )}
       </div>
+
+      {/* Message Input */}
+      <div
+        style={{
+          padding: "20px",
+          borderTop: "2px solid #bdc3c7",
+          backgroundColor: "#ecf0f1",
+        }}
+      >
+        <div style={{ display: "flex", gap: "10px" }}>
+          <input
+            type="text"
+            value={message}
+            color="black"
+            onChange={(e) => setMessage(e.target.value)}
+            placeholder="Type a message..."
+            style={{
+              flex: 1,
+              padding: "10px",
+              borderRadius: "5px",
+              border: "1px solid #bdc3c7",
+              fontSize: "16px",
+            }}
+          />
+          <button
+            onClick={() => sendMessage(selectedGroup.GroupName, message)}
+            style={{
+              padding: "10px 20px",
+              backgroundColor: "#2980b9",
+              color: "#ecf0f1",
+              borderRadius: "5px",
+              border: "none",
+              cursor: "pointer",
+            }}
+          >
+            Send
+          </button>
+        </div>
+      </div>
+    </>
+  ) : (
+    <p style={{ padding: "20px" }}>Select a group to start chatting</p>
+  )}
+</div>
 
       {/* Modal for Creating Group */}
       {showModal && (
@@ -404,6 +464,7 @@ const GroupChat = () => {
             >
               Create Group
             </button>
+            
             <button
               onClick={() => setShowModal(false)}
               style={{

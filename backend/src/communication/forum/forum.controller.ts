@@ -7,11 +7,15 @@ import { User, UserDocument } from 'src/user/user.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import * as jwt from 'jsonwebtoken';
+import { AuthService } from 'src/auth/auth.service';
+import {UserService} from '../../user/user.service'
 
 @Controller('forum')
 export class ForumController {
   constructor(private readonly forumService: ForumService,
     @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
+       @Inject(AuthService) private readonly authService: AuthService,
+  
   ) {}
 
 //      const token = req.cookies['verification_token'];
@@ -28,6 +32,21 @@ export class ForumController {
       }
     }
 
+    @Post('addComment')
+async addComment(
+  @Req() req: Request,
+  @Body('forumId') forumId: string,
+  @Body('text') text: string,
+
+) {
+  const token = (req as any).cookies['verification_token'];
+  const decoded = this.extractTokenData(token)
+  const user = await this.userModel.findById(decoded.id)
+  const data = {id :decoded.id , name : (user).name}
+  return this.forumService.addComment(forumId, data, text);
+}
+
+
   @Post('create')
   async createForum(
     @Req() req: Request,
@@ -37,9 +56,7 @@ export class ForumController {
     const token = (req as any).cookies['verification_token'];
     const decoded = this.extractTokenData(token)
     console.log(decoded.role)
-    // if(decoded.Role != 'admin'){
-    //   throw new HttpException('Only admin can create Forum', HttpStatus.BAD_REQUEST);
-    // }
+   
     
     if (!title || !description) {
       throw new HttpException('Missing required fields', HttpStatus.BAD_REQUEST);
@@ -50,7 +67,12 @@ export class ForumController {
     if(!stat){
       throw new HttpException(`This moderator does not exist.`, HttpStatus.NOT_FOUND);
     }
-
+    const usersEmail = await this.userModel.find()
+    const arr = usersEmail.map(user => user.email)
+    // (to: string, subject: string, text: string
+    for(let i = 0 ; i < arr.length ; i++){
+      await this.authService.sendMail(arr[i] , 'new post' , `New post: ${stat.name} has posted in the forum. Please check it out.`)
+    }
     const addObj = { _id : stat._id,name : stat.name}
     const forum = await this.forumService.createForum(
       title,
@@ -71,6 +93,11 @@ export class ForumController {
     const userId = decoded?.id; 
     if (!userId) {
       return { status: 'Failed', message: 'User not authenticated.' };
+    }
+    console.log("d",decoded.role)
+    if(decoded.role.toString() === 'instructor'){
+      const forums = await this.forumService.findall();
+      return { status: 'Forums fetched successfully!', forums };
     }
   
     const forums = await this.forumService.findAllForums(userId);
