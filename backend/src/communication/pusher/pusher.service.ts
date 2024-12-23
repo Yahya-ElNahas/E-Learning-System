@@ -3,7 +3,7 @@ import * as Pusher from 'pusher';
 
 @Injectable()
 export class PusherService {
-  pusher: Pusher;
+  private pusher: Pusher;
 
   constructor() {
     this.pusher = new Pusher({
@@ -15,7 +15,19 @@ export class PusherService {
     });
   }
 
-  async trigger(channel: string, event: string, data: any) {
+
+  async trigger(channel: string, event: string, data: any): Promise<void> {
     await this.pusher.trigger(channel, event, data);
+  }
+
+  
+  async sendNotification(channel: string, title: string, message: string): Promise<void> {
+    const notificationData = {
+      title,
+      message,
+      timestamp: new Date().toISOString(),
+    };
+
+    await this.pusher.trigger(channel, 'notification', notificationData);
   }
 }

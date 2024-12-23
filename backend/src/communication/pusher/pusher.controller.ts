@@ -6,9 +6,9 @@ import { ChatService } from '../chat/chat.service';
 import { UserDocument } from '../../user/user.schema';
 import { ChatDocument } from '../chat/chat.schema';
 import * as jwt from 'jsonwebtoken';
-
+import {AuthService} from '../../auth/auth.service'
 import { UserService } from '../../user/user.service';
-import { Request, Response } from 'express';
+import e, { Request, Response } from 'express';
 import { waitForDebugger } from 'inspector';
 
 
@@ -19,6 +19,7 @@ export class PusherController {
     private readonly pusherService: PusherService,
     @Inject(ChatService) private readonly chatService: ChatService,
     @Inject(UserService) private readonly userService: UserService,
+    @Inject(AuthService) private readonly authService: AuthService,
   ) {}
 
 
@@ -181,6 +182,51 @@ export class PusherController {
       status: 'Public message sent successfully!',
       channel: channelName,
     };
+  }
+//to: string, subject: string, text: string
+  @Post('notifcation')
+  async notifcation(
+    @Body('to') name : string,
+    @Body('subject') subject :string,
+    @Body('text') text: string
+  ){
+    const user = (await this.userService.findByName(name))
+    console.log(user)
+   const email = user[0].email
+   console.log(email)
+    if(!email){
+      throw new Error('ccccccc')
+    }
+   const send  =  await this.authService.sendMail(email ,'notifcation', text)
+    return{
+      send 
+    }
+  }
+  @Post('GroupNotification')
+  async GroupNotification(
+    @Body('Group') Group: string,
+    @Body('subject') subject: string,
+    @Body('text') text: string
+  ) {
+    const group = await this.chatService.findGroupByName(Group);
+  
+    if (!group) {
+      throw new Error('Group not found');
+    }
+
+    const len =  group.members.length
+    const memberNames = [] 
+    for(let i = 0;  i < len ;i++){
+      memberNames.push(group.members[i]['name'])
+    }
+  
+  
+    for(let i = 0 ; i < memberNames.length ;i++){
+      let user = await this.userService.findByName(memberNames[i])
+      let  email = user[0].email
+      let send =  await this.authService.sendMail(email ,'notifcation', text)
+    }
+    return memberNames;
   }
 
 

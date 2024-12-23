@@ -105,6 +105,29 @@ const Chat = () => {
     }
   };
 
+  const sendNotification = async (to: string, subject: string, text: string) => {
+    try {
+      const response = await fetch("http://localhost:3000/chat/notifcation", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ to, subject, text }),
+      });
+  
+      const result = await response.json();
+      if (response.ok) {
+        alert("Notification sent successfully!");
+      } else {
+        console.error("Failed to send notification:", result.message);
+        alert("Failed to send notification. Please check the user name and try again.");
+      }
+    } catch (error) {
+      console.error("Error sending notification:", error);
+      alert("An error occurred while sending the notification.");
+    }
+  };
+  
+  
+
   useEffect(() => {
     fetchUserChats();
     if (!channelName) return;
@@ -115,6 +138,10 @@ const Chat = () => {
 
     channel.bind("message", (data: MessageData) => {
       setMessages((prevMessages) => [...prevMessages, data]);
+    });
+
+    channel.bind("notification", (data: any) => {
+      alert(`Notification: ${data.title} - ${data.message}`);
     });
 
     return () => {
@@ -202,36 +229,57 @@ const Chat = () => {
         {/* Chat Area */}
         <div style={{ flex: 1, display: "flex", flexDirection: "column", backgroundColor: "#ecf0f1" }}>
           {/* User Selection Bar */}
-          <div style={{ padding: "10px", backgroundColor: "#bdc3c7", display: "flex", alignItems: "center" }}>
-            <input
-              type="text"
-              value={selectedInstructor}
-              onChange={(e) => setSelectedInstructor(e.target.value)}
-              placeholder="Enter username"
-              style={{
-                padding: "8px",
-                color : "black",
-                borderRadius: "5px",
-                marginRight: "10px",
-                flex: 1,
-                outline: "none",
-                border: "1px solid #7f8c8d",
-              }}
-            />
-            <button
-              onClick={handleInstructorSubmit}
-              style={{
-                padding: "8px 15px",
-                backgroundColor: "#2c3e50",
-                color: "#ecf0f1",
-                border: "none",
-                borderRadius: "5px",
-                cursor: "pointer",
-              }}
-            >
-              Start Chat
-            </button>
-          </div>
+<div style={{ padding: "10px", backgroundColor: "#bdc3c7", display: "flex", alignItems: "center", gap: "10px" }}>
+  <input
+    type="text"
+    value={selectedInstructor}
+    onChange={(e) => setSelectedInstructor(e.target.value)}
+    placeholder="Enter username"
+    style={{
+      padding: "8px",
+      color: "black",
+      borderRadius: "5px",
+      flex: 1,
+      outline: "none",
+      border: "1px solid #7f8c8d",
+    }}
+  />
+  <button
+    onClick={handleInstructorSubmit}
+    style={{
+      padding: "8px 15px",
+      backgroundColor: "#2c3e50",
+      color: "#ecf0f1",
+      border: "none",
+      borderRadius: "5px",
+      cursor: "pointer",
+    }}
+  >
+    Start Chat
+  </button>
+  <button
+  onClick={() => {
+    if (selectedInstructor.trim()) {
+      const subject = "Notification"; // Replace with a dynamic subject if needed
+      const text = `${selectedInstructor} is reaching out to chat with you.`;
+      sendNotification(selectedInstructor, subject, text);
+    } else {
+      alert("Please enter a username to send a notification.");
+    }
+  }}
+  style={{
+    padding: "8px 15px",
+    backgroundColor: "#e74c3c",
+    color: "#ecf0f1",
+    border: "none",
+    borderRadius: "5px",
+    cursor: "pointer",
+  }}
+>
+  Send Notification
+</button>
+
+</div>
 
           {/* Main Chat Section */}
 <div

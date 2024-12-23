@@ -33,7 +33,7 @@ const Home = () => {
       >
         {/* Group Chat Card */}
         <div
-          onClick={() => router.push("/student/communication/group")}
+          onClick={() => router.push("/communication/group")}
           style={{
             width: "280px",
             height: "180px",
@@ -69,7 +69,7 @@ const Home = () => {
 
         {/* Private Chat Card */}
         <div
-          onClick={() => router.push("/student/communication/privateChat")}
+          onClick={() => router.push("/communication/privateChat")}
           style={{
             width: "280px",
             height: "180px",
@@ -140,34 +140,7 @@ const Home = () => {
         </div>
       </div>
 
-      {/* Navigate to /student/ Button */}
-      <button
-        onClick={() => router.push("/student/")}
-        style={{
-          marginTop: "40px",
-          padding: "10px 20px",
-          fontSize: "1.2rem",
-          backgroundColor: "#9CA3AF",
-          color: "#fff",
-          border: "none",
-          borderRadius: "5px",
-          cursor: "pointer",
-          boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.2)",
-          transition: "transform 0.3s, box-shadow 0.3s",
-        }}
-        onMouseEnter={(e) => {
-          e.currentTarget.style.transform = "scale(1.05)";
-          e.currentTarget.style.boxShadow =
-            "0px 6px 15px rgba(0, 0, 0, 0.3)";
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.transform = "scale(1)";
-          e.currentTarget.style.boxShadow =
-            "0px 4px 10px rgba(0, 0, 0, 0.2)";
-        }}
-      >
-        Go to Student Portal
-      </button>
+      
     </div>
   );
 };

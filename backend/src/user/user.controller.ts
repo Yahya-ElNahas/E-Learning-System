@@ -41,6 +41,8 @@ export class UserController {
     const userId = this.authService.GetIdFromToken(token); 
     return this.userService.findById(userId); 
   }
+
+  
   @Patch('profile/details')
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(

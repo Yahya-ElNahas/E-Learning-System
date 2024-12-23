@@ -7,6 +7,7 @@ import { Forum, ForumDocument, Thread, ThreadDocument, Reply, ReplyDocument } fr
 import { User, UserDocument } from '../../user/user.schema';
 
 
+
 @Injectable()
 export class ForumService {
   constructor(
@@ -14,6 +15,7 @@ export class ForumService {
     @InjectModel(Thread.name) private readonly threadModel: Model<ThreadDocument>,
     @InjectModel(Reply.name) private readonly replyModel: Model<ReplyDocument>,
     @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
+
   ) {}
 
   private formatDate(date: Date): string {
@@ -28,8 +30,10 @@ export class ForumService {
 
   // Forum Methods
   async createForum( title:string, description:string, moderator:object) {
-    const data = { title, description, moderator};
+    const comments =[]
+    const data = { title, description,comments ,moderator };
     const existingForum = await this.forumModel.findOne({ title });
+    console.log(data)
 
     if (!existingForum) {
       const forum = new this.forumModel(data);
@@ -74,9 +78,28 @@ export class ForumService {
     return updatedForum;
   }
 
+  
+
   async deleteForum(id: string) {
     return this.forumModel.findByIdAndDelete(id).exec();
   }
+
+  async addComment(forumId: string, user: object, text: string) {
+    const forum = await this.forumModel.findById(forumId);
+
+    if (!forum) {
+      throw new Error('Forum not found');
+    }
+    
+  
+  const comments = { user,text,createdAt: new Date(),}
+  forum.comments.push(comments)
+
+    const res= await this.forumModel.updateOne({_id : forumId},{$set:{comments: forum.comments}})
+    console.log(res)
+    return forum;
+  }
+
 
   // Thread Methods
   async createThread({ forum, title, content, createdBy }: any) {

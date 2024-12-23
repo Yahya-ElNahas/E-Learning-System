@@ -202,54 +202,59 @@ const ForumManagement = () => {
 
       <h3 style={{ textAlign: "center", color: "#d1d1e0" }}>Forums</h3>
       <ul style={{ listStyle: "none", padding: "0" }}>
-        {forums.map((forum) => (
-          <li
-            key={forum._id}
-            style={{
-              background: "#2c2c3c",
-              marginBottom: "10px",
-              padding: "15px",
-              borderRadius: "5px",
-              boxShadow: "0px 2px 5px rgba(0, 0, 0, 0.5)",
-              color: "#e4e4eb",
-            }}
-          >
-            <h4 style={{ margin: "0", color: "#d1d1e0" }}>{forum.title}</h4>
-            <p style={{ margin: "5px 0 10px 0" }}>{forum.description}</p>
-            <button
-              onClick={() => {
-                setSelectedForum(forum);
-                setTitle(forum.title);
-                setDescription(forum.description);
-              }}
-              style={{
-                padding: "5px 10px",
-                marginRight: "10px",
-                backgroundColor: "#5a5a8a",
-                color: "#fff",
-                border: "none",
-                borderRadius: "5px",
-                cursor: "pointer",
-              }}
-            >
-              Edit
-            </button>
-            <button
-              onClick={() => deleteForum(forum._id)}
-              style={{
-                padding: "5px 10px",
-                backgroundColor: "#d9534f",
-                color: "#fff",
-                border: "none",
-                borderRadius: "5px",
-                cursor: "pointer",
-              }}
-            >
-              Delete
-            </button>
-          </li>
-        ))}
-      </ul>
+  {forums.map((forum) => (
+    <li
+      key={forum._id}
+      style={{
+        background: "#2c2c3c",
+        marginBottom: "10px",
+        padding: "15px",
+        borderRadius: "5px",
+        boxShadow: "0px 2px 5px rgba(0, 0, 0, 0.5)",
+        color: "#e4e4eb",
+      }}
+    >
+      <h4 style={{ margin: "0", color: "#d1d1e0" }}>{forum.title}</h4>
+      <p style={{ margin: "5px 0 10px 0" }}>{forum.description}</p>
+      <p style={{ fontSize: "0.9em", color: "#a0a0b0" }}>
+        Created by: <strong>{forum.moderator?.name || "Unknown"}</strong>
+      </p>
+      <button
+        onClick={() => {
+          setSelectedForum(forum);
+          setTitle(forum.title);
+          setDescription(forum.description);
+        }}
+        style={{
+          padding: "5px 10px",
+          marginRight: "10px",
+          backgroundColor: "#5a5a8a",
+          color: "#fff",
+          border: "none",
+          borderRadius: "5px",
+          cursor: "pointer",
+        }}
+      >
+        Edit
+      </button>
+      <button
+        onClick={() => deleteForum(forum._id)}
+        style={{
+          padding: "5px 10px",
+          backgroundColor: "#d9534f",
+          color: "#fff",
+          border: "none",
+          borderRadius: "5px",
+          cursor: "pointer",
+        }}
+      >
+        Delete
+      </button>
+    </li>
+  ))}
+</ul>
+
+         
 
       {status && (
         <p

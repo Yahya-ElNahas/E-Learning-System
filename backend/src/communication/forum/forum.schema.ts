@@ -12,6 +12,8 @@ export class Forum {
 
   @Prop({ type: String, required: true })
   description: string; 
+  @Prop({ type: Object, required: true })
+  comments: Object[]; 
 
   @Prop({ type: Object, ref: 'User', required: true })
   moderator: Object; 
@@ -27,8 +29,8 @@ export class Thread {
   @Prop({ type: String, required: true })
   title: string; 
 
-  @Prop({ type: String, required: true })
-  content: string; 
+  commits: string; 
+
 
   @Prop({ type: Types.ObjectId, ref: 'User', required: true })
   createdBy: Types.ObjectId; 
