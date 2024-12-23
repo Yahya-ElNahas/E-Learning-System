@@ -247,6 +247,7 @@ const Chat = () => {
      {/* Messages Display */}
 <div
   style={{
+    color: 'black',
     flex: 1,
     padding: "20px",
     overflowY: "auto", // Enables vertical scrolling
@@ -295,7 +296,6 @@ const Chat = () => {
             style={{
               flex: 1,
               color: 'black',
-              
               padding: "10px",
               borderRadius: "5px",
               border: "1px solid #bdc3c7",
