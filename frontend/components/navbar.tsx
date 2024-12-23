@@ -118,5 +118,5 @@ export default function NavbarComponent({ courses = false }) {
                 ))}
             </NavbarMenu>
         </Navbar>
-    )
-}
+    )}
+    
