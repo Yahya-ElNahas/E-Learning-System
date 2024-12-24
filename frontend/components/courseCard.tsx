@@ -101,7 +101,7 @@ export default function CourseCardComponent({ course, enrollment = false, studen
               View Course
             </button>
             <button
-              className="bg-green-500 text-white px-4 py-2 rounded-lg font-semibold hover:bg-green-600 transition-all duration-300"
+              className="bg-red-500 text-white px-4 py-2 rounded-lg font-semibold hover:bg-red-600 transition-all duration-300"
               onClick={handleAnalyticsClick}
             >
               Analytics
