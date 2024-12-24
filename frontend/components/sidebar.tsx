@@ -13,13 +13,15 @@ export default function SideBarComponent({
   const menuItems = student
     ? [
         { href: "/student/courses", label: "Courses" },
-        { href: "/communication/Home", label: "Communication" },
+        { href: "/communication/StudentHome", label: "Communication" },
+        { href: "/communication/forums/studentForum", label: "Forums" },
         { href: "/student/notes", label: "Quick Notes" },
         { href: "/student/instructors", label: "Instructors" },
       ]
     : [
         { href: "/instructor/courses", label: "Courses" },
         { href: "/communication/Home", label: "Communication" },
+        { href: "/communication/forums/instructor", label: "Forums" },
         { href: "/instructor/students", label: "Students" },
     //   { href: "/instructor/report", label: "Reports" },
       ];
@@ -77,7 +79,7 @@ export default function SideBarComponent({
               </Link>
             </li>
             <li className="mb-4">
-              <Link href="/communication/Home">
+              <Link href="/communication/forums/studentFourums">
                 <p className="block py-2 px-4 rounded-lg cursor-pointer text-gray-200 hover:bg-gradient-to-r hover:from-blue-600 hover:to-red-600 transition-all duration-300 mt-auto flex items-center">
                  
                 </p>
