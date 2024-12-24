@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react"
 import { useParams } from "next/navigation"
 import SideBarComponent from "@/components/sidebar"
+import jsPDF from "jspdf"
 
 interface Analytics {
   enrolledStudents: number
@@ -51,6 +52,48 @@ const CourseAnalytics: React.FC = () => {
     fetchAnalytics()
   }, [id])
 
+  const downloadPDF = () => {
+    if (analytics) {
+      const doc = new jsPDF()
+      doc.setFont("helvetica", "bold")
+      doc.setFontSize(18)
+      doc.text("Course Analytics", 105, 20, { align: "center" })
+
+      doc.setFontSize(14)
+      doc.setFont("helvetica", "normal")
+
+      // Enrollment Metrics
+      doc.text("Enrollment Metrics", 10, 40)
+      doc.text(`Enrolled Students: ${analytics.enrolledStudents}`, 10, 50)
+      doc.text(`Completed Students: ${analytics.completedStudents}`, 10, 60)
+      doc.text(`Average Completion Percentage: ${analytics.averageCompletionPercentage.toFixed(2)}%`, 10, 70)
+
+      // Performance Metrics
+      doc.text("Performance Metrics", 10, 90)
+      const performanceMetrics = Object.entries(analytics.performanceMetrics)
+      performanceMetrics.forEach(([key, value], index) => {
+        doc.text(
+          `${key.replace(/([A-Z])/g, " $1").trim()}: ${value}`,
+          10,
+          100 + index * 10
+        )
+      })
+
+      // Module Ratings
+      doc.text("Module Ratings", 10, 120 + performanceMetrics.length * 10)
+      if (analytics.moduleRatings.length > 0) {
+        analytics.moduleRatings.forEach((module, index) => {
+          const yPosition = 130 + performanceMetrics.length * 10 + index * 10
+          doc.text(`${module.moduleTitle} (Avg Rating: ${module.avgRating.toFixed(2)})`, 10, yPosition)
+        })
+      } else {
+        doc.text("No module ratings available", 10, 130 + performanceMetrics.length * 10)
+      }
+
+      doc.save(`course-analytics-${id}.pdf`)
+    }
+  }
+
   if (loading) {
     return (
       <div className="flex min-h-screen bg-gradient-to-br from-gray-900 to-gray-800">
@@ -69,6 +112,12 @@ const CourseAnalytics: React.FC = () => {
         <h1 className="text-4xl font-bold mb-8 text-white text-center animate-fade-in">
           Course Analytics
         </h1>
+        <button
+          onClick={downloadPDF}
+          className="mb-6 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+        >
+          Download Analytics as PDF
+        </button>
         {analytics ? (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div className="bg-white/10 backdrop-blur-lg border border-gray-700 rounded-lg p-6 animate-slide-up">
@@ -77,24 +126,6 @@ const CourseAnalytics: React.FC = () => {
                 <p>Enrolled Students: {analytics.enrolledStudents}</p>
                 <p>Completed Students: {analytics.completedStudents}</p>
                 <p>Average Completion: {analytics.averageCompletionPercentage?.toFixed(2)}%</p>
-              </div>
-              <div className="mt-6 h-48 flex items-center justify-center">
-                <div className="relative w-40 h-40">
-                  <svg viewBox="0 0 36 36" className="w-full h-full">
-                    <path
-                      d="M18 2.0845
-                        a 15.9155 15.9155 0 0 1 0 31.831
-                        a 15.9155 15.9155 0 0 1 0 -31.831"
-                      fill="none"
-                      stroke="#4299e1"
-                      strokeWidth="2"
-                      strokeDasharray={`${analytics.averageCompletionPercentage}, 100`}
-                    />
-                    <text x="18" y="20" textAnchor="middle" fill="#4299e1" fontSize="8">
-                      {analytics.averageCompletionPercentage?.toFixed(2)}%
-                    </text>
-                  </svg>
-                </div>
               </div>
             </div>
 
@@ -147,4 +178,3 @@ const CourseAnalytics: React.FC = () => {
 }
 
 export default CourseAnalytics
-
