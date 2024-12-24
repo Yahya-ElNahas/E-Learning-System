@@ -8,7 +8,7 @@ const Home = () => {
   return (
     <div className="flex h-screen">
       {/* Sidebar */}
-      <SideBarComponent courses={false} instructor={true} />
+      <SideBarComponent courses={false} student={true} />
 
       {/* Main Content */}
       <div className="flex flex-col flex-1 items-center justify-center bg-gradient-to-br from-gray-900 to-gray-800 text-white p-6">

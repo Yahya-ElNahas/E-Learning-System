@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Pusher from "pusher-js";
-
+import SideBarComponent from "@/components/sidebar"; 
+import ChatSidebar from "@/components/ChatSideBar";
 interface Group {
   GroupName: string;
   channel: string;
@@ -201,6 +202,9 @@ const [notificationText, setNotificationText] = useState<string>("");
   return (
     <div style={{ display: "flex", height: "100vh", fontFamily: "'Roboto', sans-serif" }}>
       {/* Sidebar */}
+      {/* <ChatSidebar userChats={[]} onSelectChat={function (instructor: string): void {
+        throw new Error("Function not implemented.");
+      } } selectedChat={""}/> */}
       <div
         style={{
           width: "25%",

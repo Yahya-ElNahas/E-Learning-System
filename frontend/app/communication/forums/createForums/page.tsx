@@ -58,7 +58,7 @@ const ForumManagement = () => {
   };
 
   // Delete a forum
-  const deleteForum = async (id: any) => {
+  const deleteForum = async (id) => {
     try {
       const response = await fetch(`http://localhost:3000/forum/${id}`, {
         method: "DELETE",
@@ -105,19 +105,24 @@ const ForumManagement = () => {
   };
 
   return (
-    <div style={{ fontFamily: "Arial, sans-serif", padding: "20px", backgroundColor: "#1e1e2f", color: "#e4e4eb", minHeight: "100vh" }}>
-      <h2 style={{ textAlign: "center", color: "#d1d1e0" }}>Forum Management</h2>
+    <div style={{ fontFamily: "Arial, sans-serif", padding: "20px", backgroundColor: "#10121B", color: "#EDEEF3", minHeight: "100vh" }}>
+      <h2 style={{ textAlign: "center", color: "#A3C7D6", marginBottom: "30px" }}>Forum Management</h2>
 
       <div
         style={{
           display: "flex",
-          justifyContent: "center",
-          marginBottom: "20px",
           flexDirection: "column",
           alignItems: "center",
+          marginBottom: "40px",
+          border: "1px solid #444",
+          padding: "20px",
+          borderRadius: "8px",
+          backgroundColor: "#1C1E2B",
+          boxShadow: "0 8px 16px rgba(0, 0, 0, 0.6)",
+          transition: "transform 0.3s",
         }}
       >
-        <h3>{selectedForum ? "Edit Forum" : "Create Forum"}</h3>
+        <h3 style={{ color: "#A3C7D6" }}>{selectedForum ? "Edit Forum" : "Create Forum"}</h3>
         <input
           type="text"
           placeholder="Title"
@@ -128,9 +133,9 @@ const ForumManagement = () => {
             padding: "10px",
             width: "300px",
             borderRadius: "5px",
-            border: "1px solid #444",
-            backgroundColor: "#2c2c3c",
-            color: "#e4e4eb",
+            border: "1px solid #666",
+            backgroundColor: "#2B2F3B",
+            color: "#EDEEF3",
           }}
         />
         <textarea
@@ -143,124 +148,126 @@ const ForumManagement = () => {
             width: "300px",
             height: "100px",
             borderRadius: "5px",
-            border: "1px solid #444",
-            backgroundColor: "#2c2c3c",
-            color: "#e4e4eb",
+            border: "1px solid #666",
+            backgroundColor: "#2B2F3B",
+            color: "#EDEEF3",
           }}
         ></textarea>
         {selectedForum ? (
-          <button
-            onClick={editForum}
-            style={{
-              padding: "10px 20px",
-              backgroundColor: "#5a5a8a",
-              color: "#fff",
-              border: "none",
-              borderRadius: "5px",
-              cursor: "pointer",
-              marginRight: "10px",
-            }}
-          >
-            Update Forum
-          </button>
+          <div style={{ display: "flex", gap: "10px" }}>
+            <button
+              onClick={editForum}
+              style={{
+                padding: "10px 20px",
+                backgroundColor: "#4CAF50",
+                color: "#FFF",
+                border: "none",
+                borderRadius: "5px",
+                cursor: "pointer",
+                boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.4)",
+                transition: "transform 0.2s ease",
+              }}
+            >
+              Update Forum
+            </button>
+            <button
+              onClick={() => {
+                setSelectedForum(null);
+                setTitle("");
+                setDescription("");
+              }}
+              style={{
+                padding: "10px 20px",
+                backgroundColor: "#E57373",
+                color: "#FFF",
+                border: "none",
+                borderRadius: "5px",
+                cursor: "pointer",
+              }}
+            >
+              Cancel
+            </button>
+          </div>
         ) : (
           <button
             onClick={createForum}
             style={{
               padding: "10px 20px",
-              backgroundColor: "#4a90e2",
-              color: "#fff",
+              backgroundColor: "#64B5F6",
+              color: "#FFF",
               border: "none",
               borderRadius: "5px",
               cursor: "pointer",
+              transition: "background 0.3s ease",
             }}
           >
             Create Forum
           </button>
         )}
-        {selectedForum && (
-          <button
-            onClick={() => {
-              setSelectedForum(null);
-              setTitle("");
-              setDescription("");
-            }}
-            style={{
-              padding: "10px 20px",
-              backgroundColor: "#d9534f",
-              color: "#fff",
-              border: "none",
-              borderRadius: "5px",
-              cursor: "pointer",
-              marginLeft: "10px",
-            }}
-          >
-            Cancel
-          </button>
-        )}
       </div>
 
-      <h3 style={{ textAlign: "center", color: "#d1d1e0" }}>Forums</h3>
+      <h3 style={{ textAlign: "center", color: "#A3C7D6" }}>Forums</h3>
       <ul style={{ listStyle: "none", padding: "0" }}>
-  {forums.map((forum) => (
-    <li
-      key={forum._id}
-      style={{
-        background: "#2c2c3c",
-        marginBottom: "10px",
-        padding: "15px",
-        borderRadius: "5px",
-        boxShadow: "0px 2px 5px rgba(0, 0, 0, 0.5)",
-        color: "#e4e4eb",
-      }}
-    >
-      <h4 style={{ margin: "0", color: "#d1d1e0" }}>{forum.title}</h4>
-      <p style={{ margin: "5px 0 10px 0" }}>{forum.description}</p>
-      <p style={{ fontSize: "0.9em", color: "#a0a0b0" }}>
-        Created by: <strong>{forum.moderator?.name || "Unknown"}</strong>
-      </p>
-      <button
-        onClick={() => {
-          setSelectedForum(forum);
-          setTitle(forum.title);
-          setDescription(forum.description);
-        }}
-        style={{
-          padding: "5px 10px",
-          marginRight: "10px",
-          backgroundColor: "#5a5a8a",
-          color: "#fff",
-          border: "none",
-          borderRadius: "5px",
-          cursor: "pointer",
-        }}
-      >
-        Edit
-      </button>
-      <button
-        onClick={() => deleteForum(forum._id)}
-        style={{
-          padding: "5px 10px",
-          backgroundColor: "#d9534f",
-          color: "#fff",
-          border: "none",
-          borderRadius: "5px",
-          cursor: "pointer",
-        }}
-      >
-        Delete
-      </button>
-    </li>
-  ))}
-</ul>
-
-         
+        {forums.map((forum) => (
+          <li
+            key={forum._id}
+            style={{
+              background: "#1C1E2B",
+              marginBottom: "10px",
+              padding: "20px",
+              borderRadius: "8px",
+              boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.4)",
+              color: "#EDEEF3",
+              transition: "transform 0.3s ease",
+              animation: "fadeIn 0.5s ease-in-out",
+            }}
+          >
+            <h4 style={{ margin: "0", color: "#A3C7D6" }}>{forum.title}</h4>
+            <p style={{ margin: "5px 0 10px 0" }}>{forum.description}</p>
+            <p style={{ fontSize: "0.9em", color: "#A0A0B0" }}>
+              Created by: <strong>{forum.moderator?.name || "Unknown"}</strong>
+            </p>
+            <div style={{ display: "flex", gap: "10px" }}>
+              <button
+                onClick={() => {
+                  setSelectedForum(forum);
+                  setTitle(forum.title);
+                  setDescription(forum.description);
+                }}
+                style={{
+                  padding: "5px 10px",
+                  backgroundColor: "#64B5F6",
+                  color: "#FFF",
+                  border: "none",
+                  borderRadius: "5px",
+                  cursor: "pointer",
+                }}
+              >
+                Edit
+              </button>
+              <button
+                onClick={() => deleteForum(forum._id)}
+                style={{
+                  padding: "5px 10px",
+                  backgroundColor: "#E57373",
+                  color: "#FFF",
+                  border: "none",
+                  borderRadius: "5px",
+                  cursor: "pointer",
+                }}
+              >
+                Delete
+              </button>
+            </div>
+          </li>
+        ))}
+      </ul>
 
       {status && (
         <p
           style={{
             textAlign: "center",
-            color: status.includes("success") ? "#4caf50" : "#f44336",
+            color: status.includes("success") ? "#81C784" : "#E57373",
             fontWeight: "bold",
           }}
         >
