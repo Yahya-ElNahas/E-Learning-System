@@ -246,7 +246,8 @@ const [notificationText, setNotificationText] = useState<string>("");
           style={{
             padding: "10px 20px",
             backgroundColor: "#2980b9",
-            color: "#ecf0f1",
+
+            color : 'black',
             borderRadius: "5px",
             border: "none",
             cursor: "pointer",
